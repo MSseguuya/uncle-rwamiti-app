@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Episodes: publicly readable so all users can play; writable by CMS admin or seed
+    match /episodes/{episodeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Choice aggregated stats: publicly readable and increments allowed
+    match /choiceStats/{statId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Poll votes: publicly readable and increments allowed
+    match /pollVotes/{voteId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Platform config: publicly readable; writable by admin
+    match /platformConfig/{configId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Subscribers: read and created when MoMo pass is unlocked
+    match /subscribers/{subscriberId} {
+      allow read, write: if true;
+    }
+
+    // Analytics: write-only stream
+    match /analytics/{eventId} {
+      allow create: if true;
+      allow read: if true;
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "episodes": {
+      "title": "Episodes",
+      "description": "Interactive episodes authored by Uncle Rwamiti / editorial CMS",
+      "type": "object",
+      "properties": {
+        "number": { "type": "string", "description": "Episode sequence e.g. 001" },
+        "title": { "type": "string", "description": "Episode headline title" },
+        "subtitle": { "type": "string", "description": "Subtitle or moral premise" },
+        "teaser": { "type": "string", "description": "Story teaser excerpt" },
+        "category": { "type": "string", "description": "Genre / category" },
+        "badge": { "type": "string", "description": "Visual pill badge" },
+        "badgeColor": { "type": "string", "description": "Pill accent color" },
+        "isPremium": { "type": "boolean", "description": "Requires MoMo UGX 5,000 pass" },
+        "published": { "type": "boolean", "description": "Visible in public catalog" },
+        "initialNodeId": { "type": "string", "description": "Starting node ID" },
+        "nodes": { "type": "object", "description": "Branching story tree map" },
+        "rwamitiEnding": { "type": "object", "description": "Moral breakdown and poll" },
+        "recommendedNextEpisodeId": { "type": "string" },
+        "sharePrompt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["number", "title", "initialNodeId", "nodes"]
+    },
+    "subscribers": {
+      "title": "Subscribers",
+      "description": "Mobile Money subscriber accounts and access passes",
+      "type": "object",
+      "properties": {
+        "phoneNumber": { "type": "string", "description": "Uganda MoMo contact" },
+        "network": { "type": "string", "description": "MTN or Airtel" },
+        "status": { "type": "string", "enum": ["active", "expired", "pending"] },
+        "subscribedAt": { "type": "string" },
+        "expiresAt": { "type": "string" },
+        "amountPaid": { "type": "number" },
+        "currency": { "type": "string" }
+      },
+      "required": ["phoneNumber", "status", "subscribedAt"]
+    },
+    "choiceStats": {
+      "title": "Choice Aggregate Statistics",
+      "description": "Real-time crowd choice distributions for social proof",
+      "type": "object",
+      "properties": {
+        "episodeId": { "type": "string" },
+        "nodeId": { "type": "string" },
+        "choiceId": { "type": "string" },
+        "count": { "type": "number" },
+        "lastUpdated": { "type": "string" }
+      },
+      "required": ["episodeId", "nodeId", "choiceId", "count"]
+    },
+    "pollVotes": {
+      "title": "Rwamiti Ending Poll Votes",
+      "description": "User responses to Uncle Rwamiti's final moral questions",
+      "type": "object",
+      "properties": {
+        "episodeId": { "type": "string" },
+        "optionIndex": { "type": "number" },
+        "count": { "type": "number" }
+      },
+      "required": ["episodeId", "optionIndex", "count"]
+    },
+    "platformConfig": {
+      "title": "Platform Configuration",
+      "description": "Subscription price, payment recipient number, aggregate toggles, and global settings",
+      "type": "object",
+      "properties": {
+        "subscriptionPriceUgx": { "type": "number" },
+        "subscriptionPriceLabel": { "type": "string" },
+        "currency": { "type": "string" },
+        "defaultPaymentNumber": { "type": "string", "description": "Default MTN MoMo and Airtel Money recipient phone number (e.g. 0772988640, no spaces)" },
+        "merchantName": { "type": "string", "description": "Merchant name shown on Mobile Money approvals" },
+        "showAggregateStats": { "type": "boolean" },
+        "allowInstantFreeTrial": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  }
+}

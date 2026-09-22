@@ -1,0 +1,7 @@
+{
+  "name": "Uncle Rwamiti: Your Move",
+  "description": "Mobile-first interactive story platform where teenagers navigate real-life dilemmas, experience consequences, and face Uncle Rwamiti's twist.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

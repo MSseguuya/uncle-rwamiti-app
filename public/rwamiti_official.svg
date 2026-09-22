@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 450" width="100%" height="100%">
+  <defs>
+    <radialGradient id="ambGlow" cx="50%" cy="38%" r="65%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="50%" stop-color="#b45309" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="capGrad" x1="15%" y1="0%" x2="85%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="35%" stop-color="#d97706"/>
+      <stop offset="85%" stop-color="#b45309"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <linearGradient id="capBrim" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#92400e"/>
+      <stop offset="50%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#b46f25"/>
+      <stop offset="40%" stop-color="#945318"/>
+      <stop offset="85%" stop-color="#733c10"/>
+      <stop offset="100%" stop-color="#552a0a"/>
+    </linearGradient>
+    <linearGradient id="skinHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d9822b"/>
+      <stop offset="100%" stop-color="#945318"/>
+    </linearGradient>
+    <linearGradient id="beard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#e4e4e7"/>
+      <stop offset="90%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="50%" stop-color="#e2d9c8"/>
+      <stop offset="100%" stop-color="#c5bcab"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#0a0a0d"/>
+  <circle cx="200" cy="180" r="180" fill="url(#ambGlow)"/>
+
+  <!-- Torso & Collared Shirt -->
+  <path d="M 70 450 L 95 350 L 135 325 L 200 355 L 265 325 L 305 350 L 330 450 Z" fill="url(#shirt)" filter="url(#softShadow)"/>
+  <!-- Open Collar -->
+  <path d="M 135 325 L 175 390 L 200 355 L 225 390 L 265 325 L 200 340 Z" fill="#ffffff" opacity="0.95"/>
+  <path d="M 185 390 L 200 450 L 215 390 Z" fill="#945318"/>
+
+  <!-- Neck -->
+  <path d="M 165 260 L 165 345 L 235 345 L 235 260 Z" fill="url(#skin)"/>
+
+  <!-- Head Contour -->
+  <ellipse cx="200" cy="195" rx="76" ry="88" fill="url(#skin)" filter="url(#softShadow)"/>
+
+  <!-- Ears & Silver Hair Tufts -->
+  <ellipse cx="122" cy="198" rx="12" ry="20" fill="#733c10"/>
+  <ellipse cx="278" cy="198" rx="12" ry="20" fill="#733c10"/>
+  <!-- Salt & Pepper hair around temples -->
+  <path d="M 124 175 Q 116 195 128 215 Q 132 195 128 175 Z" fill="url(#beard)"/>
+  <path d="M 276 175 Q 284 195 272 215 Q 268 195 272 175 Z" fill="url(#beard)"/>
+
+  <!-- Forehead Laugh Lines & Character Wrinkles -->
+  <path d="M 148 156 Q 200 148 252 156" stroke="#552a0a" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <path d="M 154 165 Q 200 158 246 165" stroke="#552a0a" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+
+  <!-- Crow's Feet Radiating from Eyes -->
+  <path d="M 152 184 L 140 178 M 150 188 L 138 188 M 152 192 L 142 198" stroke="#552a0a" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 248 184 L 260 178 M 250 188 L 262 188 M 248 192 L 258 198" stroke="#552a0a" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Cheek Highlights -->
+  <ellipse cx="160" cy="205" rx="16" ry="10" fill="url(#skinHighlight)" opacity="0.4"/>
+  <ellipse cx="240" cy="205" rx="16" ry="10" fill="url(#skinHighlight)" opacity="0.4"/>
+
+  <!-- Eyes: Warm, Intensely Wise & Smiling -->
+  <!-- Left Eye -->
+  <ellipse cx="168" cy="188" rx="14" ry="9" fill="#ffffff"/>
+  <circle cx="170" cy="188" r="6.5" fill="#381805"/>
+  <circle cx="170" cy="188" r="3.2" fill="#000000"/>
+  <circle cx="172" cy="186" r="1.8" fill="#ffffff"/>
+  <path d="M 154 186 Q 168 176 182 186" stroke="#2e1404" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Right Eye -->
+  <ellipse cx="232" cy="188" rx="14" ry="9" fill="#ffffff"/>
+  <circle cx="230" cy="188" r="6.5" fill="#381805"/>
+  <circle cx="230" cy="188" r="3.2" fill="#000000"/>
+  <circle cx="232" cy="186" r="1.8" fill="#ffffff"/>
+  <path d="M 218 186 Q 232 176 246 186" stroke="#2e1404" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+  <!-- Eyebrows with Silver Feathers -->
+  <path d="M 152 175 Q 170 168 186 175" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.95"/>
+  <path d="M 154 175 Q 170 169 184 175" stroke="#71717a" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <path d="M 214 175 Q 230 168 248 175" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.95"/>
+  <path d="M 216 175 Q 230 169 246 175" stroke="#71717a" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Broad Respected Nose -->
+  <path d="M 200 182 Q 197 218 190 223 Q 200 230 210 223 Q 203 218 200 182" fill="#733c10" opacity="0.8"/>
+  <ellipse cx="189" cy="223" rx="6" ry="4" fill="#3b1c06"/>
+  <ellipse cx="211" cy="223" rx="6" ry="4" fill="#3b1c06"/>
+
+  <!-- Full Silver-White Moustache -->
+  <path d="M 162 238 Q 182 228 200 232 Q 218 228 238 238 Q 218 252 200 245 Q 182 252 162 238 Z" fill="url(#beard)" filter="url(#softShadow)"/>
+  
+  <!-- Knowing Smile & Laughing Mouth -->
+  <path d="M 172 246 Q 200 268 228 246 Q 200 256 172 246 Z" fill="#3b1207"/>
+  <path d="M 179 248 Q 200 258 221 248" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Silver Goatee / Beard extending along jawline -->
+  <path d="M 166 252 Q 155 278 200 288 Q 245 278 234 252 Q 220 266 200 266 Q 180 266 166 252 Z" fill="url(#beard)"/>
+
+  <!-- Right Hand under Chin (The Classic Pensive Uncle Rwamiti Pose) -->
+  <path d="M 240 420 L 255 330 L 235 295 L 205 295 L 180 282 L 175 300 L 208 315 L 220 420 Z" fill="url(#skin)" filter="url(#softShadow)"/>
+  <!-- Fingers curling under chin -->
+  <ellipse cx="205" cy="288" rx="16" ry="8" fill="#854d0e"/>
+  <ellipse cx="220" cy="292" rx="14" ry="7" fill="#854d0e"/>
+  <ellipse cx="190" cy="286" rx="13" ry="7" fill="#713f12"/>
+
+  <!-- MUSTARD-GOLD NEWSBOY CAP (Flat Cap) -->
+  <!-- Cap Crown Puff -->
+  <path d="M 110 148 C 105 88, 170 58, 210 65 C 275 72, 310 108, 296 158 C 275 164, 138 164, 110 148 Z" fill="url(#capGrad)" filter="url(#softShadow)"/>
+  <!-- Stitched Panelling Seams -->
+  <path d="M 200 65 Q 182 112 165 152" stroke="#78350f" stroke-width="2.5" fill="none" opacity="0.65"/>
+  <path d="M 210 65 Q 225 112 245 152" stroke="#78350f" stroke-width="2.5" fill="none" opacity="0.65"/>
+  <!-- Cap Visor Brim projecting over forehead -->
+  <path d="M 120 148 Q 200 132 285 152 Q 252 174 155 170 Z" fill="url(#capBrim)" filter="url(#softShadow)"/>
+  <path d="M 132 150 Q 200 138 276 154" stroke="#fef08a" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Cap Crown Center Button -->
+  <circle cx="206" cy="68" r="6" fill="#78350f"/>
+</svg>
