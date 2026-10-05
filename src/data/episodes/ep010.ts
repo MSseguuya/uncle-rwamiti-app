@@ -9,7 +9,7 @@ export const ep010: Episode = {
   category: 'Cheating & Academics',
   badge: '2040 CHALLENGE',
   badgeColor: 'amber',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

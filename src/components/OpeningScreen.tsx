@@ -35,17 +35,17 @@ export const OpeningScreen: React.FC<OpeningScreenProps> = ({
           <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 text-center">
             <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center justify-center gap-1 mb-0.5">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{freeEpisodesCount} Free Stories</span>
+              <span>100% FREE ACCESS</span>
             </div>
-            <div className="text-xs text-zinc-400">Play instantly • Zero sign-up</div>
+            <div className="text-xs text-zinc-400">Play all 12 • No sign-up</div>
           </div>
 
           <div className="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 text-center">
             <div className="text-[10px] font-bold text-[#e5a93b] uppercase tracking-wider flex items-center justify-center gap-1 mb-0.5">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>{totalEpisodesCount} Episodes</span>
+              <span>{totalEpisodesCount} COMPLETE STORIES</span>
             </div>
-            <div className="text-xs text-zinc-400">Full library & exclusives</div>
+            <div className="text-xs text-zinc-400">Full dilemmas & twists</div>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ export const ep008: Episode = {
   category: 'Social Media & Identity',
   badge: 'TIKTOK VIRAL',
   badgeColor: 'amber',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

@@ -52,60 +52,28 @@ export const EpisodeDrawer: React.FC<EpisodeDrawerProps> = ({
           </button>
         </div>
 
-        {/* Subscription banner if not premium */}
-        {!isPremiumUser && (
-          <div className="p-3.5 mx-4 mt-4 rounded-xl bg-gradient-to-r from-[#e5a93b]/15 via-[#e5a93b]/10 to-amber-900/20 border border-[#e5a93b]/30 flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#e5a93b]">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>YOUR MOVE+</span>
-              </div>
-              <p className="text-[11px] text-zinc-300 mt-0.5">
-                Unlock locked stories (Episodes 006–012) + upcoming weekly dilemmas
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                sound.playTap();
-                onOpenSubscription();
-              }}
-              className="px-3 py-1.5 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] text-black font-bold text-xs shrink-0 cursor-pointer transition-colors shadow-sm"
-            >
-              Unlock
-            </button>
-          </div>
-        )}
-
         {/* Episode list */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
-          <div className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider px-1">
-            Episodes ({episodes.length})
+          <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-500 uppercase tracking-wider px-1">
+            <span>Stories ({episodes.length})</span>
+            <span className="text-emerald-400 font-bold">100% Free</span>
           </div>
 
           {episodes.map((ep) => {
             const isCurrent = ep.id === currentEpisodeId;
             const isCompleted = completedEpisodeIds.includes(ep.id);
-            const num = parseInt(ep.number, 10);
-            const isEpPremium = !isNaN(num) ? num >= 6 : !!ep.isPremium;
-            const isLocked = isEpPremium && !isPremiumUser;
 
             return (
               <div
                 key={ep.id}
                 onClick={() => {
                   sound.playTap();
-                  if (isLocked) {
-                    onOpenSubscription();
-                  } else {
-                    onSelectEpisode(ep.id);
-                    onClose();
-                  }
+                  onSelectEpisode(ep.id);
+                  onClose();
                 }}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer relative group ${
                   isCurrent
                     ? 'bg-[#e5a93b]/10 border-[#e5a93b] shadow-md shadow-[#e5a93b]/5'
-                    : isLocked
-                    ? 'bg-zinc-900/40 border-zinc-850 opacity-85 hover:border-zinc-700'
                     : 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850'
                 }`}
               >
@@ -120,16 +88,9 @@ export const EpisodeDrawer: React.FC<EpisodeDrawerProps> = ({
                           {ep.badge}
                         </span>
                       )}
-                      {isEpPremium ? (
-                        <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/20 text-[#e5a93b] border border-amber-500/30 flex items-center gap-1">
-                          <Lock className="w-2.5 h-2.5" />
-                          SUBSCRIBE
-                        </span>
-                      ) : (
-                        <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                          FREE
-                        </span>
-                      )}
+                      <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        FREE
+                      </span>
                     </div>
 
                     <h3 className="text-sm font-bold text-white group-hover:text-[#e5a93b] transition-colors truncate">
@@ -142,11 +103,7 @@ export const EpisodeDrawer: React.FC<EpisodeDrawerProps> = ({
                   </div>
 
                   <div className="flex flex-col items-center justify-center shrink-0 pl-2 pt-1">
-                    {isLocked ? (
-                      <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-[#e5a93b]">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                    ) : isCompleted ? (
+                    {isCompleted ? (
                       <div className="w-8 h-8 rounded-full bg-emerald-950/60 border border-emerald-800/40 flex items-center justify-center text-emerald-400">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>

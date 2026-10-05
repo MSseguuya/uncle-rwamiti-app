@@ -9,7 +9,7 @@ export const ep012: Episode = {
   category: 'Future & Disruption',
   badge: 'SPECIAL EDITION',
   badgeColor: 'amber',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

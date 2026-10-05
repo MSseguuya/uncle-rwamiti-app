@@ -1,4 +1,5 @@
 import { PlatformConfig } from '../types';
+import { StorageService } from './storage';
 
 const SESSION_KEY = 'rwamiti_admin_auth_session_v1';
 const LOCKOUT_KEY = 'rwamiti_admin_lockout_v1';
@@ -41,8 +42,12 @@ export class AdminAuthService {
   }
 
   // Check if admin has established a passcode
-  static isPinConfigured(config: PlatformConfig): boolean {
-    return Boolean(config.adminPinHash || (config.adminPin && config.adminPin !== '1234'));
+  static isPinConfigured(config?: PlatformConfig): boolean {
+    if (config && (config.adminPinHash || (config.adminPin && config.adminPin !== '1234'))) {
+      return true;
+    }
+    const local = StorageService.getConfig();
+    return Boolean(local.adminPinHash || (local.adminPin && local.adminPin !== '1234'));
   }
 
   // Check if console is currently in lockout due to brute-force attempts
@@ -101,7 +106,7 @@ export class AdminAuthService {
   // Validate entered PIN against stored configuration
   static async verifyPin(
     inputPin: string,
-    config: PlatformConfig
+    config?: PlatformConfig
   ): Promise<{ success: boolean; error?: string }> {
     const trimmed = inputPin.trim();
     if (!trimmed) {
@@ -116,16 +121,21 @@ export class AdminAuthService {
       };
     }
 
+    const localConfig = StorageService.getConfig();
+    const activeConfig = (config?.adminPinHash || (config?.adminPin && config?.adminPin !== '1234'))
+      ? config
+      : localConfig;
+
     let matches = false;
 
     // Check modern hashed PIN
-    if (config.adminPinHash) {
-      const salt = config.adminPinSalt || '';
+    if (activeConfig.adminPinHash) {
+      const salt = activeConfig.adminPinSalt || '';
       const inputHash = await this.hashWithSalt(trimmed, salt);
-      matches = inputHash === config.adminPinHash;
-    } else if (config.adminPin && config.adminPin !== '1234') {
+      matches = inputHash === activeConfig.adminPinHash;
+    } else if (activeConfig.adminPin && activeConfig.adminPin !== '1234') {
       // Legacy custom plaintext PIN (migrate on match)
-      matches = trimmed === config.adminPin;
+      matches = trimmed === activeConfig.adminPin;
     } else {
       // Unconfigured or legacy default: do not allow silent 1234 bypass without explicit prompt
       return {

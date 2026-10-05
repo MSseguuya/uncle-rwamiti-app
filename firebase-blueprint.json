@@ -76,6 +76,45 @@
         "allowInstantFreeTrial": { "type": "boolean" },
         "updatedAt": { "type": "string" }
       }
+    },
+    "gameSessions": {
+      "title": "Player Game Sessions & Demographics",
+      "description": "Anonymized player demographics (age bracket, gender, location/district) and gameplay behaviour metrics",
+      "type": "object",
+      "properties": {
+        "episodeId": { "type": "string" },
+        "episodeNumber": { "type": "string" },
+        "episodeTitle": { "type": "string" },
+        "ageBracket": { "type": "string", "enum": ["Under 13", "13–17 (Teens)", "18–24 (Youth)", "25–34", "35+", "Undisclosed"] },
+        "gender": { "type": "string", "enum": ["Female", "Male", "Other", "Undisclosed"] },
+        "location": { "type": "string", "description": "District or Region (e.g. Kampala, Wakiso, Mukono, Jinja, Gulu, Mbarara, Diaspora)" },
+        "deviceType": { "type": "string", "enum": ["Mobile", "Tablet", "Desktop"] },
+        "startedAt": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "choicesCount": { "type": "number" },
+        "pollOption": { "type": "string" }
+      },
+      "required": ["episodeId", "startedAt"]
+    },
+    "visitors": {
+      "title": "Unique Visitors",
+      "description": "Unique visitor sessions, visit frequency, referral channels, and device metadata",
+      "type": "object",
+      "properties": {
+        "visitorId": { "type": "string" },
+        "visitCount": { "type": "number" },
+        "firstVisit": { "type": "string" },
+        "lastVisit": { "type": "string" },
+        "referralSource": { "type": "string" },
+        "deviceType": { "type": "string" },
+        "countryOrTimezone": { "type": "string" },
+        "gamesPlayed": { "type": "number" },
+        "gamesCompleted": { "type": "number" },
+        "ageBracket": { "type": "string" },
+        "gender": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["visitorId", "firstVisit", "visitCount"]
     }
   }
 }

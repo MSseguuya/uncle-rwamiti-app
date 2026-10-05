@@ -9,7 +9,7 @@ export const ep009: Episode = {
   category: 'Violence & Conflict',
   badge: 'FOOTBALL PITCH',
   badgeColor: 'red',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

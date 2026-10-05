@@ -44,38 +44,18 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({
     setPathHistory([episode.initialNodeId]);
 
     AnalyticsService.track('episode_opened', { episodeId: episode.id });
-  }, [episode.id, episode.initialNodeId]);
+    AnalyticsService.startRealGameSession({
+      episodeId: episode.id,
+      episodeNumber: episode.number,
+      episodeTitle: episode.title,
+      isReplay: false,
+      initialNodeId: episode.initialNodeId,
+      initialNodeTitle: episode.nodes[episode.initialNodeId]?.situation?.title || episode.title,
+    });
+  }, [episode.id, episode.initialNodeId, episode.number, episode.title]);
 
-  // Check if locked
-  const epNum = parseInt(episode.number, 10);
-  const isEpPremium = !isNaN(epNum) ? epNum >= 6 : !!episode.isPremium;
-  if (isEpPremium && !isPremiumUser) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-zinc-100 min-h-[500px]">
-        <div className="w-14 h-14 rounded-full bg-[#e5a93b]/20 border border-[#e5a93b]/50 text-[#e5a93b] flex items-center justify-center mb-4">
-          <Sparkles className="w-7 h-7" />
-        </div>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[#e5a93b] mb-1">
-          YOUR MOVE+ EXCLUSIVE
-        </span>
-        <h2 className="text-2xl font-black text-white mb-2">
-          Episode {episode.number}: {episode.title}
-        </h2>
-        <p className="text-xs text-zinc-400 max-w-sm mb-6 leading-relaxed">
-          {episode.teaser}
-        </p>
-        <button
-          onClick={() => {
-            sound.playTap();
-            onOpenSubscription();
-          }}
-          className="w-full max-w-xs py-3.5 px-6 rounded-xl bg-[#e5a93b] hover:bg-[#d8982a] text-black font-extrabold text-sm tracking-wide shadow-lg shadow-[#e5a93b]/20 cursor-pointer transition-all"
-        >
-          UNLOCK WITH YOUR MOVE+ →
-        </button>
-      </div>
-    );
-  }
+  // All stories are free to play
+  const isEpPremium = false;
 
   const currentNode: StoryNode | undefined = episode.nodes[currentNodeId] || episode.nodes[episode.initialNodeId];
 
@@ -123,6 +103,14 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({
       choiceId: choice.id,
       choiceLabel: choice.label,
     });
+    AnalyticsService.updateRealGameSessionChoice({
+      nodeId: currentNode.id,
+      nodeTitle: currentNode.headline || currentNode.id,
+      choiceId: choice.id,
+      choiceLabel: choice.label,
+      totalChoicesMade: pathHistory.length + 1,
+      isClimax: currentNode.type === 'climax' || choice.nextNodeId === 'climax',
+    });
     FirestoreDataService.recordChoiceStat(episode.id, currentNode.id, choice.id);
 
     if (choice.nextNodeId && episode.nodes[choice.nextNodeId]) {
@@ -149,6 +137,13 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({
     setTimeout(() => {
       setPhase('epilogue');
       AnalyticsService.track('story_completed', { episodeId: episode.id });
+      AnalyticsService.completeRealGameSession({
+        episodeId: episode.id,
+        episodeNumber: episode.number,
+        episodeTitle: episode.title,
+        choicesCount: pathHistory.length,
+        pollOption: option,
+      });
       onStoryCompleted(episode.id);
     }, 400);
   };
@@ -157,6 +152,14 @@ export const StoryPlayer: React.FC<StoryPlayerProps> = ({
   const handleReplay = () => {
     sound.playTap();
     AnalyticsService.track('replay_clicked', { episodeId: episode.id });
+    AnalyticsService.startRealGameSession({
+      episodeId: episode.id,
+      episodeNumber: episode.number,
+      episodeTitle: episode.title,
+      isReplay: true,
+      initialNodeId: episode.initialNodeId,
+      initialNodeTitle: episode.nodes[episode.initialNodeId]?.situation?.title || episode.title,
+    });
     setCurrentNodeId(episode.initialNodeId);
     setPhase('story_node');
     setUserSelectedChoice(null);

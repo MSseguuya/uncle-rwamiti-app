@@ -100,3 +100,72 @@ export interface UserState {
   userChoices: Record<string, string>; // nodeId -> choiceId
   soundEnabled: boolean;
 }
+
+export type AgeBracket =
+  | 'Under 13'
+  | '13–17 (Teens)'
+  | '18–24 (Youth)'
+  | '25–34'
+  | '35+'
+  | 'Undisclosed';
+
+export type GenderType = 'Female' | 'Male' | 'Other' | 'Prefer not to say';
+
+export interface PlayerDemographics {
+  ageBracket: AgeBracket;
+  gender: GenderType;
+  location: string;
+  hasSubmitted?: boolean;
+}
+
+export interface GameSessionChoice {
+  nodeId: string;
+  choiceId: string;
+  choiceLabel: string;
+  timestamp: number;
+}
+
+export type StoryStage = 'opened' | 'first_choice' | 'mid_story' | 'climax' | 'completed';
+
+export interface GameSessionRecord {
+  id: string;
+  visitorId: string;
+  timestamp: number;
+  dateStr: string;
+  episodeId: string;
+  episodeNumber: string;
+  episodeTitle: string;
+  ageBracket: string;
+  gender: string;
+  location: string;
+  deviceType: 'Mobile' | 'Tablet' | 'Desktop';
+  stageReached: StoryStage;
+  dropOffNodeId?: string;
+  dropOffNodeTitle?: string;
+  choices: GameSessionChoice[];
+  choicesCount: number;
+  completed: boolean;
+  completedAt?: string;
+  isReplay: boolean;
+  pollOption?: string;
+  referralSource: string;
+  countryOrTimezone: string;
+}
+
+export interface VisitorRecord {
+  visitorId: string;
+  visitCount: number;
+  firstVisit: number;
+  lastVisit: number;
+  isReturning: boolean;
+  referralSource: string;
+  deviceType: 'Mobile' | 'Tablet' | 'Desktop';
+  countryOrTimezone: string;
+  gamesPlayed: number;
+  gamesCompleted: number;
+  replaysCount: number;
+  ageBracket?: string;
+  gender?: string;
+  location?: string;
+}
+

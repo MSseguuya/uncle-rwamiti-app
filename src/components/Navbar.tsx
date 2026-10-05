@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, Shield, Smartphone, Monitor, BookOpen, LogOut, Menu } from 'lucide-react';
+import { Volume2, VolumeX, Shield, Smartphone, Monitor, BookOpen, LogOut, Menu, MapPin } from 'lucide-react';
 import { sound } from '../services/audio';
 import { RwamitiPosterArt } from './RwamitiPosterArt';
 
@@ -18,6 +18,7 @@ interface NavbarProps {
   currentView?: 'opening' | 'catalog' | 'story' | 'subscription';
   onNavigateView?: (view: 'opening' | 'catalog') => void;
   onTogglePremium?: () => void;
+  onOpenDemographics?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentView = 'story',
   onNavigateView,
   onTogglePremium,
+  onOpenDemographics,
 }) => {
   return (
     <header className="w-full bg-[#0d0e12] border-b border-zinc-800/80 px-4 py-2.5 flex items-center justify-between text-xs tracking-wider select-none shrink-0 z-30">
@@ -67,33 +69,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </button>
 
-        {isPremiumUser ? (
-          <button
-            onClick={() => {
-              sound.playTap();
-              if (onTogglePremium) onTogglePremium();
-            }}
-            className="bg-amber-500/20 hover:bg-amber-500/30 text-[#e5a93b] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#e5a93b]/40 cursor-pointer transition-colors"
-            title="YOUR MOVE+ Subscribed (Click to test as Free Visitor)"
-          >
-            YOUR MOVE+
-          </button>
-        ) : (
-          <button
-            onClick={() => {
-              sound.playTap();
-              if (onTogglePremium) onTogglePremium();
-            }}
-            className="bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-zinc-700/60 cursor-pointer transition-colors"
-            title="Free Visitor (Click to test as Subscribed)"
-          >
-            FREE VISITOR
-          </button>
-        )}
+        <span className="bg-emerald-500/15 text-emerald-400 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>100% FREE ACCESS</span>
+        </span>
       </div>
 
       {/* Right controls */}
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Demographic / Region button */}
+        {onOpenDemographics && (
+          <button
+            onClick={() => {
+              sound.playTap();
+              onOpenDemographics();
+            }}
+            className="flex items-center gap-1 px-2 py-1 rounded bg-zinc-850 hover:bg-zinc-800 text-zinc-300 hover:text-[#e5a93b] border border-zinc-800 transition-colors cursor-pointer text-[11px] font-bold"
+            title="Audience Demographics & District Info"
+          >
+            <MapPin className="w-3.5 h-3.5 text-[#e5a93b]" />
+            <span className="hidden sm:inline">My Region</span>
+          </button>
+        )}
+
         {/* Stories Catalog Button */}
         {onNavigateView && (
           <button

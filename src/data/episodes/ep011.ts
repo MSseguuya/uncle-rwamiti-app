@@ -9,7 +9,7 @@ export const ep011: Episode = {
   category: 'Future & Career',
   badge: 'FINALE • 2040',
   badgeColor: 'amber',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

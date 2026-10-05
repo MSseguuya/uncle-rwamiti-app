@@ -3,63 +3,91 @@ import { Episode, PlatformConfig, UserState } from './types';
 import { StorageService } from './services/storage';
 import { FirestoreDataService } from './services/firestoreData';
 import { AnalyticsService } from './services/analytics';
-import { sound } from './services/audio';
-import { Navbar } from './components/Navbar';
-import { MobileFrame } from './components/MobileFrame';
-import { OpeningScreen } from './components/OpeningScreen';
-import { StoryCatalog } from './components/StoryCatalog';
-import { StoryPlayer } from './components/StoryPlayer';
-import { EpisodeDrawer } from './components/EpisodeDrawer';
-import { SubscriptionPage } from './components/SubscriptionPage';
-import { SubscriptionModal } from './components/SubscriptionModal';
-import { ShareModal } from './components/ShareModal';
-import { AdminCMS } from './components/AdminCMS';
 import { AdminAuthService } from './services/adminAuth';
-
-type AppView = 'opening' | 'catalog' | 'story' | 'subscription';
+import { sound } from './services/audio';
+import {
+  CatalogStory,
+  StoryData,
+  StoryDatabaseService,
+} from './services/storyDatabaseService';
+import { PlatformHeader, MainNavTab } from './components/PlatformHeader';
+import { StreamHero } from './components/StreamHero';
+import { TeenStoriesSection } from './components/TeenStoriesSection';
+import { StreamRow } from './components/StreamRow';
+import { SearchStoriesView } from './components/SearchStoriesView';
+import { MyListView } from './components/MyListView';
+import { StorySceneReader } from './components/StorySceneReader';
+import { StoryDetailModal } from './components/StoryDetailModal';
+import { ShareDilemmaModal } from './components/ShareDilemmaModal';
+import { BottomNav } from './components/BottomNav';
+import { AuthorFooter } from './components/AuthorFooter';
+import { AdminCMS } from './components/AdminCMS';
+import { DemographicsModal } from './components/DemographicsModal';
 
 export default function App() {
-  const [episodes, setEp] = useState<Episode[]>(() => StorageService.getEpisodes());
+  // Catalog & Stories Data
+  const [catalog] = useState<CatalogStory[]>(() => StoryDatabaseService.getCatalog());
+  const featuredStory = StoryDatabaseService.getFeaturedStory();
+  const teenStories = StoryDatabaseService.getTeenStories();
+  const adultStories = StoryDatabaseService.getAdultStories();
+
+  // Navigation State
+  const [activeTab, setActiveTab] = useState<MainNavTab>('browse');
+  const [activeScreen, setActiveScreen] = useState<'main' | 'reader'>('main');
+  const [currentStorySlug, setCurrentStorySlug] = useState<string>('the-match-you-missed');
+
+  // Modals & Overlays
+  const [detailModalStory, setDetailModalStory] = useState<CatalogStory | null>(null);
+  const [detailStoryData, setDetailStoryData] = useState<StoryData | null>(null);
+  const [shareStory, setShareStory] = useState<CatalogStory | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(() => StoryDatabaseService.getSavedSlugs());
+
+  // In-progress continuing stories
+  const [continuingStories, setContinuingStories] = useState<CatalogStory[]>([]);
+
+  // Admin & Firestore State
+  const [episodes, setEpisodes] = useState<Episode[]>(() => StorageService.getEpisodes());
   const [config, setConfig] = useState<PlatformConfig>(() => StorageService.getConfig());
-  const [userState, setUserState] = useState<UserState>(() => StorageService.getUserState());
-
-  // View state: 'opening' -> 'catalog' -> 'story'
-  const [currentView, setCurrentView] = useState<AppView>('opening');
-
-  // Navigation & current story
-  const [currentEpisodeId, setCurrentEpisodeId] = useState<string>('ep-001');
-
-  // Modals & Drawers
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [userState] = useState<UserState>(() => StorageService.getUserState());
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminActive, setIsAdminActive] = useState<boolean>(() => AdminAuthService.isSessionActive());
-  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
-  const [isShareOpen, setIsShareOpen] = useState(false);
-  const [subscriptionTargetEpisode, setSubscriptionTargetEpisode] = useState<Episode | null>(null);
+  const [isDemographicsOpen, setIsDemographicsOpen] = useState(false);
 
-  // Desktop smartphone frame preview toggle
-  const [isDesktopPreview, setIsDesktopPreview] = useState(true);
-
-  // Sound sync
-  useEffect(() => {
-    sound.setMuted(!userState.soundEnabled);
-  }, [userState.soundEnabled]);
-
-  // Firestore real-time synchronization
-  useEffect(() => {
-    FirestoreDataService.init((remoteEpisodes) => {
-      const sanitized = remoteEpisodes.map((ep) => {
-        const num = parseInt(ep.number, 10);
-        return {
-          ...ep,
-          isPremium: !isNaN(num) ? num >= 6 : ep.isPremium,
-        };
-      });
-      setEp(sanitized);
+  // Sync Continuing Stories
+  const refreshContinuingStories = () => {
+    const progressMap = StoryDatabaseService.getAllProgress();
+    const continuing = catalog.filter((s) => {
+      const p = progressMap[s.slug];
+      return p && !p.completed && p.node !== 'opening';
     });
+    setContinuingStories(continuing);
+  };
+
+  useEffect(() => {
+    refreshContinuingStories();
+  }, [activeScreen, activeTab]);
+
+  // Firestore real-time synchronization & Visitor Tracking
+  useEffect(() => {
+    // Record real visitor session (referral, device, unique visitor ID)
+    AnalyticsService.recordVisitorVisit();
+
+    FirestoreDataService.init(
+      (remoteEpisodes) => {
+        const sanitized = remoteEpisodes.map((ep) => ({
+          ...ep,
+          isPremium: false,
+        }));
+        setEpisodes(sanitized);
+      },
+      (remoteConfig) => {
+        setConfig(remoteConfig);
+      }
+    );
   }, []);
 
-  // Admin session sync
+  // Admin session sync & URL / shortcut listener
   useEffect(() => {
     const handleSessionChange = () => {
       setIsAdminActive(AdminAuthService.isSessionActive());
@@ -72,7 +100,7 @@ export default function App() {
     window.addEventListener('rwamiti-admin-session-change', handleSessionChange);
     window.addEventListener('open-admin-cms', handleOpenAdminEvent);
 
-    // Keyboard shortcut for authorized administrators: Ctrl+Shift+A or Cmd+Shift+A
+    // Keyboard shortcut: Ctrl+Shift+A or Cmd+Shift+A
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
         e.preventDefault();
@@ -82,19 +110,26 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Secure Admin URL Route check: ?admin=1, ?admin=true, or #admin
+    // URL route check for ?admin=1 or #admin
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('admin') === '1' || params.get('admin') === 'true' || window.location.hash === '#admin') {
         setIsAdminOpen(true);
-        // Clean URL to prevent exposing administrative entry in browser history
         try {
           params.delete('admin');
-          const newSearch = params.toString() ? `?${params.toString()}` : '';
-          const newUrl = `${window.location.pathname}${newSearch}`;
-          window.history.replaceState({}, document.title, newUrl);
+          const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+          window.history.replaceState({}, '', newUrl);
         } catch {
-          // Ignore
+          // ignore
+        }
+      }
+
+      // Check ?story=slug in query parameters
+      const urlStory = params.get('story');
+      if (urlStory) {
+        const found = catalog.find((s) => s.slug === urlStory);
+        if (found) {
+          handlePlayStory(found.slug);
         }
       }
     }
@@ -104,283 +139,230 @@ export default function App() {
       window.removeEventListener('open-admin-cms', handleOpenAdminEvent);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [catalog]);
 
-  // Handle direct URL parameter on initial load (Acceptance Test 1 & Requirement 2)
-  // E.g. https://.../?episode=001 or ?episode=3&ref=challenge
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const epParam = params.get('episode');
-    const refParam = params.get('ref');
-
-    if (epParam) {
-      // Look up by id or number (e.g. "001", "1", "ep-001")
-      const found = episodes.find(
-        (e) =>
-          e.id.toLowerCase() === epParam.toLowerCase() ||
-          e.number === epParam ||
-          e.number === epParam.padStart(3, '0')
-      );
-      if (found) {
-        const num = parseInt(found.number, 10);
-        const isEpPremium = !isNaN(num) ? num >= 6 : !!found.isPremium;
-        if (isEpPremium && !userState.isPremium) {
-          setSubscriptionTargetEpisode(found);
-          setCurrentView('subscription');
-        } else {
-          setCurrentEpisodeId(found.id);
-          setCurrentView('story');
-        }
-        if (refParam) {
-          AnalyticsService.track('shared_link_visit', {
-            episodeId: found.id,
-            metadata: { ref: refParam },
-          });
-        }
-      }
-    }
-  }, [episodes, userState.isPremium]);
-
-  // Current active episode
-  const currentEpisode =
-    episodes.find((e) => e.id === currentEpisodeId) || episodes[0] || null;
-
-  // Published counts
-  const publishedEpisodes = episodes.filter((e) => e.published !== false);
-  const freeEpisodesCount = publishedEpisodes.filter((e) => !e.isPremium).length;
-
-  // Toggle sound
-  const handleToggleSound = () => {
-    const next = !userState.soundEnabled;
-    const updated = { ...userState, soundEnabled: next };
-    setUserState(updated);
-    StorageService.saveUserState(updated);
-  };
-
-  // Handle payment success (Ugandan Mobile Money)
-  const handlePaymentSuccess = () => {
-    const updated = { ...userState, isPremium: true, subscribedAt: Date.now() };
-    setUserState(updated);
-    StorageService.saveUserState(updated);
-    // If user paid to unlock a specific episode, navigate to it now
-    if (subscriptionTargetEpisode) {
-      setCurrentEpisodeId(subscriptionTargetEpisode.id);
-      setCurrentView('story');
-    } else {
-      setCurrentView('catalog');
-    }
-  };
-
-  // Toggle user premium status for quick testing / paywall verification
-  const handleTogglePremium = () => {
-    const nextPremium = !userState.isPremium;
-    const updated = { ...userState, isPremium: nextPremium };
-    setUserState(updated);
-    StorageService.saveUserState(updated);
-  };
-
-  // Handle story completion
-  const handleStoryCompleted = (episodeId: string) => {
-    if (!userState.completedEpisodeIds.includes(episodeId)) {
-      const updated = {
-        ...userState,
-        completedEpisodeIds: [...userState.completedEpisodeIds, episodeId],
-      };
-      setUserState(updated);
-      StorageService.saveUserState(updated);
-    }
-  };
-
-  // Handle navigating to next episode seamlessly
-  const handleNextEpisode = (targetEpisodeId: string) => {
+  const handlePlayStory = (slug: string) => {
     sound.playTap();
-    AnalyticsService.track('next_episode_clicked', {
-      episodeId: currentEpisodeId,
-      metadata: { target: targetEpisodeId },
-    });
-
-    const targetEp = episodes.find(
-      (e) => e.id === targetEpisodeId || e.number === targetEpisodeId
-    );
-
-    if (targetEp) {
-      const num = parseInt(targetEp.number, 10);
-      const isEpPremium = !isNaN(num) ? num >= 6 : !!targetEp.isPremium;
-      if (isEpPremium && !userState.isPremium) {
-        // Locked behind YOUR MOVE+
-        setSubscriptionTargetEpisode(targetEp);
-        AnalyticsService.track('subscription_screen_reached', { episodeId: targetEp.id });
-        setIsSubscriptionOpen(true);
-      } else {
-        setCurrentEpisodeId(targetEp.id);
-        setCurrentView('story');
-      }
-    } else {
-      // If reached the end of list, open catalog
-      setCurrentView('catalog');
-    }
+    setCurrentStorySlug(slug);
+    setDetailModalStory(null);
+    setActiveScreen('reader');
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  // Open subscription page
-  const handleOpenSubscription = (ep?: Episode | null) => {
-    if (ep) {
-      setSubscriptionTargetEpisode(ep);
-    }
-    AnalyticsService.track('subscription_screen_reached', { episodeId: ep?.id });
-    setIsDrawerOpen(false);
-    setIsSubscriptionOpen(false);
-    setCurrentView('subscription');
+  const handleOpenMoreInfo = (story: CatalogStory) => {
+    sound.playTap();
+    setDetailModalStory(story);
+    const data = StoryDatabaseService.getStory(story.slug);
+    setDetailStoryData(data);
   };
 
-  // Select an episode from Catalog or Drawer
-  const handleSelectEpisode = (epId: string) => {
-    const ep = episodes.find((e) => e.id === epId);
-    if (!ep) return;
-
-    const num = parseInt(ep.number, 10);
-    const isEpPremium = !isNaN(num) ? num >= 6 : !!ep.isPremium;
-    if (isEpPremium && !userState.isPremium) {
-      handleOpenSubscription(ep);
-    } else {
-      setCurrentEpisodeId(ep.id);
-      setCurrentView('story');
-      setIsDrawerOpen(false);
-    }
+  const handleOpenShare = (story: CatalogStory) => {
+    sound.playTap();
+    setShareStory(story);
+    setIsShareOpen(true);
   };
 
-  return (
-    <div className="min-h-screen bg-[#07080a] text-zinc-100 flex flex-col font-sans antialiased select-none">
-      {/* Platform Navigation Bar */}
-      <Navbar
-        currentEpisodeTitle={currentView === 'story' ? currentEpisode?.title : undefined}
-        currentEpisodeNumber={currentView === 'story' ? currentEpisode?.number : undefined}
-        isDesktopPreview={isDesktopPreview}
-        onToggleDesktopPreview={() => setIsDesktopPreview((prev) => !prev)}
-        onOpenDrawer={() => {
-          sound.playTap();
-          setIsDrawerOpen(true);
-        }}
-        onOpenAdmin={() => {
-          sound.playTap();
-          setIsAdminOpen(true);
-        }}
-        soundEnabled={userState.soundEnabled}
-        onToggleSound={handleToggleSound}
-        isPremiumUser={userState.isPremium}
-        isAdminActive={isAdminActive}
-        onLogoutAdmin={() => {
-          AdminAuthService.clearSession();
-          setIsAdminActive(false);
-        }}
-        currentView={currentView}
-        onNavigateView={(view) => setCurrentView(view)}
-        onTogglePremium={handleTogglePremium}
-      />
+  const handleToggleSave = (slug: string) => {
+    StoryDatabaseService.toggleSaved(slug);
+    setSavedSlugs(StoryDatabaseService.getSavedSlugs());
+  };
 
-      {/* Main Viewport (Mobile or Framed) */}
-      <MobileFrame isDesktopPreview={isDesktopPreview}>
-        {/* VIEW 1: OPENING SCREEN */}
-        {currentView === 'opening' && (
-          <OpeningScreen
-            onStart={() => setCurrentView('catalog')}
-            totalEpisodesCount={publishedEpisodes.length}
-            freeEpisodesCount={freeEpisodesCount}
-          />
-        )}
+  const savedStoryList = catalog.filter((s) => savedSlugs.has(s.slug));
 
-        {/* VIEW 2: ALL STORIES CATALOG */}
-        {currentView === 'catalog' && (
-          <StoryCatalog
-            episodes={episodes}
-            onSelectEpisode={handleSelectEpisode}
-            onOpenSubscription={(ep) => handleOpenSubscription(ep)}
-            isPremiumUser={userState.isPremium}
-            completedEpisodeIds={userState.completedEpisodeIds}
-            onBackToOpening={() => setCurrentView('opening')}
-            onTogglePremium={handleTogglePremium}
-          />
-        )}
+  // If in Reader view, render the full StorySceneReader
+  if (activeScreen === 'reader') {
+    const currentStoryMeta =
+      StoryDatabaseService.findCatalogStory(currentStorySlug) ||
+      catalog.find((s) => s.slug === currentStorySlug) ||
+      featuredStory;
+    const currentStoryData = StoryDatabaseService.getStory(currentStorySlug) || {
+      id: currentStorySlug,
+      title: currentStoryMeta.title,
+      image: currentStoryMeta.cover,
+      category: currentStoryMeta.category,
+      nodes: {
+        opening: {
+          key: 'opening',
+          title: currentStoryMeta.title,
+          summary: currentStoryMeta.description,
+          paragraphs: [currentStoryMeta.description],
+          choices: [],
+          is_ending: true,
+        },
+      },
+    };
 
-        {/* VIEW 3: INTERACTIVE STORY PLAYER */}
-        {currentView === 'story' && currentEpisode && (
-          <StoryPlayer
-            episode={currentEpisode}
-            onNextEpisode={handleNextEpisode}
-            onOpenShare={() => {
-              sound.playTap();
-              setIsShareOpen(true);
-            }}
-            onOpenSubscription={() => handleOpenSubscription(currentEpisode)}
-            isPremiumUser={userState.isPremium}
-            showAggregateStats={config.showAggregateStats}
-            onStoryCompleted={handleStoryCompleted}
-            onBackToCatalog={() => setCurrentView('catalog')}
-          />
-        )}
+    return (
+      <>
+        <StorySceneReader
+          storyMeta={currentStoryMeta}
+          storyData={currentStoryData}
+          onBackToStories={() => {
+            setActiveScreen('main');
+            refreshContinuingStories();
+          }}
+          onShare={handleOpenShare}
+        />
 
-        {/* VIEW 4: SUBSCRIPTION & UNLOCK PAGE */}
-        {currentView === 'subscription' && (
-          <SubscriptionPage
-            targetEpisode={subscriptionTargetEpisode}
-            priceUgx={config.subscriptionPriceUgx || 5000}
-            recipientNumber={config.defaultPaymentNumber || '0772988640'}
-            merchantName={config.merchantName || 'Uncle Rwamiti / Your Move'}
-            onPaymentSuccess={handlePaymentSuccess}
-            onBackToCatalog={() => setCurrentView('catalog')}
-          />
-        )}
-      </MobileFrame>
-
-      {/* Episode Navigation Drawer */}
-      <EpisodeDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        episodes={episodes}
-        currentEpisodeId={currentEpisodeId}
-        onSelectEpisode={(epId) => {
-          handleSelectEpisode(epId);
-        }}
-        isPremiumUser={userState.isPremium}
-        onOpenSubscription={() => {
-          handleOpenSubscription(currentEpisode);
-        }}
-        completedEpisodeIds={userState.completedEpisodeIds}
-      />
-
-      {/* Ugandan Mobile Money Subscription Modal */}
-      <SubscriptionModal
-        isOpen={isSubscriptionOpen}
-        onClose={() => setIsSubscriptionOpen(false)}
-        priceUgx={config.subscriptionPriceUgx || 5000}
-        recipientNumber={config.defaultPaymentNumber || '0772988640'}
-        merchantName={config.merchantName || 'Uncle Rwamiti / Your Move'}
-        onPaymentSuccess={handlePaymentSuccess}
-        episodeTitle={subscriptionTargetEpisode?.title || currentEpisode?.title}
-      />
-
-      {/* WhatsApp & Social Challenge Share Modal */}
-      {currentEpisode && (
-        <ShareModal
+        {/* Share Dilemma Modal */}
+        <ShareDilemmaModal
+          story={shareStory}
           isOpen={isShareOpen}
           onClose={() => setIsShareOpen(false)}
-          episode={currentEpisode}
+        />
+      </>
+    );
+  }
+
+  // Curated adult stories for primary row
+  const primaryAdultSlugs = [
+    'empty-chair',
+    'the-rehearsal',
+    'red-ledger',
+    'the-donation',
+    'borrowed-name',
+    'wedding-guest',
+  ];
+  const primaryAdultStories = primaryAdultSlugs
+    .map((slug) => adultStories.find((s) => s.slug === slug))
+    .filter((s): s is CatalogStory => !!s);
+  const remainingAdultStories = adultStories.filter((s) => !primaryAdultSlugs.includes(s.slug));
+
+  return (
+    <main className="platform min-h-screen">
+      {/* Topbar / Header */}
+      <PlatformHeader
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }}
+        isAdminActive={isAdminActive}
+        onOpenAdmin={() => setIsAdminOpen(true)}
+      />
+
+      {/* Main Tab Views */}
+      {activeTab === 'browse' && (
+        <>
+          {/* Featured Stream Hero: "The Match You Missed" */}
+          <StreamHero
+            story={featuredStory}
+            onPlay={handlePlayStory}
+            onMoreInfo={handleOpenMoreInfo}
+          />
+
+          {/* Teen Stories Section */}
+          <TeenStoriesSection
+            stories={teenStories}
+            onPlay={handlePlayStory}
+            onMoreInfo={handleOpenMoreInfo}
+          />
+
+          {/* Continue Your Story (if in-progress stories exist) */}
+          {continuingStories.length > 0 && (
+            <StreamRow
+              title="Continue your story"
+              stories={continuingStories}
+              onSelectStory={handleOpenMoreInfo}
+            />
+          )}
+
+          {/* Adult Stories Rows */}
+          <StreamRow
+            title="Adult Stories"
+            stories={primaryAdultStories}
+            onSelectStory={handleOpenMoreInfo}
+          />
+
+          <StreamRow
+            title="More adult stories"
+            stories={remainingAdultStories}
+            onSelectStory={handleOpenMoreInfo}
+          />
+        </>
+      )}
+
+      {activeTab === 'search' && (
+        <SearchStoriesView
+          catalog={catalog}
+          onSelectStory={handleOpenMoreInfo}
         />
       )}
 
-      {/* Administrator Console & CMS */}
+      {activeTab === 'list' && (
+        <MyListView
+          savedStories={savedStoryList}
+          onSelectStory={handleOpenMoreInfo}
+          onBrowse={() => setActiveTab('browse')}
+        />
+      )}
+
+      {/* Author Footer */}
+      <AuthorFooter />
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }}
+      />
+
+      {/* Story Detail / More Info Modal */}
+      <StoryDetailModal
+        story={detailModalStory}
+        storyData={detailStoryData}
+        isOpen={!!detailModalStory}
+        onClose={() => setDetailModalStory(null)}
+        onPlay={handlePlayStory}
+        onShare={handleOpenShare}
+        isSaved={detailModalStory ? savedSlugs.has(detailModalStory.slug) : false}
+        onToggleSave={handleToggleSave}
+      />
+
+      {/* Share Dilemma Modal */}
+      <ShareDilemmaModal
+        story={shareStory}
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+      />
+
+      {/* Demographics Survey Modal (optional) */}
+      <DemographicsModal
+        isOpen={isDemographicsOpen}
+        onClose={() => setIsDemographicsOpen(false)}
+        onSubmitDemographics={() => {
+          setIsDemographicsOpen(false);
+        }}
+      />
+
+      {/* Admin CMS & Analytics Console */}
       <AdminCMS
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
         episodes={episodes}
-        onEpisodesChange={(newEpisodes) => setEp(newEpisodes)}
+        onEpisodesChange={(newEpisodes) => {
+          setEpisodes(newEpisodes);
+          StorageService.saveEpisodes(newEpisodes);
+        }}
         config={config}
-        onConfigChange={(newConfig) => setConfig(newConfig)}
+        onConfigChange={(newConfig) => {
+          setConfig(newConfig);
+          StorageService.saveConfig(newConfig);
+        }}
         onPlayEpisode={(epId) => {
-          setCurrentEpisodeId(epId);
-          setCurrentView('story');
+          setIsAdminOpen(false);
+          const found =
+            StoryDatabaseService.findCatalogStory(epId) ||
+            catalog.find((c) => c.slug === epId || c.slug.includes(epId));
+          if (found) {
+            handlePlayStory(found.slug);
+          } else {
+            handlePlayStory(epId);
+          }
         }}
       />
-    </div>
+    </main>
   );
 }

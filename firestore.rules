@@ -30,6 +30,16 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Game Sessions & Player Demographics (Age, Gender, District/Location)
+    match /gameSessions/{sessionId} {
+      allow read, write: if true;
+    }
+
+    // Unique Visitors & Audience Profile tracking
+    match /visitors/{visitorId} {
+      allow read, write: if true;
+    }
+
     // Analytics: write-only stream
     match /analytics/{eventId} {
       allow create: if true;

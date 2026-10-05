@@ -22,8 +22,12 @@ export class FirestoreDataService {
    * 1. Checks if episodes collection in Firestore has documents.
    * 2. Seeds any missing launch episodes into Firestore.
    * 3. Sets up real-time listener to sync remote changes with local cache.
+   * 4. Synchronizes platform configuration and preserves administrator credentials.
    */
-  static async init(onEpisodesUpdated?: (episodes: Episode[]) => void): Promise<void> {
+  static async init(
+    onEpisodesUpdated?: (episodes: Episode[]) => void,
+    onConfigUpdated?: (config: PlatformConfig) => void
+  ): Promise<void> {
     try {
       const db = getDb();
       const epCollection = collection(db, 'episodes');
@@ -41,17 +45,15 @@ export class FirestoreDataService {
       const missingToSeed: Episode[] = [];
       for (const launchEp of LAUNCH_EPISODES) {
         const existing = loadedMap.get(launchEp.id);
-        const epNum = parseInt(launchEp.number, 10);
-        const shouldBePremium = !isNaN(epNum) && epNum >= 6;
         const normalizedLaunchEp = {
           ...launchEp,
-          isPremium: shouldBePremium,
+          isPremium: false,
         };
 
         if (
           !existing ||
           existing.teaser !== launchEp.teaser ||
-          existing.isPremium !== shouldBePremium ||
+          existing.isPremium !== false ||
           !existing.nodes ||
           Object.keys(existing.nodes).length === 0
         ) {
@@ -60,23 +62,20 @@ export class FirestoreDataService {
         } else {
           loadedMap.set(launchEp.id, {
             ...existing,
-            isPremium: shouldBePremium,
+            isPremium: false,
           });
         }
       }
 
       if (missingToSeed.length > 0) {
-        console.log(`[Firestore] Syncing ${missingToSeed.length} launch episodes to Firestore with lock flags...`);
+        console.log(`[Firestore] Syncing ${missingToSeed.length} launch episodes to Firestore as 100% free...`);
         await this.seedEpisodesToFirestore(missingToSeed);
       }
 
-      const allEpisodes = Array.from(loadedMap.values()).map((ep) => {
-        const num = parseInt(ep.number, 10);
-        return {
-          ...ep,
-          isPremium: !isNaN(num) ? num >= 6 : ep.isPremium,
-        };
-      });
+      const allEpisodes = Array.from(loadedMap.values()).map((ep) => ({
+        ...ep,
+        isPremium: false,
+      }));
       allEpisodes.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
       StorageService.saveEpisodes(allEpisodes);
       if (onEpisodesUpdated) {
@@ -92,33 +91,33 @@ export class FirestoreDataService {
         snap.forEach((d) => {
           const ep = d.data() as Episode;
           if (ep && ep.id) {
-            const num = parseInt(ep.number, 10);
             liveMap.set(ep.id, {
               ...ep,
-              isPremium: !isNaN(num) ? num >= 6 : ep.isPremium,
+              isPremium: false,
             });
           }
         });
 
-        // Ensure launch episodes are never wiped out
+        // Ensure launch episodes are never wiped out and all remain free
         for (const launchEp of LAUNCH_EPISODES) {
           const existing = liveMap.get(launchEp.id);
-          const epNum = parseInt(launchEp.number, 10);
-          const shouldBePremium = !isNaN(epNum) && epNum >= 6;
           if (!existing || !existing.nodes || Object.keys(existing.nodes).length === 0) {
             liveMap.set(launchEp.id, {
               ...launchEp,
-              isPremium: shouldBePremium,
+              isPremium: false,
             });
           } else {
             liveMap.set(launchEp.id, {
               ...existing,
-              isPremium: shouldBePremium,
+              isPremium: false,
             });
           }
         }
 
-        const liveEpisodes = Array.from(liveMap.values());
+        const liveEpisodes = Array.from(liveMap.values()).map((ep) => ({
+          ...ep,
+          isPremium: false,
+        }));
         liveEpisodes.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
         StorageService.saveEpisodes(liveEpisodes);
         if (onEpisodesUpdated) {
@@ -128,15 +127,68 @@ export class FirestoreDataService {
         console.warn('[Firestore] Episodes snapshot error (falling back to offline cache):', err);
       });
 
-      // Fetch or seed platform config
+      // Fetch or seed platform config with credentials preservation
       const configDocRef = doc(db, 'platformConfig', 'main');
       const configSnap = await getDoc(configDocRef);
+      const localConfig = StorageService.getConfig();
+      let mergedConfig: PlatformConfig = { ...DEFAULT_CONFIG, ...localConfig };
+
       if (!configSnap.exists()) {
-        await setDoc(configDocRef, { ...DEFAULT_CONFIG, updatedAt: new Date().toISOString() });
+        await setDoc(configDocRef, { ...mergedConfig, updatedAt: new Date().toISOString() });
       } else {
         const remoteConfig = configSnap.data() as PlatformConfig;
-        StorageService.saveConfig({ ...DEFAULT_CONFIG, ...remoteConfig });
+        mergedConfig = {
+          ...DEFAULT_CONFIG,
+          ...localConfig,
+          ...remoteConfig,
+        };
+
+        // If local admin passcode exists but remote Firestore does not yet have it, sync to Firestore
+        if (!remoteConfig.adminPinHash && localConfig.adminPinHash) {
+          mergedConfig.adminPinHash = localConfig.adminPinHash;
+          mergedConfig.adminPinSalt = localConfig.adminPinSalt;
+          await setDoc(
+            configDocRef,
+            {
+              adminPinHash: localConfig.adminPinHash,
+              adminPinSalt: localConfig.adminPinSalt,
+              updatedAt: new Date().toISOString(),
+            },
+            { merge: true }
+          );
+        }
       }
+
+      StorageService.saveConfig(mergedConfig);
+      if (onConfigUpdated) {
+        onConfigUpdated(mergedConfig);
+      }
+
+      // Realtime listener for platform config changes
+      if (this.configUnsubscribe) {
+        this.configUnsubscribe();
+      }
+      this.configUnsubscribe = onSnapshot(configDocRef, (snap) => {
+        if (snap.exists()) {
+          const liveRemote = snap.data() as PlatformConfig;
+          const currentLocal = StorageService.getConfig();
+          const liveMerged: PlatformConfig = {
+            ...DEFAULT_CONFIG,
+            ...currentLocal,
+            ...liveRemote,
+          };
+          if (!liveRemote.adminPinHash && currentLocal.adminPinHash) {
+            liveMerged.adminPinHash = currentLocal.adminPinHash;
+            liveMerged.adminPinSalt = currentLocal.adminPinSalt;
+          }
+          StorageService.saveConfig(liveMerged);
+          if (onConfigUpdated) {
+            onConfigUpdated(liveMerged);
+          }
+        }
+      }, (err) => {
+        console.warn('[Firestore] Config snapshot error (offline fallback):', err);
+      });
     } catch (err) {
       console.warn('[Firestore] Initialization fallback to local storage:', err);
     }

@@ -1,4 +1,4 @@
 import { Episode } from '../types';
-import { ALL_UPDATED_EPISODES } from './episodes';
+import { ALL_INCORPORATED_EPISODES } from './allGamesDatabase';
 
-export const LAUNCH_EPISODES: Episode[] = ALL_UPDATED_EPISODES;
+export const LAUNCH_EPISODES: Episode[] = ALL_INCORPORATED_EPISODES;

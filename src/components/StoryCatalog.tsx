@@ -28,15 +28,7 @@ export const StoryCatalog: React.FC<StoryCatalogProps> = ({
 
   const handleEpisodeClick = (episode: Episode) => {
     sound.playTap();
-    const num = parseInt(episode.number, 10);
-    const isEpPremium = !isNaN(num) ? num >= 6 : !!episode.isPremium;
-    if (isEpPremium && !isPremiumUser) {
-      // Locked behind YOUR MOVE+ -> Opens subscription/payment
-      onOpenSubscription(episode);
-    } else {
-      // Free or unlocked -> Play directly
-      onSelectEpisode(episode.id);
-    }
+    onSelectEpisode(episode.id);
   };
 
   return (
@@ -68,51 +60,29 @@ export const StoryCatalog: React.FC<StoryCatalogProps> = ({
         </button>
       </div>
 
-      {/* Access status bar with instant test toggle */}
-      <div className="my-2.5 p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-1.5 overflow-hidden">
-          <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Status:</span>
-          {isPremiumUser ? (
-            <span className="text-[11px] font-extrabold text-[#e5a93b] flex items-center gap-1 truncate">
-              YOUR MOVE+ SUBSCRIBER (All Stories Unlocked)
-            </span>
-          ) : (
-            <span className="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1 truncate">
-              FREE VISITOR (001–005 Free • 006–012 Locked)
-            </span>
-          )}
+      {/* Free Access announcement bar */}
+      <div className="my-2.5 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="text-[11px] font-extrabold text-emerald-400 uppercase tracking-wide">
+            ALL 12 STORIES ARE 100% FREE TO PLAY
+          </span>
         </div>
-        {onTogglePremium && (
-          <button
-            onClick={() => {
-              sound.playTap();
-              onTogglePremium();
-            }}
-            className="text-[10px] font-bold text-zinc-300 hover:text-white px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors cursor-pointer border border-zinc-700/60 shrink-0"
-            title="Toggle subscriber status for testing"
-          >
-            {isPremiumUser ? 'Test as Free Visitor' : 'Test as Subscribed'}
-          </button>
-        )}
+        <span className="text-[10px] font-bold text-zinc-400">
+          No subscription required
+        </span>
       </div>
 
       {/* Unified Episode List */}
       <div className="flex-1 overflow-y-auto space-y-2.5 pr-0.5 mt-1 pb-4">
         {displayEpisodes.map((ep) => {
           const isCompleted = completedEpisodeIds.includes(ep.id);
-          const num = parseInt(ep.number, 10);
-          const isEpPremium = !isNaN(num) ? num >= 6 : !!ep.isPremium;
-          const isLocked = isEpPremium && !isPremiumUser;
 
           return (
             <div
               key={ep.id}
               onClick={() => handleEpisodeClick(ep)}
-              className={`group relative p-3.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 ${
-                isLocked
-                  ? 'bg-zinc-900/60 border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-900'
-                  : 'bg-zinc-900 border-zinc-800 hover:border-[#e5a93b] hover:bg-zinc-800/80'
-              }`}
+              className="group relative p-3.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-3 bg-zinc-900 border-zinc-800 hover:border-[#e5a93b] hover:bg-zinc-800/80"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
@@ -120,17 +90,10 @@ export const StoryCatalog: React.FC<StoryCatalogProps> = ({
                     EPISODE {ep.number}
                   </span>
 
-                  {/* Tags */}
-                  {!isEpPremium ? (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      FREE STORY
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-[#e5a93b]/15 text-[#e5a93b] border border-[#e5a93b]/40">
-                      <Lock className="w-2.5 h-2.5" />
-                      SUBSCRIBE
-                    </span>
-                  )}
+                  {/* Free Tag */}
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    FREE STORY
+                  </span>
 
                   {isCompleted && (
                     <span className="inline-flex items-center gap-1 text-[9px] text-zinc-400">
@@ -140,13 +103,7 @@ export const StoryCatalog: React.FC<StoryCatalogProps> = ({
                   )}
                 </div>
 
-                <h3
-                  className={`text-sm font-extrabold transition-colors truncate ${
-                    isLocked
-                      ? 'text-zinc-200 group-hover:text-white'
-                      : 'text-white group-hover:text-[#e5a93b]'
-                  }`}
-                >
+                <h3 className="text-sm font-extrabold transition-colors truncate text-white group-hover:text-[#e5a93b]">
                   {ep.title}
                 </h3>
 
@@ -157,15 +114,9 @@ export const StoryCatalog: React.FC<StoryCatalogProps> = ({
 
               {/* Action Indicator */}
               <div className="shrink-0 flex items-center">
-                {isLocked ? (
-                  <div className="w-9 h-9 rounded-lg bg-zinc-800/90 text-zinc-400 border border-zinc-700/60 flex items-center justify-center group-hover:text-[#e5a93b] group-hover:border-[#e5a93b]/50 transition-colors">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                ) : (
-                  <div className="w-9 h-9 rounded-lg bg-zinc-800 text-zinc-300 group-hover:bg-[#e5a93b] group-hover:text-black transition-colors flex items-center justify-center">
-                    <Play className="w-4 h-4 fill-current ml-0.5" />
-                  </div>
-                )}
+                <div className="w-9 h-9 rounded-lg bg-zinc-800 text-zinc-300 group-hover:bg-[#e5a93b] group-hover:text-black transition-colors flex items-center justify-center">
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                </div>
               </div>
             </div>
           );

@@ -9,7 +9,7 @@ export const ep006: Episode = {
   category: 'Gambling & Risk',
   badge: 'PREMIER LEAGUE',
   badgeColor: 'amber',
-  isPremium: true,
+  isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {

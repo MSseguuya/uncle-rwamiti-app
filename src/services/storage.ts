@@ -2,9 +2,9 @@ import { Episode, PlatformConfig, UserState } from '../types';
 import { LAUNCH_EPISODES } from '../data/launchEpisodes';
 
 const STORAGE_KEYS = {
-  EPISODES: 'rwamiti_episodes_v2',
+  EPISODES: 'rwamiti_episodes_v5',
   CONFIG: 'rwamiti_config_v1',
-  USER_STATE: 'rwamiti_user_state_v3',
+  USER_STATE: 'rwamiti_user_state_v4',
   PHOTO: 'rwamiti_official_photo_v1',
 };
 
@@ -64,17 +64,12 @@ export class StorageService {
 
       const merged = Array.from(existingMap.values());
 
-      // Strictly enforce: Episodes 006 to 010 are NOT free (isPremium: true)
-      // Episodes 001 to 005 are free (isPremium: false)
+      // All stories are 100% free of charge
       const sanitized = merged.map((ep) => {
-        const num = parseInt(ep.number, 10);
-        if (!isNaN(num)) {
-          return {
-            ...ep,
-            isPremium: num >= 6,
-          };
-        }
-        return ep;
+        return {
+          ...ep,
+          isPremium: false,
+        };
       });
 
       sanitized.sort((a, b) => parseInt(a.number, 10) - parseInt(b.number, 10));
@@ -125,15 +120,43 @@ export class StorageService {
   }
 
   // Configuration
+  static getAdminCredentials(): { hash?: string; salt?: string } | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const stored = localStorage.getItem('rwamiti_admin_credentials_v1');
+      if (!stored) return null;
+      return JSON.parse(stored);
+    } catch {
+      return null;
+    }
+  }
+
+  static saveAdminCredentials(creds: { hash?: string; salt?: string }): void {
+    if (typeof window === 'undefined') return;
+    try {
+      if (creds && creds.hash) {
+        localStorage.setItem('rwamiti_admin_credentials_v1', JSON.stringify(creds));
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   static getConfig(): PlatformConfig {
     if (typeof window === 'undefined') return DEFAULT_CONFIG;
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.CONFIG);
-      if (!stored) {
-        localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(DEFAULT_CONFIG));
-        return DEFAULT_CONFIG;
+      let parsed = stored ? { ...DEFAULT_CONFIG, ...JSON.parse(stored) } : { ...DEFAULT_CONFIG };
+
+      // Guaranteed fallback: If parsed has no adminPinHash, retrieve from dedicated credentials vault
+      if (!parsed.adminPinHash) {
+        const creds = this.getAdminCredentials();
+        if (creds?.hash) {
+          parsed.adminPinHash = creds.hash;
+          parsed.adminPinSalt = creds.salt;
+        }
       }
-      const parsed = { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
+
       // Strip any spaces from the payment number
       if (parsed.defaultPaymentNumber) {
         parsed.defaultPaymentNumber = parsed.defaultPaymentNumber.replace(/\s+/g, '');
@@ -150,7 +173,18 @@ export class StorageService {
   static saveConfig(config: PlatformConfig): void {
     if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(config));
+      const creds = this.getAdminCredentials();
+      const mergedConfig = { ...config };
+
+      if (config.adminPinHash) {
+        this.saveAdminCredentials({ hash: config.adminPinHash, salt: config.adminPinSalt });
+      } else if (creds?.hash) {
+        // Protect against any accidental wipe of admin passcode
+        mergedConfig.adminPinHash = creds.hash;
+        mergedConfig.adminPinSalt = creds.salt;
+      }
+
+      localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(mergedConfig));
     } catch (e) {
       console.error('Failed to save config:', e);
     }
