@@ -188,7 +188,8 @@ export class AdminAuthService {
   // Setup / Update Admin Passcode
   static async setupNewPasscode(
     newPin: string,
-    config: PlatformConfig
+    config: PlatformConfig,
+    activateSession: boolean = true
   ): Promise<{ success: boolean; error?: string; updatedConfig: PlatformConfig }> {
     const trimmed = newPin.trim();
     if (!trimmed || trimmed.length < 4) {
@@ -224,7 +225,11 @@ export class AdminAuthService {
       });
 
       this.resetFailedAttempts();
-      this.setSessionActive();
+      if (activateSession) {
+        this.setSessionActive();
+      } else {
+        this.clearSession();
+      }
 
       return { success: true, updatedConfig };
     } catch (e: any) {
@@ -376,7 +381,8 @@ export class AdminAuthService {
       };
     }
 
-    const setupResult = await this.setupNewPasscode(newPin, config);
+    // Pass activateSession = false so session is not started yet; user will login with the new passcode
+    const setupResult = await this.setupNewPasscode(newPin, config, false);
     if (!setupResult.success) {
       return setupResult;
     }
@@ -399,6 +405,7 @@ export class AdminAuthService {
       FirestoreDataService.markPasswordResetUsed(verification.token).catch(console.warn);
     }
 
+    this.clearSession();
     return setupResult;
   }
 

@@ -95,6 +95,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
   const [confirmPasscode, setConfirmPasscode] = useState('');
   const [resetTokenOrCode, setResetTokenOrCode] = useState('');
   const [isResetDispatching, setIsResetDispatching] = useState(false);
+  const [loginSuccessMessage, setLoginSuccessMessage] = useState<string>('');
   const [resetDispatchedInfo, setResetDispatchedInfo] = useState<{
     token: string;
     code: string;
@@ -272,12 +273,14 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
   const handleRequestReset = async () => {
     setIsResetDispatching(true);
     setPinError('');
+    setLoginSuccessMessage('');
     try {
       const res = await AdminAuthService.requestPasswordReset();
       if (res.success) {
         sound.playSuccess();
         setResetDispatchedInfo(res);
-        setResetTokenOrCode(res.code);
+        // Do not prefill code so it must be retrieved from email
+        setResetTokenOrCode('');
         setAuthMode('reset_verify');
       }
     } catch (e: any) {
@@ -287,12 +290,13 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
     }
   };
 
-  // Verify Code / Token and Reset Passcode
+  // Verify Code / Token and Reset Passcode - Transitions back to login screen
   const handleResetWithToken = async (e: React.FormEvent) => {
     e.preventDefault();
     setPinError('');
+    setLoginSuccessMessage('');
     if (!resetTokenOrCode.trim()) {
-      setPinError('Please enter the 6-digit code or reset token.');
+      setPinError('Please enter the 6-digit verification code received in your email.');
       return;
     }
     if (newPasscode.trim().length < 4) {
@@ -310,16 +314,15 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
       if (res.success) {
         sound.playSuccess();
         onConfigChange(res.updatedConfig);
-        setIsAuthenticated(true);
+        // After entering them, go back to login screen which will accept the new passcode
+        setIsAuthenticated(false);
         setAuthMode('login');
         setResetTokenOrCode('');
         setNewPasscode('');
         setConfirmPasscode('');
+        setPinInput('');
         setResetDispatchedInfo(null);
-        setBackupMessage({
-          text: 'Passcode successfully reset! You are now logged in with your new passcode.',
-          type: 'success',
-        });
+        setLoginSuccessMessage('Passcode successfully reset! Please enter your new passcode to unlock.');
       } else {
         sound.playError();
         setPinError(res.error || 'Failed to reset passcode.');
@@ -625,6 +628,13 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                   </div>
                 ) : (
                   <form onSubmit={handlePinSubmit} className="w-full space-y-3.5">
+                    {loginSuccessMessage && (
+                      <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-xs text-emerald-300 font-semibold flex items-center gap-2 text-left">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span>{loginSuccessMessage}</span>
+                      </div>
+                    )}
+
                     <div className="relative">
                       <input
                         type={showPassword ? 'text' : 'password'}
@@ -632,6 +642,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                         onChange={(e) => {
                           setPinInput(e.target.value);
                           setPinError('');
+                          setLoginSuccessMessage('');
                         }}
                         placeholder="Enter Passcode"
                         maxLength={20}
@@ -858,27 +869,25 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                   <CheckCircle className="w-7 h-7" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white">Enter New Passcode</h3>
+                  <h3 className="text-xl font-black text-white">Reset Passcode</h3>
                   <p className="text-xs text-zinc-400 mt-1">
-                    Password reset link and 6-digit verification code sent to <strong className="text-zinc-200">{ADMIN_RECOVERY_EMAIL}</strong>.
+                    Enter the verification code sent to <strong className="text-zinc-200">{ADMIN_RECOVERY_EMAIL}</strong>, set your new passcode, and press enter.
                   </p>
                 </div>
 
-                {resetDispatchedInfo && (
-                  <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-800/60 text-left text-xs space-y-2">
-                    <div className="flex items-center justify-between text-emerald-400 font-bold">
-                      <span>Verification Code</span>
-                      <span className="font-mono text-base tracking-widest text-[#e5a93b]">{resetDispatchedInfo.code}</span>
-                    </div>
-                    <div className="text-[11px] text-zinc-400">
-                      Dispatched to <strong>{resetDispatchedInfo.email}</strong>. Use the 6-digit code above or click the reset link in your email.
-                    </div>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-left text-xs space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-400">
+                    <Mail className="w-4 h-4" />
+                    <span>Check Your Email</span>
                   </div>
-                )}
+                  <p className="text-zinc-300 text-[11px] leading-relaxed">
+                    A unique 6-digit verification code has been dispatched to <strong className="text-white font-mono">{ADMIN_RECOVERY_EMAIL}</strong>. Please check your inbox and enter the code below.
+                  </p>
+                </div>
 
                 <form onSubmit={handleResetWithToken} className="space-y-3 text-left">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-zinc-300">6-Digit Code or Reset Token *</label>
+                    <label className="text-[11px] font-bold text-zinc-300">Verification Code (from your email) *</label>
                     <input
                       type="text"
                       value={resetTokenOrCode}
@@ -886,14 +895,16 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                         setResetTokenOrCode(e.target.value);
                         setPinError('');
                       }}
-                      placeholder="e.g. 6-digit code from email"
-                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-mono text-center text-sm focus:outline-none focus:border-[#e5a93b]"
+                      placeholder="Enter 6-digit code"
+                      maxLength={32}
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-mono text-center text-sm tracking-wider focus:outline-none focus:border-[#e5a93b]"
                       required
+                      autoFocus
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-zinc-300">New Passcode (min 4 characters) *</label>
+                    <label className="text-[11px] font-bold text-zinc-300">New Passcode *</label>
                     <input
                       type="password"
                       value={newPasscode}
@@ -908,7 +919,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-zinc-300">Confirm New Passcode *</label>
+                    <label className="text-[11px] font-bold text-zinc-300">Confirm Passcode *</label>
                     <input
                       type="password"
                       value={confirmPasscode}
@@ -916,7 +927,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                         setConfirmPasscode(e.target.value);
                         setPinError('');
                       }}
-                      placeholder="Re-type new passcode"
+                      placeholder="Confirm new passcode"
                       className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
                       required
                     />
@@ -936,10 +947,10 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                     {isVerifying ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Resetting Passcode...</span>
+                        <span>Verifying...</span>
                       </>
                     ) : (
-                      <span>Reset Passcode & Unlock Console</span>
+                      <span>Enter</span>
                     )}
                   </button>
 
