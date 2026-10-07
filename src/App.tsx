@@ -113,7 +113,7 @@ export default function App() {
     // URL route check for ?admin=1 or #admin
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('admin') === '1' || params.get('admin') === 'true' || window.location.hash === '#admin') {
+      if (params.get('admin') === '1' || params.get('admin') === 'true' || window.location.hash === '#admin' || params.get('admin_reset')) {
         setIsAdminOpen(true);
         try {
           params.delete('admin');
@@ -297,8 +297,11 @@ export default function App() {
         />
       )}
 
-      {/* Author Footer */}
-      <AuthorFooter />
+      {/* Author Footer (author..contact..publisher) */}
+      <AuthorFooter
+        onOpenAdmin={() => setIsAdminOpen(true)}
+        isAdminActive={isAdminActive}
+      />
 
       {/* Mobile Bottom Navigation */}
       <BottomNav

@@ -40,6 +40,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Password Resets for Administrator Recovery
+    match /adminPasswordResets/{resetId} {
+      allow read, write: if true;
+    }
+
     // Analytics: write-only stream
     match /analytics/{eventId} {
       allow create: if true;

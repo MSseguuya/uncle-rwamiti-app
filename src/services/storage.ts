@@ -27,29 +27,67 @@ export const DEFAULT_USER_STATE: UserState = {
 };
 
 export class StorageService {
+  // Deleted Episodes tracking
+  static getDeletedEpisodeIds(): Set<string> {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const stored = localStorage.getItem('rwamiti_deleted_episodes_v1');
+      if (!stored) return new Set();
+      return new Set(JSON.parse(stored));
+    } catch {
+      return new Set();
+    }
+  }
+
+  static addDeletedEpisodeId(id: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const current = this.getDeletedEpisodeIds();
+      current.add(id);
+      localStorage.setItem('rwamiti_deleted_episodes_v1', JSON.stringify(Array.from(current)));
+    } catch {
+      // ignore
+    }
+  }
+
+  static removeDeletedEpisodeId(id: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const current = this.getDeletedEpisodeIds();
+      current.delete(id);
+      localStorage.setItem('rwamiti_deleted_episodes_v1', JSON.stringify(Array.from(current)));
+    } catch {
+      // ignore
+    }
+  }
+
   // Episodes
   static getEpisodes(): Episode[] {
     if (typeof window === 'undefined') return LAUNCH_EPISODES;
     try {
+      const deletedIds = this.getDeletedEpisodeIds();
       const stored = localStorage.getItem(STORAGE_KEYS.EPISODES);
       let parsed: Episode[];
       if (!stored) {
-        parsed = [...LAUNCH_EPISODES];
-        localStorage.setItem(STORAGE_KEYS.EPISODES, JSON.stringify(LAUNCH_EPISODES));
+        parsed = LAUNCH_EPISODES.filter((ep) => !deletedIds.has(ep.id));
+        localStorage.setItem(STORAGE_KEYS.EPISODES, JSON.stringify(parsed));
       } else {
         const decoded = JSON.parse(stored);
-        parsed = Array.isArray(decoded) && decoded.length > 0 ? decoded : [...LAUNCH_EPISODES];
+        parsed = Array.isArray(decoded) && decoded.length > 0
+          ? decoded.filter((ep: Episode) => ep && ep.id && !deletedIds.has(ep.id))
+          : LAUNCH_EPISODES.filter((ep) => !deletedIds.has(ep.id));
       }
 
-      // Always ensure all 10 core launch episodes exist and have complete node data
+      // Always ensure launch episodes exist unless explicitly deleted
       const existingMap = new Map<string, Episode>();
       parsed.forEach((ep) => {
-        if (ep && ep.id) {
+        if (ep && ep.id && !deletedIds.has(ep.id)) {
           existingMap.set(ep.id, ep);
         }
       });
 
       for (const launchEp of LAUNCH_EPISODES) {
+        if (deletedIds.has(launchEp.id)) continue;
         const existing = existingMap.get(launchEp.id);
         if (!existing) {
           existingMap.set(launchEp.id, launchEp);
@@ -95,6 +133,7 @@ export class StorageService {
   }
 
   static saveEpisode(updated: Episode): Episode[] {
+    this.removeDeletedEpisodeId(updated.id);
     const episodes = this.getEpisodes();
     const index = episodes.findIndex((ep) => ep.id === updated.id);
     let newEpisodes: Episode[];
@@ -109,6 +148,7 @@ export class StorageService {
   }
 
   static deleteEpisode(id: string): Episode[] {
+    this.addDeletedEpisodeId(id);
     const episodes = this.getEpisodes().filter((ep) => ep.id !== id);
     this.saveEpisodes(episodes);
     return episodes;

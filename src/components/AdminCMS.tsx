@@ -3,8 +3,9 @@ import { Episode, PlatformConfig, StoryChoice, GameSessionRecord, VisitorRecord 
 import { StorageService } from '../services/storage';
 import { FirestoreDataService } from '../services/firestoreData';
 import { AnalyticsService } from '../services/analytics';
-import { AdminAuthService } from '../services/adminAuth';
+import { AdminAuthService, ADMIN_RECOVERY_EMAIL } from '../services/adminAuth';
 import { sound } from '../services/audio';
+import { StoryEditorModal } from './StoryEditorModal';
 import {
   X,
   Plus,
@@ -49,6 +50,11 @@ import {
   ChevronDown,
   ChevronUp,
   BookOpen,
+  Mail,
+  KeyRound,
+  Send,
+  CheckCircle,
+  HelpCircle,
 } from 'lucide-react';
 import { UncleRwamitiAvatar } from './UncleRwamitiAvatar';
 
@@ -80,28 +86,41 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
   const [isVerifying, setIsVerifying] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Setup state for unconfigured / first-time admin
-  const isSetupNeeded = !AdminAuthService.isPinConfigured(config) && !AdminAuthService.isPinConfigured(StorageService.getConfig());
-  const [setupPin, setSetupPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
-  const [setupError, setSetupError] = useState('');
-
   // Lockout countdown timer
   const [lockoutSeconds, setLockoutSeconds] = useState<number>(() => AdminAuthService.getLockoutStatus().remainingSeconds);
 
-  // Password change state in Settings tab
-  const [currentPass, setCurrentPass] = useState('');
-  const [newPass, setNewPass] = useState('');
-  const [confirmNewPass, setConfirmNewPass] = useState('');
-  const [passChangeError, setPassChangeError] = useState('');
-  const [passChangeSuccess, setPassChangeSuccess] = useState('');
+  // Auth Modes: 'login' | 'setup' | 'forgot' | 'reset_verify'
+  const [authMode, setAuthMode] = useState<'login' | 'setup' | 'forgot' | 'reset_verify'>('login');
+  const [newPasscode, setNewPasscode] = useState('');
+  const [confirmPasscode, setConfirmPasscode] = useState('');
+  const [resetTokenOrCode, setResetTokenOrCode] = useState('');
+  const [isResetDispatching, setIsResetDispatching] = useState(false);
+  const [resetDispatchedInfo, setResetDispatchedInfo] = useState<{
+    token: string;
+    code: string;
+    email: string;
+    resetUrl: string;
+    message: string;
+  } | null>(null);
 
-  // Synchronize session on open
+  // Story Editor Modal State
+  const [isStoryEditorOpen, setIsStoryEditorOpen] = useState(false);
+
+  // Synchronize session on open & check URL for admin_reset token
   useEffect(() => {
     if (isOpen) {
       setIsAuthenticated(AdminAuthService.isSessionActive());
       const status = AdminAuthService.getLockoutStatus();
       setLockoutSeconds(status.remainingSeconds);
+
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const resetParam = params.get('admin_reset');
+        if (resetParam) {
+          setResetTokenOrCode(resetParam);
+          setAuthMode('reset_verify');
+        }
+      }
     }
   }, [isOpen]);
 
@@ -189,10 +208,17 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
     try {
       const result = await AdminAuthService.verifyPin(pinInput, config);
       if (result.success) {
-        sound.playSuccess();
-        setIsAuthenticated(true);
-        setPinInput('');
-        setPinError('');
+        if (result.needsSetup) {
+          sound.playTap();
+          setAuthMode('setup');
+          setPinError('');
+        } else {
+          sound.playSuccess();
+          setIsAuthenticated(true);
+          setPinInput('');
+          setPinError('');
+          setAuthMode('login');
+        }
       } else {
         sound.playError();
         setPinError(result.error || 'Authentication failed.');
@@ -206,34 +232,123 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
     }
   };
 
-  // Handle First-Time Admin Passcode Setup
-  const handleSetupSubmit = async (e: React.FormEvent) => {
+  // Setup New Passcode Handler
+  const handleSetupNewPasscode = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSetupError('');
-
-    if (setupPin.length < 4) {
-      setSetupError('Passcode must be at least 4 characters long.');
+    setPinError('');
+    if (newPasscode.trim().length < 4) {
+      setPinError('Passcode must be at least 4 characters.');
       return;
     }
-    if (setupPin !== confirmPin) {
-      setSetupError('Passcodes do not match. Please try again.');
+    if (newPasscode !== confirmPasscode) {
+      setPinError('Passcodes do not match.');
       return;
     }
 
+    setIsVerifying(true);
     try {
-      const updated = await AdminAuthService.updatePin(setupPin, config);
-      onConfigChange(updated);
-      StorageService.saveConfig(updated);
-      await FirestoreDataService.savePlatformConfig(updated);
-      AdminAuthService.setSessionActive();
-      sound.playSuccess();
-      setIsAuthenticated(true);
-      setSetupPin('');
-      setConfirmPin('');
-      setBackupMessage({ text: 'Administrator passcode saved and synced to Cloud Firestore!', type: 'success' });
-    } catch (err: any) {
-      setSetupError(err?.message || 'Failed to establish passcode.');
+      const res = await AdminAuthService.setupNewPasscode(newPasscode, config);
+      if (res.success) {
+        sound.playSuccess();
+        onConfigChange(res.updatedConfig);
+        setIsAuthenticated(true);
+        setAuthMode('login');
+        setNewPasscode('');
+        setConfirmPasscode('');
+        setPinError('');
+        setBackupMessage({
+          text: 'New passcode established! This passcode will be used from now on.',
+          type: 'success',
+        });
+      } else {
+        setPinError(res.error || 'Failed to establish passcode.');
+      }
+    } finally {
+      setIsVerifying(false);
     }
+  };
+
+  // Request Password Reset Link Handler (sent to peterowamala62@gmail.com)
+  const handleRequestReset = async () => {
+    setIsResetDispatching(true);
+    setPinError('');
+    try {
+      const res = await AdminAuthService.requestPasswordReset();
+      if (res.success) {
+        sound.playSuccess();
+        setResetDispatchedInfo(res);
+        setResetTokenOrCode(res.code);
+        setAuthMode('reset_verify');
+      }
+    } catch (e: any) {
+      setPinError(e.message || 'Failed to dispatch reset link.');
+    } finally {
+      setIsResetDispatching(false);
+    }
+  };
+
+  // Verify Code / Token and Reset Passcode
+  const handleResetWithToken = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPinError('');
+    if (!resetTokenOrCode.trim()) {
+      setPinError('Please enter the 6-digit code or reset token.');
+      return;
+    }
+    if (newPasscode.trim().length < 4) {
+      setPinError('New passcode must be at least 4 characters.');
+      return;
+    }
+    if (newPasscode !== confirmPasscode) {
+      setPinError('Passcodes do not match.');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      const res = await AdminAuthService.resetPasscodeWithToken(resetTokenOrCode, newPasscode, config);
+      if (res.success) {
+        sound.playSuccess();
+        onConfigChange(res.updatedConfig);
+        setIsAuthenticated(true);
+        setAuthMode('login');
+        setResetTokenOrCode('');
+        setNewPasscode('');
+        setConfirmPasscode('');
+        setResetDispatchedInfo(null);
+        setBackupMessage({
+          text: 'Passcode successfully reset! You are now logged in with your new passcode.',
+          type: 'success',
+        });
+      } else {
+        sound.playError();
+        setPinError(res.error || 'Failed to reset passcode.');
+      }
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // Story Add / Edit handlers
+  const handleOpenAddStory = () => {
+    sound.playTap();
+    setEditingEpisode(null);
+    setIsStoryEditorOpen(true);
+  };
+
+  const handleOpenEditStory = (ep: Episode) => {
+    sound.playTap();
+    setEditingEpisode(ep);
+    setIsStoryEditorOpen(true);
+  };
+
+  const handleSaveStoryFromEditor = (saved: Episode) => {
+    const updated = StorageService.saveEpisode(saved);
+    onEpisodesChange(updated);
+    FirestoreDataService.saveEpisode(saved).catch((err) => {
+      console.warn('[AdminCMS] Remote Firestore story save notice:', err);
+    });
+    setBackupMessage({ text: `Story "${saved.title}" saved successfully!`, type: 'success' });
   };
 
   // Handle Logout
@@ -244,42 +359,6 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
     setPinInput('');
     setPinError('');
     onClose();
-  };
-
-  // Handle Change Passcode inside Settings tab
-  const handleChangePasscode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPassChangeError('');
-    setPassChangeSuccess('');
-
-    if (newPass.length < 4) {
-      setPassChangeError('New passcode must be at least 4 characters long.');
-      return;
-    }
-    if (newPass !== confirmNewPass) {
-      setPassChangeError('New passcodes do not match.');
-      return;
-    }
-
-    const verifyCurrent = await AdminAuthService.verifyPin(currentPass, config);
-    if (!verifyCurrent.success) {
-      setPassChangeError('Current passcode is incorrect.');
-      return;
-    }
-
-    try {
-      const updated = await AdminAuthService.updatePin(newPass, config);
-      onConfigChange(updated);
-      StorageService.saveConfig(updated);
-      await FirestoreDataService.savePlatformConfig(updated);
-      sound.playSuccess();
-      setPassChangeSuccess('Admin passcode updated and synced to Cloud Firestore!');
-      setCurrentPass('');
-      setNewPass('');
-      setConfirmNewPass('');
-    } catch (err: any) {
-      setPassChangeError(err?.message || 'Failed to update passcode.');
-    }
   };
 
   // Quick Action for Mandatory Acceptance Test 7:
@@ -419,10 +498,16 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
   // Delete Episode
   const handleDeleteEpisode = (episodeId: string) => {
-    if (confirm('Are you sure you want to delete this episode?')) {
+    const target = episodes.find((e) => e.id === episodeId);
+    const storyTitle = target?.title || 'this story';
+    if (confirm(`Are you sure you want to permanently delete story "${storyTitle}"? This will remove it from the catalog and reader.`)) {
       sound.playTap();
       const updated = StorageService.deleteEpisode(episodeId);
       onEpisodesChange(updated);
+      FirestoreDataService.deleteEpisode(episodeId).catch((err) => {
+        console.warn('[AdminCMS] Remote Firestore story delete notice:', err);
+      });
+      setBackupMessage({ text: `Story "${storyTitle}" deleted successfully.`, type: 'success' });
     }
   };
 
@@ -518,124 +603,151 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
         {/* Security Gate if not authenticated */}
         {!isAuthenticated ? (
-          isSetupNeeded ? (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-zinc-800 border border-[#e5a93b]/40 flex items-center justify-center text-[#e5a93b] mb-4 shadow-lg shadow-[#e5a93b]/10">
-                <Key className="w-7 h-7" />
-              </div>
-              <h3 className="text-xl font-black text-white mb-1">First-Time Administrator Setup</h3>
-              <p className="text-xs text-zinc-400 max-w-md mb-6 leading-relaxed">
-                No administrator passcode is configured yet. Set a private, secure administrator passcode to protect story publishing, analytics, and platform controls.
-              </p>
-
-              <form onSubmit={handleSetupSubmit} className="w-full max-w-xs space-y-3">
-                <div className="text-left">
-                  <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                    New Passcode (min 4 characters)
-                  </label>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={setupPin}
-                    onChange={(e) => {
-                      setSetupPin(e.target.value);
-                      setSetupError('');
-                    }}
-                    placeholder="Enter new admin passcode"
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm tracking-wider focus:outline-none focus:border-[#e5a93b]"
-                    autoFocus
-                  />
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto w-full">
+            {authMode === 'login' && (
+              <>
+                <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[#e5a93b] mb-4 shadow-lg shadow-black/40">
+                  <Lock className="w-7 h-7" />
                 </div>
+                <h3 className="text-xl font-black text-white mb-1">Publisher & Administrator Access</h3>
+                <p className="text-xs text-zinc-400 mb-6">
+                  Enter your publisher passcode to access story publishing, real-time analytics, and platform controls.
+                </p>
 
-                <div className="text-left">
-                  <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                    Confirm Passcode
-                  </label>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={confirmPin}
-                    onChange={(e) => {
-                      setConfirmPin(e.target.value);
-                      setSetupError('');
-                    }}
-                    placeholder="Confirm passcode"
-                    className="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm tracking-wider focus:outline-none focus:border-[#e5a93b]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-[11px] text-zinc-400 hover:text-zinc-200 flex items-center gap-1 cursor-pointer"
-                  >
-                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    <span>{showPassword ? "Hide text" : "Show text"}</span>
-                  </button>
-                </div>
-
-                {setupError && (
-                  <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 font-medium">
-                    {setupError}
+                {lockoutSeconds > 0 ? (
+                  <div className="w-full p-4 rounded-xl bg-red-950/40 border border-red-800/80 text-center space-y-2">
+                    <div className="text-sm font-bold text-red-400 flex items-center justify-center gap-1.5">
+                      <AlertTriangle className="w-4 h-4" />
+                      <span>Console Temporarily Locked</span>
+                    </div>
+                    <p className="text-xs text-zinc-300">Too many consecutive failed attempts.</p>
+                    <div className="font-mono text-lg font-bold text-amber-400">{lockoutSeconds}s cooldown</div>
                   </div>
+                ) : (
+                  <form onSubmit={handlePinSubmit} className="w-full space-y-3.5">
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={pinInput}
+                        onChange={(e) => {
+                          setPinInput(e.target.value);
+                          setPinError('');
+                        }}
+                        placeholder="Enter Passcode"
+                        maxLength={20}
+                        className="w-full px-4 py-2.5 pr-10 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-white text-base tracking-widest focus:outline-none focus:border-[#e5a93b]"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer"
+                        title={showPassword ? 'Hide passcode' : 'Show passcode'}
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    {pinError && (
+                      <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 font-medium">
+                        {pinError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isVerifying}
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#e5a93b] hover:bg-[#d8982a] disabled:opacity-50 text-black font-extrabold text-xs tracking-wider uppercase transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+                    >
+                      {isVerifying ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Verifying...</span>
+                        </>
+                      ) : (
+                        <span>Unlock Admin Console</span>
+                      )}
+                    </button>
+
+                    <div className="pt-2 flex flex-col gap-2 text-xs">
+                      <div className="flex items-center justify-between text-zinc-400">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            sound.playTap();
+                            setPinError('');
+                            setAuthMode('setup');
+                          }}
+                          className="hover:text-[#e5a93b] transition-colors cursor-pointer text-left"
+                        >
+                          Setup New Passcode Now →
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            sound.playTap();
+                            setPinError('');
+                            setAuthMode('forgot');
+                          }}
+                          className="hover:text-amber-300 transition-colors cursor-pointer text-right flex items-center gap-1"
+                        >
+                          <HelpCircle className="w-3 h-3" />
+                          <span>Forgot Passcode?</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
                 )}
+              </>
+            )}
 
-                <button
-                  type="submit"
-                  className="w-full py-2.5 px-4 rounded-xl bg-[#e5a93b] hover:bg-[#d8982a] text-black font-extrabold text-xs tracking-wider uppercase transition-colors cursor-pointer shadow-md"
-                >
-                  SAVE PASSCODE & PROCEED
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[#e5a93b] mb-4">
-                <Lock className="w-7 h-7" />
-              </div>
-              <h3 className="text-xl font-black text-white mb-1">Authorised Administrator Access</h3>
-              <p className="text-xs text-zinc-400 max-w-sm mb-6">
-                Enter your private administrator passcode to access story publishing, real-time analytics, and platform controls.
-              </p>
-
-              {lockoutSeconds > 0 ? (
-                <div className="w-full max-w-xs p-4 rounded-xl bg-red-950/40 border border-red-800/80 text-center space-y-2">
-                  <div className="text-sm font-bold text-red-400 flex items-center justify-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span>Console Temporarily Locked</span>
-                  </div>
-                  <p className="text-xs text-zinc-300">
-                    Too many consecutive failed attempts.
-                  </p>
-                  <div className="font-mono text-lg font-bold text-amber-400">
-                    {lockoutSeconds}s cooldown
-                  </div>
+            {authMode === 'setup' && (
+              <div className="w-full space-y-4 animate-in fade-in duration-150">
+                <div className="w-14 h-14 rounded-full bg-[#e5a93b]/20 border border-[#e5a93b]/50 flex items-center justify-center text-[#e5a93b] mx-auto shadow-lg">
+                  <KeyRound className="w-7 h-7" />
                 </div>
-              ) : (
-                <form onSubmit={handlePinSubmit} className="w-full max-w-xs space-y-3">
-                  <div className="relative">
+                <div>
+                  <h3 className="text-xl font-black text-white">Setup Administrator Passcode</h3>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Set up your new passcode now. This passcode will be used from now on for console access.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSetupNewPasscode} className="space-y-3 pt-2">
+                  <div className="space-y-1 text-left">
+                    <label className="text-[11px] font-bold text-zinc-300">New Passcode (min 4 characters)</label>
                     <input
-                      type={showPassword ? "text" : "password"}
-                      value={pinInput}
+                      type="password"
+                      value={newPasscode}
                       onChange={(e) => {
-                        setPinInput(e.target.value);
+                        setNewPasscode(e.target.value);
                         setPinError('');
                       }}
-                      placeholder="Enter Administrator Passcode"
-                      className="w-full px-4 py-2.5 pr-10 rounded-xl bg-zinc-900 border border-zinc-700 text-center text-white text-base tracking-widest focus:outline-none focus:border-[#e5a93b]"
+                      placeholder="Enter new passcode"
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
                       autoFocus
+                      required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 cursor-pointer"
-                      title={showPassword ? "Hide passcode" : "Show passcode"}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[11px] font-bold text-zinc-300">Confirm Passcode</label>
+                    <input
+                      type="password"
+                      value={confirmPasscode}
+                      onChange={(e) => {
+                        setConfirmPasscode(e.target.value);
+                        setPinError('');
+                      }}
+                      placeholder="Re-type new passcode"
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
+                      required
+                    />
                   </div>
 
                   {pinError && (
-                    <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 font-medium">
+                    <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 text-center font-medium">
                       {pinError}
                     </div>
                   )}
@@ -648,16 +760,206 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                     {isVerifying ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>Verifying...</span>
+                        <span>Saving Passcode...</span>
                       </>
                     ) : (
-                      <span>Unlock Admin Console</span>
+                      <span>Save New Passcode & Enter Console</span>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playTap();
+                      setPinError('');
+                      setAuthMode('login');
+                    }}
+                    className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer pt-1"
+                  >
+                    ← Back to Login
+                  </button>
                 </form>
-              )}
-            </div>
-          )
+              </div>
+            )}
+
+            {authMode === 'forgot' && (
+              <div className="w-full space-y-4 animate-in fade-in duration-150">
+                <div className="w-14 h-14 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 mx-auto shadow-lg">
+                  <Mail className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white">Reset Passcode</h3>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    In case you forget your passcode, a secure password reset link will be sent to the administrator recovery email.
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-left space-y-1">
+                  <div className="text-[10px] uppercase font-mono tracking-wider text-zinc-500">Recovery Recipient</div>
+                  <div className="text-sm font-bold text-white font-mono break-all">{ADMIN_RECOVERY_EMAIL}</div>
+                </div>
+
+                {pinError && (
+                  <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 font-medium">
+                    {pinError}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleRequestReset}
+                  disabled={isResetDispatching}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#e5a93b] hover:bg-[#d8982a] disabled:opacity-50 text-black font-extrabold text-xs tracking-wider uppercase transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+                >
+                  {isResetDispatching ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending to {ADMIN_RECOVERY_EMAIL}...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Reset Link to {ADMIN_RECOVERY_EMAIL}</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-between text-xs text-zinc-400 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playTap();
+                      setPinError('');
+                      setAuthMode('reset_verify');
+                    }}
+                    className="hover:text-amber-300 transition-colors cursor-pointer"
+                  >
+                    Already have a reset code?
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sound.playTap();
+                      setPinError('');
+                      setAuthMode('login');
+                    }}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    ← Back to Login
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {authMode === 'reset_verify' && (
+              <div className="w-full space-y-4 animate-in fade-in duration-150">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto shadow-lg">
+                  <CheckCircle className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white">Enter New Passcode</h3>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Password reset link and 6-digit verification code sent to <strong className="text-zinc-200">{ADMIN_RECOVERY_EMAIL}</strong>.
+                  </p>
+                </div>
+
+                {resetDispatchedInfo && (
+                  <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-800/60 text-left text-xs space-y-2">
+                    <div className="flex items-center justify-between text-emerald-400 font-bold">
+                      <span>Verification Code</span>
+                      <span className="font-mono text-base tracking-widest text-[#e5a93b]">{resetDispatchedInfo.code}</span>
+                    </div>
+                    <div className="text-[11px] text-zinc-400">
+                      Dispatched to <strong>{resetDispatchedInfo.email}</strong>. Use the 6-digit code above or click the reset link in your email.
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleResetWithToken} className="space-y-3 text-left">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-300">6-Digit Code or Reset Token *</label>
+                    <input
+                      type="text"
+                      value={resetTokenOrCode}
+                      onChange={(e) => {
+                        setResetTokenOrCode(e.target.value);
+                        setPinError('');
+                      }}
+                      placeholder="e.g. 6-digit code from email"
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-mono text-center text-sm focus:outline-none focus:border-[#e5a93b]"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-300">New Passcode (min 4 characters) *</label>
+                    <input
+                      type="password"
+                      value={newPasscode}
+                      onChange={(e) => {
+                        setNewPasscode(e.target.value);
+                        setPinError('');
+                      }}
+                      placeholder="Enter new passcode"
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-zinc-300">Confirm New Passcode *</label>
+                    <input
+                      type="password"
+                      value={confirmPasscode}
+                      onChange={(e) => {
+                        setConfirmPasscode(e.target.value);
+                        setPinError('');
+                      }}
+                      placeholder="Re-type new passcode"
+                      className="w-full px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
+                      required
+                    />
+                  </div>
+
+                  {pinError && (
+                    <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 text-center font-medium">
+                      {pinError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isVerifying}
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#e5a93b] hover:bg-[#d8982a] disabled:opacity-50 text-black font-extrabold text-xs tracking-wider uppercase transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+                  >
+                    {isVerifying ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Resetting Passcode...</span>
+                      </>
+                    ) : (
+                      <span>Reset Passcode & Unlock Console</span>
+                    )}
+                  </button>
+
+                  <div className="text-center pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sound.playTap();
+                        setPinError('');
+                        setAuthMode('login');
+                      }}
+                      className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                    >
+                      ← Back to Login
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             {/* Navigation Tabs */}
@@ -788,14 +1090,24 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                       </div>
 
                       <div className="flex items-center gap-2">
+                        {/* Add Story Button */}
+                        <button
+                          onClick={handleOpenAddStory}
+                          className="py-2 px-3.5 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] text-black font-extrabold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-md"
+                          title="Author a new interactive story or dilemma"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add Story</span>
+                        </button>
+
                         {/* Acceptance Test 7 Button */}
                         <button
                           onClick={handleCreateDummyEpisode011}
-                          className="py-2 px-3 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] text-black font-extrabold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                          className="py-2 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-zinc-700"
                           title="Create custom episode independently"
                         >
                           <Sparkles className="w-3.5 h-3.5" />
-                          <span>Create Episode 011</span>
+                          <span className="hidden sm:inline">Episode 011</span>
                         </button>
                       </div>
                     </div>
@@ -968,6 +1280,15 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                                   title="Play this game now in reader"
                                 >
                                   <Play className="w-3.5 h-3.5 fill-current" />
+                                </button>
+
+                                {/* Edit Story */}
+                                <button
+                                  onClick={() => handleOpenEditStory(ep)}
+                                  className="p-1.5 rounded-lg bg-zinc-800 hover:bg-[#e5a93b] text-zinc-300 hover:text-black transition-colors cursor-pointer shadow-sm"
+                                  title={`Edit "${ep.title}" - modify text, decisions & endings`}
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
                                 </button>
 
                                 {/* Free / Premium Toggle */}
@@ -1953,87 +2274,80 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
                   {/* Security & Admin Passcode Management */}
                   <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-[#e5a93b]" />
-                      <h5 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
-                        Administrator Passcode Security
-                      </h5>
+                    <div className="flex items-center justify-between border-b border-zinc-800 pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-[#e5a93b]" />
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-zinc-200">
+                          Administrator Passcode & Security Recovery
+                        </h5>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        {AdminAuthService.isCustomPasscodeConfigured(config) ? 'Custom Passcode Active' : 'Default Passcode 2580'}
+                      </span>
                     </div>
+
                     <p className="text-xs text-zinc-400 leading-relaxed">
-                      Your administrator passcode is cryptographically salted and hashed using SHA-256 with rate-limiting brute force protection.
+                      Your administrator passcode secures story management, analytics, and platform controls. You can update your passcode below at any time.
                     </p>
 
-                    <form onSubmit={handleChangePasscode} className="space-y-3 pt-1 max-w-sm">
-                      <div>
-                        <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                          Current Passcode
-                        </label>
-                        <input
-                          type="password"
-                          value={currentPass}
-                          onChange={(e) => {
-                            setCurrentPass(e.target.value);
-                            setPassChangeError('');
-                            setPassChangeSuccess('');
-                          }}
-                          placeholder="Enter current passcode"
-                          className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
-                        />
+                    <form onSubmit={handleSetupNewPasscode} className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800/80 space-y-3">
+                      <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <KeyRound className="w-3.5 h-3.5 text-[#e5a93b]" />
+                        <span>Update Administrator Passcode</span>
                       </div>
-
-                      <div>
-                        <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                          New Passcode (min 4 characters)
-                        </label>
-                        <input
-                          type="password"
-                          value={newPass}
-                          onChange={(e) => {
-                            setNewPass(e.target.value);
-                            setPassChangeError('');
-                            setPassChangeSuccess('');
-                          }}
-                          placeholder="Enter new passcode"
-                          className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                          Confirm New Passcode
-                        </label>
-                        <input
-                          type="password"
-                          value={confirmNewPass}
-                          onChange={(e) => {
-                            setConfirmNewPass(e.target.value);
-                            setPassChangeError('');
-                            setPassChangeSuccess('');
-                          }}
-                          placeholder="Confirm new passcode"
-                          className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white text-sm focus:outline-none focus:border-[#e5a93b]"
-                        />
-                      </div>
-
-                      {passChangeError && (
-                        <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-400 font-medium">
-                          {passChangeError}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold text-zinc-300 mb-1">New Passcode</label>
+                          <input
+                            type="password"
+                            value={newPasscode}
+                            onChange={(e) => setNewPasscode(e.target.value)}
+                            placeholder="Enter new passcode"
+                            className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-xs focus:outline-none focus:border-[#e5a93b]"
+                          />
                         </div>
-                      )}
-
-                      {passChangeSuccess && (
-                        <div className="p-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-xs text-emerald-400 font-medium">
-                          {passChangeSuccess}
+                        <div>
+                          <label className="block text-[11px] font-bold text-zinc-300 mb-1">Confirm Passcode</label>
+                          <input
+                            type="password"
+                            value={confirmPasscode}
+                            onChange={(e) => setConfirmPasscode(e.target.value)}
+                            placeholder="Re-type passcode"
+                            className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-xs focus:outline-none focus:border-[#e5a93b]"
+                          />
                         </div>
-                      )}
+                      </div>
 
                       <button
                         type="submit"
-                        className="py-2 px-4 rounded-lg bg-zinc-800 hover:bg-[#e5a93b] hover:text-black text-white font-bold text-xs tracking-wider transition-colors cursor-pointer border border-zinc-700 hover:border-[#e5a93b]"
+                        disabled={isVerifying || !newPasscode}
+                        className="py-1.5 px-4 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] disabled:opacity-40 text-black font-extrabold text-xs cursor-pointer transition-colors shadow-sm"
                       >
-                        Update Admin Passcode
+                        {isVerifying ? 'Saving...' : 'Update Passcode'}
                       </button>
                     </form>
+
+                    {/* Email Recovery */}
+                    <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                      <div>
+                        <div className="font-bold text-white flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Recovery Email: <strong className="font-mono text-zinc-300">{ADMIN_RECOVERY_EMAIL}</strong></span>
+                        </div>
+                        <div className="text-[11px] text-zinc-400 mt-0.5">
+                          In case you forget your passcode, password reset links are dispatched to this address.
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleRequestReset}
+                        disabled={isResetDispatching}
+                        className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold cursor-pointer shrink-0 transition-colors"
+                      >
+                        {isResetDispatching ? 'Sending...' : 'Send Test Reset Link'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2103,6 +2417,18 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
           </>
         )}
       </div>
+
+      {/* Story Editor Modal (Add & Edit Stories) */}
+      <StoryEditorModal
+        isOpen={isStoryEditorOpen}
+        onClose={() => {
+          setIsStoryEditorOpen(false);
+          setEditingEpisode(null);
+        }}
+        episode={editingEpisode}
+        existingEpisodes={episodes}
+        onSave={handleSaveStoryFromEditor}
+      />
     </div>
   );
 };

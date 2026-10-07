@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CatalogStory, StoryData, StoryDatabaseService, StoryProgress } from '../services/storyDatabaseService';
 import { ReaderControls } from './ReaderControls';
+import { AuthorFooter } from './AuthorFooter';
 import { sound } from '../services/audio';
 import { AnalyticsService } from '../services/analytics';
 
@@ -374,6 +375,11 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
           </div>
         </div>
       </section>
+
+      {/* Subtle line down the page: author..contact..publisher */}
+      <AuthorFooter
+        onOpenAdmin={() => window.dispatchEvent(new CustomEvent('open-admin-cms'))}
+      />
     </main>
   );
 };

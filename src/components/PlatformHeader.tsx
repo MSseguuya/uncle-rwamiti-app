@@ -7,15 +7,13 @@ export type MainNavTab = 'browse' | 'search' | 'list';
 interface PlatformHeaderProps {
   activeTab: MainNavTab;
   onSelectTab: (tab: MainNavTab) => void;
-  isAdminActive: boolean;
-  onOpenAdmin: () => void;
+  isAdminActive?: boolean;
+  onOpenAdmin?: () => void;
 }
 
 export const PlatformHeader: React.FC<PlatformHeaderProps> = ({
   activeTab,
   onSelectTab,
-  isAdminActive,
-  onOpenAdmin,
 }) => {
   return (
     <header className="platform-head">
@@ -67,22 +65,6 @@ export const PlatformHeader: React.FC<PlatformHeaderProps> = ({
 
       <span className="platform-actions flex items-center gap-3">
         <ReaderControls />
-
-        <button
-          type="button"
-          className={`header-account text-xs font-mono font-bold px-3 py-2 rounded border transition-colors ${
-            isAdminActive
-              ? 'border-emerald-500/60 text-emerald-400 bg-emerald-950/30'
-              : 'border-[var(--line,rgba(255,255,255,0.2))] text-[var(--text,#f5f3ed)] hover:border-[var(--yellow,#f4c900)]'
-          }`}
-          onClick={() => {
-            sound.playTap();
-            onOpenAdmin();
-          }}
-          title="Open Admin Console & Analytics"
-        >
-          {isAdminActive ? '● ADMIN' : 'ADMIN CONSOLE'}
-        </button>
       </span>
     </header>
   );

@@ -5,6 +5,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   increment,
   onSnapshot,
 } from 'firebase/firestore';
@@ -12,6 +13,15 @@ import { getDb } from './firebase';
 import { Episode, PlatformConfig } from '../types';
 import { LAUNCH_EPISODES } from '../data/launchEpisodes';
 import { StorageService, DEFAULT_CONFIG } from './storage';
+
+export interface PasswordResetRecord {
+  token: string;
+  code?: string;
+  email: string;
+  createdAt: string;
+  expiresAt: string;
+  used: boolean;
+}
 
 export class FirestoreDataService {
   private static episodesUnsubscribe: (() => void) | null = null;
@@ -87,10 +97,11 @@ export class FirestoreDataService {
         this.episodesUnsubscribe();
       }
       this.episodesUnsubscribe = onSnapshot(epCollection, (snap) => {
+        const deletedIds = StorageService.getDeletedEpisodeIds();
         const liveMap = new Map<string, Episode>();
         snap.forEach((d) => {
           const ep = d.data() as Episode;
-          if (ep && ep.id) {
+          if (ep && ep.id && !deletedIds.has(ep.id)) {
             liveMap.set(ep.id, {
               ...ep,
               isPremium: false,
@@ -98,8 +109,9 @@ export class FirestoreDataService {
           }
         });
 
-        // Ensure launch episodes are never wiped out and all remain free
+        // Ensure launch episodes are never wiped out and all remain free (unless deleted)
         for (const launchEp of LAUNCH_EPISODES) {
+          if (deletedIds.has(launchEp.id)) continue;
           const existing = liveMap.get(launchEp.id);
           if (!existing || !existing.nodes || Object.keys(existing.nodes).length === 0) {
             liveMap.set(launchEp.id, {
@@ -222,6 +234,63 @@ export class FirestoreDataService {
     } catch (err) {
       console.error('[Firestore] Error saving episode:', err);
       throw err;
+    }
+  }
+
+  /**
+   * Deletes an episode from Cloud Firestore
+   */
+  static async deleteEpisode(episodeId: string): Promise<void> {
+    try {
+      const db = getDb();
+      const epRef = doc(db, 'episodes', episodeId);
+      await deleteDoc(epRef);
+    } catch (err) {
+      console.warn('[Firestore] Error deleting episode from remote database:', err);
+    }
+  }
+
+  /**
+   * Saves a password reset token record to Cloud Firestore
+   */
+  static async savePasswordReset(record: PasswordResetRecord): Promise<void> {
+    try {
+      const db = getDb();
+      const resetRef = doc(db, 'adminPasswordResets', record.token);
+      await setDoc(resetRef, record, { merge: true });
+    } catch (err) {
+      console.warn('[Firestore] Error saving password reset token:', err);
+    }
+  }
+
+  /**
+   * Retrieves a password reset record by token from Cloud Firestore
+   */
+  static async getPasswordReset(token: string): Promise<PasswordResetRecord | null> {
+    try {
+      const db = getDb();
+      const resetRef = doc(db, 'adminPasswordResets', token);
+      const snap = await getDoc(resetRef);
+      if (snap.exists()) {
+        return snap.data() as PasswordResetRecord;
+      }
+      return null;
+    } catch (err) {
+      console.warn('[Firestore] Error retrieving password reset:', err);
+      return null;
+    }
+  }
+
+  /**
+   * Marks a password reset token as used in Cloud Firestore
+   */
+  static async markPasswordResetUsed(token: string): Promise<void> {
+    try {
+      const db = getDb();
+      const resetRef = doc(db, 'adminPasswordResets', token);
+      await updateDoc(resetRef, { used: true, usedAt: new Date().toISOString() });
+    } catch (err) {
+      console.warn('[Firestore] Error marking reset token as used:', err);
     }
   }
 
