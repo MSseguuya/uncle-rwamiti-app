@@ -1,9 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { CatalogStory, StoryData, StoryDatabaseService, StoryProgress } from '../services/storyDatabaseService';
 import { ReaderControls } from './ReaderControls';
 import { AuthorFooter } from './AuthorFooter';
 import { sound } from '../services/audio';
 import { AnalyticsService } from '../services/analytics';
+
+// Traverses downstream from a node to collect total decision depths to all terminal endpoints
+function getDownstreamChoiceDepths(
+  nodesMap: Record<string, any>,
+  startKey: string,
+  visited = new Set<string>()
+): number[] {
+  if (visited.has(startKey)) return [0];
+  const node = nodesMap[startKey];
+  if (!node || node.is_ending || !node.choices || node.choices.length === 0) return [0];
+
+  visited.add(startKey);
+  const isDecision = node.choices.length > 1;
+  const decisionWeight = isDecision ? 1 : 0;
+
+  const depths: number[] = [];
+  for (const c of node.choices) {
+    const targetKey = c.to || c.target;
+    if (!targetKey) {
+      depths.push(decisionWeight);
+      continue;
+    }
+    const childDepths = getDownstreamChoiceDepths(nodesMap, targetKey, new Set(visited));
+    for (const cd of childDepths) {
+      depths.push(decisionWeight + cd);
+    }
+  }
+  return depths.length > 0 ? depths : [decisionWeight];
+}
 
 interface StorySceneReaderProps {
   storyMeta: CatalogStory;
@@ -52,13 +81,46 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
 
   const isEnding = !!currentNode.is_ending;
 
-  // Calculate move progress step %
-  const choicesDone = trail.filter((m) => nodes[m.from]?.choices?.length).length;
-  const movesRemaining = isEnding ? 0 : 2;
-  const progressPercent = isEnding ? 100 : Math.min(95, Math.round(((choicesDone + 1) / (choicesDone + 1 + movesRemaining)) * 100));
-  const moveLabel = isEnding
-    ? 'Story complete'
-    : `Move ${choicesDone + 1} of ${Math.max(choicesDone + 1, choicesDone + 1 + movesRemaining)}`;
+  // Calculate move progress and label reflecting the actual route or "Your next move"
+  const { moveLabel, progressPercent } = useMemo(() => {
+    if (isEnding) {
+      return { moveLabel: 'Story complete', progressPercent: 100 };
+    }
+
+    const initialKey = nodes['opening'] ? 'opening' : Object.keys(nodes)[0] || 'start';
+    const initialDepths = getDownstreamChoiceDepths(nodes, initialKey);
+    const initialMin = initialDepths.length > 0 ? Math.min(...initialDepths) : 0;
+    const initialMax = initialDepths.length > 0 ? Math.max(...initialDepths) : 0;
+    const hasFixedTotal = initialMin === initialMax && initialMin > 0;
+
+    const choicesDone = trail.filter((m) => {
+      const n = nodes[m.from];
+      return n && !n.is_ending && n.choices && n.choices.length > 0;
+    }).length;
+
+    if (hasFixedTotal) {
+      const totalMoves = initialMin;
+      const currentMove = Math.min(totalMoves, choicesDone + 1);
+      const percent = Math.min(95, Math.max(15, Math.round((currentMove / (totalMoves + 0.3)) * 100)));
+      return {
+        moveLabel: `Move ${currentMove} of ${totalMoves}`,
+        progressPercent: percent,
+      };
+    }
+
+    // Branching prevents a reliable total across the story: use wording such as "Your next move"
+    const currentDepths = getDownstreamChoiceDepths(nodes, currentNodeKey);
+    const currentMin = currentDepths.length > 0 ? Math.min(...currentDepths) : 1;
+    const currentMax = currentDepths.length > 0 ? Math.max(...currentDepths) : 2;
+    const approxRemaining = Math.max(1, Math.round((currentMin + currentMax) / 2));
+    const approxTotal = choicesDone + approxRemaining;
+    const percent = Math.min(90, Math.max(20, Math.round(((choicesDone + 1) / (approxTotal + 0.5)) * 100)));
+
+    return {
+      moveLabel: 'Your next move',
+      progressPercent: percent,
+    };
+  }, [nodes, currentNodeKey, trail, isEnding]);
 
   const handleChoice = (targetKey: string, choiceLabel: string) => {
     sound.playTap();
