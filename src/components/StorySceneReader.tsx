@@ -291,7 +291,7 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
                 {trail.length > 0 && (
                   <div className="move-receipt my-6">
                     <span className="block font-mono text-xs font-bold text-[var(--yellow,#f4c900)] tracking-wider mb-2">
-                      YOUR RWAMITI RECEIPT
+                      YOUR MOVES.
                     </span>
                     <ol className="list-decimal pl-5 space-y-2 text-sm text-[var(--text,#f5f3ed)]">
                       {trail.map((move, i) => (
