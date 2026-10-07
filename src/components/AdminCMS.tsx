@@ -680,33 +680,19 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                       )}
                     </button>
 
-                    <div className="pt-2 flex flex-col gap-2 text-xs">
-                      <div className="flex items-center justify-between text-zinc-400">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            sound.playTap();
-                            setPinError('');
-                            setAuthMode('setup');
-                          }}
-                          className="hover:text-[#e5a93b] transition-colors cursor-pointer text-left"
-                        >
-                          Setup New Passcode Now →
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            sound.playTap();
-                            setPinError('');
-                            setAuthMode('forgot');
-                          }}
-                          className="hover:text-amber-300 transition-colors cursor-pointer text-right flex items-center gap-1"
-                        >
-                          <HelpCircle className="w-3 h-3" />
-                          <span>Forgot Passcode?</span>
-                        </button>
-                      </div>
+                    <div className="pt-2 flex items-center justify-center text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sound.playTap();
+                          setPinError('');
+                          setAuthMode('forgot');
+                        }}
+                        className="text-zinc-400 hover:text-amber-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span>Forgot Passcode?</span>
+                      </button>
                     </div>
                   </form>
                 )}

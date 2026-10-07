@@ -99,20 +99,20 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400">General & Editorial:</span>
                   <a
-                    href="mailto:contact@peterospaths.org"
+                    href="mailto:peterowamala62@gmail.com?subject=Uncle%20Rwamiti%20Editorial"
                     className="font-mono text-[#e5a93b] hover:underline flex items-center gap-1"
                   >
-                    contact@peterospaths.org
+                    peterowamala62@gmail.com
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-zinc-400">Story Submissions:</span>
                   <a
-                    href="mailto:stories@peterospaths.org"
+                    href="mailto:peterowamala62@gmail.com?subject=Uncle%20Rwamiti%20Story%20Submission"
                     className="font-mono text-[#e5a93b] hover:underline flex items-center gap-1"
                   >
-                    stories@peterospaths.org
+                    peterowamala62@gmail.com
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>

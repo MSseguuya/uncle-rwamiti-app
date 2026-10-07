@@ -149,8 +149,8 @@ export class AdminAuthService {
     const storedHash = creds?.hash || config?.adminPinHash;
     const storedSalt = creds?.salt || config?.adminPinSalt;
 
-    // If custom passcode is established, verify hash
-    if (isCustomSet && storedHash && storedSalt) {
+    // If custom passcode hash is stored, verify against it
+    if (storedHash && storedSalt) {
       const computedHash = await this.hashWithSalt(trimmed, storedSalt);
       if (computedHash === storedHash) {
         this.resetFailedAttempts();
@@ -159,16 +159,11 @@ export class AdminAuthService {
       }
     }
 
-    // If custom passcode is NOT yet configured, check default initial passcode '2580'
-    if (!isCustomSet && trimmed === DEFAULT_INITIAL_PASSCODE) {
-      this.resetFailedAttempts();
-      return { success: true, needsSetup: true };
-    }
-
-    // Also support initial passcode '2580' as emergency fallback if user hasn't set one or enters it
+    // Default initial passcode '2580' when no custom passcode hash has been established
     if (!storedHash && trimmed === DEFAULT_INITIAL_PASSCODE) {
       this.resetFailedAttempts();
-      return { success: true, needsSetup: true };
+      this.setSessionActive();
+      return { success: true };
     }
 
     const { remainingAttempts, isLocked, remainingSeconds } = this.recordFailedAttempt();

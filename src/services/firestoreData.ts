@@ -258,18 +258,22 @@ export class FirestoreDataService {
       const db = getDb();
       const resetRef = doc(db, 'adminPasswordResets', record.token);
       await setDoc(resetRef, record, { merge: true });
+      if (record.code) {
+        const codeRef = doc(db, 'adminPasswordResets', record.code);
+        await setDoc(codeRef, record, { merge: true });
+      }
     } catch (err) {
       console.warn('[Firestore] Error saving password reset token:', err);
     }
   }
 
   /**
-   * Retrieves a password reset record by token from Cloud Firestore
+   * Retrieves a password reset record by token or 6-digit code from Cloud Firestore
    */
-  static async getPasswordReset(token: string): Promise<PasswordResetRecord | null> {
+  static async getPasswordReset(tokenOrCode: string): Promise<PasswordResetRecord | null> {
     try {
       const db = getDb();
-      const resetRef = doc(db, 'adminPasswordResets', token);
+      const resetRef = doc(db, 'adminPasswordResets', tokenOrCode);
       const snap = await getDoc(resetRef);
       if (snap.exists()) {
         return snap.data() as PasswordResetRecord;
@@ -284,11 +288,23 @@ export class FirestoreDataService {
   /**
    * Marks a password reset token as used in Cloud Firestore
    */
-  static async markPasswordResetUsed(token: string): Promise<void> {
+  static async markPasswordResetUsed(tokenOrCode: string): Promise<void> {
     try {
       const db = getDb();
-      const resetRef = doc(db, 'adminPasswordResets', token);
-      await updateDoc(resetRef, { used: true, usedAt: new Date().toISOString() });
+      const resetRef = doc(db, 'adminPasswordResets', tokenOrCode);
+      const snap = await getDoc(resetRef);
+      if (snap.exists()) {
+        const data = snap.data() as PasswordResetRecord;
+        await updateDoc(resetRef, { used: true, usedAt: new Date().toISOString() });
+        if (data.token && data.token !== tokenOrCode) {
+          await updateDoc(doc(db, 'adminPasswordResets', data.token), { used: true, usedAt: new Date().toISOString() });
+        }
+        if (data.code && data.code !== tokenOrCode) {
+          await updateDoc(doc(db, 'adminPasswordResets', data.code), { used: true, usedAt: new Date().toISOString() });
+        }
+      } else {
+        await setDoc(resetRef, { used: true, usedAt: new Date().toISOString() }, { merge: true });
+      }
     } catch (err) {
       console.warn('[Firestore] Error marking reset token as used:', err);
     }

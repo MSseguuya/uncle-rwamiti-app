@@ -11,19 +11,17 @@ export const AuthorFooter: React.FC<AuthorFooterProps> = ({ onOpenAdmin, isAdmin
     <footer className="w-full py-8 pb-24 sm:pb-14 flex items-center justify-center text-center">
       <div className="text-xs sm:text-[13px] font-mono tracking-wider text-zinc-500 flex items-center justify-center gap-2 select-none">
         <a
-          href="https://peterospaths.org"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="mailto:peterowamala62@gmail.com?subject=Uncle%20Rwamiti%20Author%20Inquiry"
           className="text-zinc-400 hover:text-zinc-100 transition-colors underline-offset-4 hover:underline"
+          title="Author: Uncle Rwamiti"
         >
           author
         </a>
         <span className="text-zinc-600">..</span>
         <a
-          href="https://peterospaths.org"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="mailto:peterowamala62@gmail.com?subject=Uncle%20Rwamiti%20Platform%20Contact"
           className="text-zinc-400 hover:text-zinc-100 transition-colors underline-offset-4 hover:underline"
+          title="Contact Uncle Rwamiti"
         >
           contact
         </a>
