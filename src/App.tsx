@@ -30,6 +30,7 @@ export default function App() {
   const featuredStory = StoryDatabaseService.getFeaturedStory();
   const teenStories = StoryDatabaseService.getTeenStories();
   const adultStories = StoryDatabaseService.getAdultStories();
+  const kampalaDilemmas = StoryDatabaseService.getKampalaDilemmas();
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<MainNavTab>('browse');
@@ -279,6 +280,14 @@ export default function App() {
             stories={remainingAdultStories}
             onSelectStory={handleOpenMoreInfo}
           />
+
+          {kampalaDilemmas.length > 0 && (
+            <StreamRow
+              title="Kampala Dilemmas"
+              stories={kampalaDilemmas}
+              onSelectStory={handleOpenMoreInfo}
+            />
+          )}
         </>
       )}
 

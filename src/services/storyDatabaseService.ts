@@ -1,5 +1,10 @@
 import storyDb from '../data/storyDatabase.json';
-import { ALL_INCORPORATED_EPISODES, convertEpisodeToStoryData } from '../data/allGamesDatabase';
+import {
+  ALL_INCORPORATED_EPISODES,
+  KAMPALA_EPISODES,
+  KAMPALA_COVERS,
+  convertEpisodeToStoryData,
+} from '../data/allGamesDatabase';
 
 export interface CatalogStory {
   slug: string;
@@ -60,7 +65,34 @@ const STORAGE_THEME_KEY = 'rw_theme';
 const STORAGE_TEXT_SIZE_KEY = 'rw_text_size';
 
 export class StoryDatabaseService {
-  private static catalog: CatalogStory[] = storyDb.catalog as CatalogStory[];
+  private static buildCatalog(): CatalogStory[] {
+    const base = (storyDb.catalog as CatalogStory[]) || [];
+    const kampalaStories: CatalogStory[] = KAMPALA_EPISODES.map((ep) => ({
+      slug: ep.id,
+      title: ep.title,
+      description: ep.teaser,
+      cover: (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'cover-match-you-missed.webp',
+      duration_minutes: 6,
+      reading_time: '4–6 min · interactive',
+      category: 'Kampala Dilemmas',
+      keywords: `Kampala Dilemmas ${ep.title} ${ep.teaser} episode ${ep.number}`,
+      legacy_engine: false,
+    }));
+
+    // Replace any duplicates in base if they share the same slug or title
+    const kampalaTitleMap = new Set(kampalaStories.map((k) => k.title.toLowerCase().trim()));
+    const kampalaSlugMap = new Set(kampalaStories.map((k) => k.slug.toLowerCase().trim()));
+
+    const filteredBase = base.filter(
+      (s) =>
+        !kampalaSlugMap.has(s.slug.toLowerCase().trim()) &&
+        !kampalaTitleMap.has(s.title.toLowerCase().trim())
+    );
+
+    return [...filteredBase, ...kampalaStories];
+  }
+
+  private static catalog: CatalogStory[] = StoryDatabaseService.buildCatalog();
   private static stories: Record<string, StoryData> = storyDb.stories as Record<string, StoryData>;
   private static wisdom: Record<string, string> = storyDb.uncleWisdom as Record<string, string>;
 
@@ -81,7 +113,11 @@ export class StoryDatabaseService {
   }
 
   static getAdultStories(): CatalogStory[] {
-    return this.catalog.filter((s) => s.category !== 'Teen Stories');
+    return this.catalog.filter((s) => s.category === 'Adult Stories');
+  }
+
+  static getKampalaDilemmas(): CatalogStory[] {
+    return this.catalog.filter((s) => s.category === 'Kampala Dilemmas');
   }
 
   static getStory(slug: string): StoryData | null {

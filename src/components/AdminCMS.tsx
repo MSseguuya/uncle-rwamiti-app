@@ -55,6 +55,9 @@ import {
   Send,
   CheckCircle,
   HelpCircle,
+  ShieldAlert,
+  Clock,
+  Timer,
 } from 'lucide-react';
 import { UncleRwamitiAvatar } from './UncleRwamitiAvatar';
 
@@ -152,6 +155,10 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
   // Analytics filter, live demographic sessions, and unique visitors
   const [analyticsFilterEpisode, setAnalyticsFilterEpisode] = useState<string>('all');
+  const [excludeTestsFilter, setExcludeTestsFilter] = useState<'audience' | 'all' | 'tests_only'>('audience');
+  const [showFlaggedAccountsModal, setShowFlaggedAccountsModal] = useState<boolean>(false);
+  const [newTestVisitorInput, setNewTestVisitorInput] = useState<string>('');
+  const [flaggedVisitorsSet, setFlaggedVisitorsSet] = useState<Set<string>>(() => AnalyticsService.getFlaggedTestVisitors());
   const [gameSessions, setGameSessions] = useState<GameSessionRecord[]>(() => AnalyticsService.getLocalGameSessions());
   const [visitors, setVisitors] = useState<VisitorRecord[]>(() => AnalyticsService.getLocalVisitors());
 
@@ -1375,10 +1382,21 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
               {/* TAB 2: BEHAVIOURAL ANALYTICS */}
               {activeTab === 'analytics' && (() => {
+                const testVisitorIds = flaggedVisitorsSet;
+                let sessionsToAnalyze = gameSessions;
+                const isAudienceView = excludeTestsFilter === 'audience';
+
+                if (excludeTestsFilter === 'tests_only') {
+                  sessionsToAnalyze = gameSessions.filter(
+                    (s) => testVisitorIds.has(s.visitorId) || s.isTest
+                  );
+                }
+
                 const fullAnalytics = AnalyticsService.getComprehensiveAnalytics(
-                  gameSessions,
+                  sessionsToAnalyze,
                   visitors,
-                  analyticsFilterEpisode
+                  analyticsFilterEpisode,
+                  isAudienceView
                 );
 
                 return (
@@ -1398,18 +1416,18 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                               {episodes
                                 .filter((ep) => ep.category === 'Adult Stories')
                                 .map((ep) => (
-                                  <option key={ep.id} value={ep.id}>
-                                    EP {ep.number}: {ep.title}
-                                  </option>
+                                   <option key={ep.id} value={ep.id}>
+                                     EP {ep.number}: {ep.title}
+                                   </option>
                                 ))}
                             </optgroup>
                             <optgroup label="Teen Stories">
                               {episodes
                                 .filter((ep) => ep.category === 'Teen Stories')
                                 .map((ep) => (
-                                  <option key={ep.id} value={ep.id}>
-                                    EP {ep.number}: {ep.title}
-                                  </option>
+                                   <option key={ep.id} value={ep.id}>
+                                     EP {ep.number}: {ep.title}
+                                   </option>
                                 ))}
                             </optgroup>
                             <optgroup label="Kampala Dilemmas">
@@ -1420,9 +1438,9 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                                     (!ep.category?.includes('Teen') && !ep.category?.includes('Adult'))
                                 )
                                 .map((ep) => (
-                                  <option key={ep.id} value={ep.id}>
-                                    EP {ep.number}: {ep.title}
-                                  </option>
+                                   <option key={ep.id} value={ep.id}>
+                                     EP {ep.number}: {ep.title}
+                                   </option>
                                 ))}
                             </optgroup>
                           </select>
@@ -1430,7 +1448,7 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
 
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
                           <Cloud className="w-3 h-3 animate-pulse" />
-                          <span>Firestore Live Sync Active</span>
+                          <span>Firestore Live Sync Active (Uganda Time EAT)</span>
                         </div>
                       </div>
 
@@ -1438,19 +1456,39 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                         <button
                           onClick={() => {
                             sound.playTap();
-                            const csv = AnalyticsService.exportDemographicsCSV(gameSessions);
+                            const csv = AnalyticsService.exportDemographicsCSV(gameSessions, true);
                             const blob = new Blob([csv], { type: 'text/csv' });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = `rwamiti-player-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
+                            a.download = `rwamiti-audience-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
                             a.click();
                             URL.revokeObjectURL(url);
                           }}
                           className="py-1.5 px-3 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] text-black text-xs font-black flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                          title="Exports verified audience analytics (confirmed test activity excluded)"
                         >
                           <Download className="w-3.5 h-3.5" />
-                          <span>Export Analytics (CSV)</span>
+                          <span>Audience Analytics (CSV)</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            sound.playTap();
+                            const csv = AnalyticsService.exportAllRecordsCSV(gameSessions);
+                            const blob = new Blob([csv], { type: 'text/csv' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `rwamiti-full-audit-trail-${new Date().toISOString().slice(0, 10)}.csv`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          }}
+                          className="py-1.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-amber-300 text-xs font-semibold flex items-center gap-1.5 border border-zinc-700 transition-colors cursor-pointer"
+                          title="Exports full audit trail including both audience and test activity records"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>All Records & Audit Trail (CSV)</span>
                         </button>
 
                         <button
@@ -1489,83 +1527,188 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                       </div>
                     </div>
 
-                    {/* 1. TOP AUDIENCE & GAMEPLAY SUMMARY KPIS */}
+                    {/* TEST ACTIVITY CONTROL & AUDIT BANNER */}
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-900 border border-amber-600/30 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-start sm:items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                          <ShieldAlert className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+                              Test Activity Audit
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold border border-amber-500/30">
+                              {fullAnalytics.filteredTestCompletionsCount} test completions flagged
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-zinc-300 mt-0.5">
+                            Two developer test visitor accounts account for 77 completions ({Array.from(AnalyticsService.getFlaggedTestVisitors()).slice(0, 2).join(', ')}). They are excluded from audience summaries while preserved in records. Fast completion alone is not classified as testing.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex rounded-lg bg-zinc-800 p-0.5 border border-zinc-700 text-xs">
+                          <button
+                            onClick={() => {
+                              sound.playTap();
+                              setExcludeTestsFilter('audience');
+                            }}
+                            className={`px-3 py-1.5 rounded-md font-bold transition-colors cursor-pointer ${
+                              excludeTestsFilter === 'audience'
+                                ? 'bg-[#e5a93b] text-black shadow-sm'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            Audience Only (Tests Excluded)
+                          </button>
+                          <button
+                            onClick={() => {
+                              sound.playTap();
+                              setExcludeTestsFilter('all');
+                            }}
+                            className={`px-3 py-1.5 rounded-md font-bold transition-colors cursor-pointer ${
+                              excludeTestsFilter === 'all'
+                                ? 'bg-[#e5a93b] text-black shadow-sm'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            All Records (Includes Tests)
+                          </button>
+                          <button
+                            onClick={() => {
+                              sound.playTap();
+                              setExcludeTestsFilter('tests_only');
+                            }}
+                            className={`px-3 py-1.5 rounded-md font-bold transition-colors cursor-pointer ${
+                              excludeTestsFilter === 'tests_only'
+                                ? 'bg-amber-600 text-white shadow-sm'
+                                : 'text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            Test Runs Only ({fullAnalytics.filteredTestCount})
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            sound.playTap();
+                            setShowFlaggedAccountsModal(true);
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Settings className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Manage Test IDs</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 1. SEPARATE ENGAGEMENT & ATTEMPT REPORTING KPIS */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                      {/* Metric 1: Unique Visitors & Game Players */}
+                      {/* Metric 1: Distinct Visitor IDs */}
                       <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Unique Visitors</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Distinct Visitor IDs</span>
                           <Users className="w-3.5 h-3.5 text-[#e5a93b]" />
                         </div>
                         <div className="text-2xl font-black text-white">{fullAnalytics.uniqueVisitorsCount}</div>
                         <div className="text-[10px] text-zinc-400 font-semibold mt-1">
-                          <span className="text-emerald-400 font-bold">{fullAnalytics.gamePlayersCount} players</span> ({fullAnalytics.playerConversionRate}%)
+                          <span className="text-emerald-400 font-bold">{fullAnalytics.gamePlayersCount} active readers</span> ({fullAnalytics.playerConversionRate}%)
                         </div>
                       </div>
 
-                      {/* Metric 2: Starts & Completions */}
+                      {/* Metric 2: Story Attempts Started */}
                       <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Games Started</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Attempts Started</span>
                           <Activity className="w-3.5 h-3.5 text-sky-400" />
                         </div>
-                        <div className="text-2xl font-black text-white">{fullAnalytics.totalStarts}</div>
-                        <div className="text-[10px] text-emerald-400 font-semibold mt-1 flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3 shrink-0" />
-                          <span>{fullAnalytics.totalCompletions} finished ({fullAnalytics.overallCompletionRate}%)</span>
+                        <div className="text-2xl font-black text-white">{fullAnalytics.attemptsStartedCount}</div>
+                        <div className="text-[10px] text-zinc-400 font-medium mt-1 truncate">
+                          Deduplicated attempts
                         </div>
                       </div>
 
-                      {/* Metric 3: Games Played Per Visitor */}
+                      {/* Metric 3: Reached First Choice */}
                       <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Games / Visitor</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Reached 1st Choice</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+                        </div>
+                        <div className="text-2xl font-black text-indigo-400">{fullAnalytics.reachedFirstChoiceCount}</div>
+                        <div className="text-[10px] text-zinc-400 font-medium mt-1 truncate">
+                          {fullAnalytics.firstChoiceConversionRate}% of started attempts
+                        </div>
+                      </div>
+
+                      {/* Metric 4: Completed Attempts */}
+                      <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
+                        <div className="flex items-center justify-between text-zinc-400 mb-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Completed Attempts</span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        </div>
+                        <div className="text-2xl font-black text-emerald-400">{fullAnalytics.completedAttemptsCount}</div>
+                        <div className="text-[10px] text-emerald-400 font-semibold mt-1 truncate">
+                          {fullAnalytics.firstChoiceToCompletionRate}% from 1st choice
+                        </div>
+                      </div>
+
+                      {/* Metric 5: Completion Rate (Calculated from Attempts) */}
+                      <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
+                        <div className="flex items-center justify-between text-zinc-400 mb-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Completion Rate</span>
                           <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
                         </div>
-                        <div className="text-2xl font-black text-[#e5a93b]">{fullAnalytics.avgGamesPerVisitor}</div>
+                        <div className="text-2xl font-black text-[#e5a93b]">{fullAnalytics.attemptCompletionRate}%</div>
                         <div className="text-[10px] text-zinc-400 font-medium mt-1 truncate">
-                          Avg depth per player
+                          From story attempts
                         </div>
                       </div>
 
-                      {/* Metric 4: Returning Visitors & Replays */}
+                      {/* Metric 6: Active Play Time & Pacing */}
                       <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
                         <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Repeat Visitors</span>
-                          <Repeat className="w-3.5 h-3.5 text-purple-400" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Active Play Time</span>
+                          <Clock className="w-3.5 h-3.5 text-purple-400" />
                         </div>
-                        <div className="text-2xl font-black text-purple-400">{fullAnalytics.repeatVisitorRate}%</div>
-                        <div className="text-[10px] text-zinc-400 font-medium mt-1">
-                          {fullAnalytics.returningVisitorsCount} returning • {fullAnalytics.totalReplaysCount} replays
+                        <div className="text-2xl font-black text-purple-400">{fullAnalytics.avgActivePlayTimeFormatted}</div>
+                        <div className="text-[10px] text-zinc-400 font-medium mt-1 truncate">
+                          {fullAnalytics.pacingCounts.considered} considered • {fullAnalytics.pacingCounts.rapid} rapid
                         </div>
                       </div>
+                    </div>
 
-                      {/* Metric 5: Top Referral Source */}
-                      <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
-                        <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Top Source</span>
-                          <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+                    {/* Secondary Row: Depth, Referrals & Districts */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-zinc-400">Replays & Engagement Depth</div>
+                          <div className="text-base font-black text-white mt-0.5">
+                            {fullAnalytics.totalReplaysCount} replays · Avg {fullAnalytics.avgGamesPerVisitor} stories/player
+                          </div>
                         </div>
-                        <div className="text-base font-black text-emerald-400 truncate">
-                          {fullAnalytics.referralDistribution[0]?.name || 'Direct'}
-                        </div>
-                        <div className="text-[10px] text-zinc-400 font-medium mt-1">
-                          {fullAnalytics.inAppShareClicks} WhatsApp shares
-                        </div>
+                        <Repeat className="w-4 h-4 text-purple-400 shrink-0" />
                       </div>
 
-                      {/* Metric 6: Top Location */}
-                      <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col justify-between">
-                        <div className="flex items-center justify-between text-zinc-400 mb-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider">Top Location</span>
-                          <MapPin className="w-3.5 h-3.5 text-sky-400" />
+                      <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-zinc-400">Top Channel Source</div>
+                          <div className="text-base font-black text-emerald-400 mt-0.5 truncate max-w-[200px]">
+                            {fullAnalytics.referralDistribution[0]?.name || 'Direct / Unknown'}
+                          </div>
                         </div>
-                        <div className="text-base font-black text-sky-400 truncate">
-                          {fullAnalytics.topLocations[0]?.name || 'Kampala'}
+                        <Share2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between">
+                        <div>
+                          <div className="text-[10px] uppercase font-bold text-zinc-400">Top District Location</div>
+                          <div className="text-base font-black text-sky-400 mt-0.5 truncate max-w-[200px]">
+                            {fullAnalytics.topLocations[0]?.name || 'Kampala'}
+                          </div>
                         </div>
-                        <div className="text-[10px] text-zinc-400 font-medium mt-1">
-                          {fullAnalytics.topLocations[0]?.count || 0} plays ({fullAnalytics.topLocations[0]?.percentage || 0}%)
-                        </div>
+                        <MapPin className="w-4 h-4 text-sky-400 shrink-0" />
                       </div>
                     </div>
 
@@ -2426,6 +2569,114 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
         existingEpisodes={episodes}
         onSave={handleSaveStoryFromEditor}
       />
+
+      {/* Flagged Test Accounts Management Modal */}
+      {showFlaggedAccountsModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-lg w-full p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-amber-400" />
+                <h4 className="text-sm font-bold text-white uppercase tracking-wider">
+                  Manage Flagged Test Accounts
+                </h4>
+              </div>
+              <button
+                onClick={() => setShowFlaggedAccountsModal(false)}
+                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Flagged test accounts are preserved in audit logs but excluded from audience summaries so reported completions and conversion rates reflect authentic readership. Fast completion alone does not classify a player as testing.
+            </p>
+
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              <span className="text-[11px] font-bold uppercase text-zinc-400">Currently Flagged IDs:</span>
+              {Array.from(flaggedVisitorsSet).map((vid) => {
+                const isPermanent =
+                  vid === 'vid_muxwl849_dh37ltr' ||
+                  vid === 'vid_muvn5sny_rj0nalz' ||
+                  vid === 'server_visitor';
+                const sessionCount = gameSessions.filter((s) => s.visitorId === vid).length;
+                const completionCount = gameSessions.filter((s) => s.visitorId === vid && s.completed).length;
+
+                return (
+                  <div
+                    key={vid}
+                    className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="font-mono font-bold text-amber-300 flex items-center gap-1.5">
+                        <span>{vid}</span>
+                        {isPermanent && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            Confirmed Test Run (77 completions audit)
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[10px] text-zinc-400 mt-0.5">
+                        {sessionCount} recorded sessions · {completionCount} completions
+                      </div>
+                    </div>
+
+                    {!isPermanent && (
+                      <button
+                        onClick={() => {
+                          AnalyticsService.toggleFlagTestVisitor(String(vid));
+                          setFlaggedVisitorsSet(AnalyticsService.getFlaggedTestVisitors());
+                        }}
+                        className="px-2 py-1 rounded bg-zinc-800 hover:bg-red-950/60 text-zinc-300 hover:text-red-300 text-[10px] font-semibold border border-zinc-700 cursor-pointer"
+                      >
+                        Remove Flag
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-2 border-t border-zinc-800 space-y-2">
+              <span className="text-[11px] font-bold uppercase text-zinc-400">Flag Additional Visitor ID:</span>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newTestVisitorInput}
+                  onChange={(e) => setNewTestVisitorInput(e.target.value)}
+                  placeholder="e.g. vid_xxxxxxxx_xxxxxxx"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 text-white font-mono text-xs focus:outline-none focus:border-[#e5a93b]"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const trimmed = newTestVisitorInput.trim();
+                    if (trimmed) {
+                      AnalyticsService.toggleFlagTestVisitor(trimmed);
+                      setFlaggedVisitorsSet(AnalyticsService.getFlaggedTestVisitors());
+                      setNewTestVisitorInput('');
+                    }
+                  }}
+                  disabled={!newTestVisitorInput.trim()}
+                  className="px-3 py-1.5 rounded-lg bg-[#e5a93b] hover:bg-[#d8982a] disabled:opacity-40 text-black font-bold text-xs cursor-pointer"
+                >
+                  Flag ID
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setShowFlaggedAccountsModal(false)}
+                className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

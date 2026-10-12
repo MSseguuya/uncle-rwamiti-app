@@ -62,6 +62,22 @@ export const CATALOG_EPISODES: Episode[] = rawCatalog.map((story, idx) => {
 });
 
 // 2. Format the 12 original Kampala dilemmas with consistent category & sequential numbering
+export const KAMPALA_COVERS: Record<string, string> = {
+  'ep-001': 'cover-match-you-missed.webp', // 2% Battery
+  'ep-002': 'cover-red-ledger.webp',        // Everybody Took One
+  'ep-003': 'cover-extra-500000.webp',     // UGX 500,000
+  'ep-004': 'cover-what-we-havent-said.webp', // Delete That Photo
+  'ep-005': 'cover-voice-note.webp',       // She Says She's Late
+  'ep-006': 'cover-one-more-bet.webp',      // Just One Bet
+  'ep-007': 'cover-house-key.webp',         // Don't Tell Mum
+  'ep-008': 'cover-second-phone.webp',     // 10,000 Followers
+  'ep-009': 'cover-borrowed-name.webp',    // He Hit Him First
+  'ep-010': 'cover-guest-room.webp',       // The Answer Is Already on AI
+  'ep-011': 'cover-lake-photograph.webp',  // Kampala 2040
+  'ep-012': 'cover-school-fees.webp',      // Dad's Job Disappeared
+  'ep-013': 'cover-because-i-said-so.webp', // Because I Said So
+};
+
 export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) => ({
   ...ep,
   number: String(CATALOG_EPISODES.length + idx + 1).padStart(3, '0'),
@@ -69,6 +85,7 @@ export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) =>
   subtitle: `Kampala Dilemma • EP ${ep.number}`,
   badge: ep.badge || `EPISODE ${ep.number}`,
   badgeColor: ep.badgeColor || 'amber',
+  coverImage: KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
 }));
 
 // 3. Combined unified list of all 50 interactive games
@@ -109,7 +126,7 @@ export function convertEpisodeToStoryData(ep: Episode): StoryData {
   return {
     id: ep.id,
     title: ep.title,
-    image: (ep as any).coverImage || 'rwamiti.jpg',
+    image: (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
     category: ep.category || 'Kampala Dilemmas',
     nodes: nodes,
   };

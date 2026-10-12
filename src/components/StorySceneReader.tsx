@@ -53,6 +53,33 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
   const [seenEndings, setSeenEndings] = useState<string[]>([]);
   const [previousTrail, setPreviousTrail] = useState<Array<{ from: string; to: string; label: string }> | null>(null);
 
+  // Active playing time tracking (accumulates actively while tab is focused)
+  const activeStartRef = React.useRef<number>(Date.now());
+  const activeAccumulatorRef = React.useRef<number>(0);
+
+  const getActiveSeconds = () => {
+    const currentRun = Math.round((Date.now() - activeStartRef.current) / 1000);
+    return activeAccumulatorRef.current + Math.max(0, currentRun);
+  };
+
+  useEffect(() => {
+    activeStartRef.current = Date.now();
+    activeAccumulatorRef.current = 0;
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        activeStartRef.current = Date.now();
+      } else {
+        const elapsed = Math.round((Date.now() - activeStartRef.current) / 1000);
+        activeAccumulatorRef.current += Math.max(0, elapsed);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [storyMeta.slug]);
+
   // Load existing progress or initialize
   useEffect(() => {
     const saved = StoryDatabaseService.getProgress(storyMeta.slug);
@@ -65,7 +92,7 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
         setPreviousTrail(saved.previous.trail);
       }
     } else {
-      AnalyticsService.recordStoryStarted(storyMeta.slug);
+      AnalyticsService.recordStoryStarted(storyMeta.slug, storyMeta.title, false);
     }
   }, [storyMeta.slug, storyData]);
 
@@ -95,15 +122,17 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
 
     const choicesDone = trail.filter((m) => {
       const n = nodes[m.from];
-      return n && !n.is_ending && n.choices && n.choices.length > 0;
+      return n && !n.is_ending && n.choices && n.choices.length > 1;
     }).length;
+
+    const isCurrentDecision = currentNode.choices && currentNode.choices.length > 1;
 
     if (hasFixedTotal) {
       const totalMoves = initialMin;
-      const currentMove = Math.min(totalMoves, choicesDone + 1);
-      const percent = Math.min(95, Math.max(15, Math.round((currentMove / (totalMoves + 0.3)) * 100)));
+      const currentMove = Math.min(totalMoves, choicesDone + (isCurrentDecision ? 1 : 0));
+      const percent = Math.min(95, Math.max(15, Math.round(((choicesDone + 1) / (totalMoves + 0.3)) * 100)));
       return {
-        moveLabel: `Move ${currentMove} of ${totalMoves}`,
+        moveLabel: isCurrentDecision ? `Move ${currentMove} of ${totalMoves}` : 'Your next move',
         progressPercent: percent,
       };
     }
@@ -124,7 +153,16 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
 
   const handleChoice = (targetKey: string, choiceLabel: string) => {
     sound.playTap();
-    AnalyticsService.recordChoiceSelected(storyMeta.slug, currentNodeKey, choiceLabel);
+    const activeSec = getActiveSeconds();
+    AnalyticsService.recordChoiceSelected({
+      episodeId: storyMeta.slug,
+      episodeTitle: storyMeta.title,
+      nodeId: currentNodeKey,
+      choiceLabel,
+      choiceId: targetKey,
+      totalChoicesMade: trail.length + 1,
+      activeTimeSeconds: activeSec,
+    });
 
     const newTrail = [...trail, { from: currentNodeKey, to: targetKey, label: choiceLabel }];
     const newHistory = [...history, currentNodeKey];
@@ -153,7 +191,15 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
     StoryDatabaseService.saveProgress(updatedProgress);
 
     if (targetIsEnding) {
-      AnalyticsService.recordStoryCompleted(storyMeta.slug, targetKey);
+      AnalyticsService.recordStoryCompleted({
+        episodeId: storyMeta.slug,
+        episodeTitle: storyMeta.title,
+        endingNodeId: targetKey,
+        endingTitle: targetNode?.title || 'Story Complete',
+        finalChoiceLabel: choiceLabel,
+        choicesCount: trail.length + 1,
+        activeTimeSeconds: activeSec,
+      });
     }
 
     // Scroll to top of reading pane smoothly
@@ -162,7 +208,11 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
 
   const handleReplay = () => {
     sound.playTap();
+    activeStartRef.current = Date.now();
+    activeAccumulatorRef.current = 0;
     AnalyticsService.recordReplayClicked(storyMeta.slug);
+    // Deliberate replay starts a separate identifiable attempt
+    AnalyticsService.recordStoryStarted(storyMeta.slug, storyMeta.title, true);
 
     setPreviousTrail(trail);
     setTrail([]);
@@ -349,11 +399,11 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
                   STORY COMPLETE · THE END
                 </span>
 
-                {/* Move receipt */}
+                {/* Your Moves */}
                 {trail.length > 0 && (
                   <div className="move-receipt my-6">
                     <span className="block font-mono text-xs font-bold text-[var(--yellow,#f4c900)] tracking-wider mb-2">
-                      YOUR MOVES.
+                      YOUR MOVES
                     </span>
                     <ol className="list-decimal pl-5 space-y-2 text-sm text-[var(--text,#f5f3ed)]">
                       {trail.map((move, i) => (

@@ -16,7 +16,8 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
       const matchCat =
         selectedCategory === 'All' ||
         (selectedCategory === 'Teen' && story.category === 'Teen Stories') ||
-        (selectedCategory === 'Adult' && story.category !== 'Teen Stories');
+        (selectedCategory === 'Adult' && story.category === 'Adult Stories') ||
+        (selectedCategory === 'Kampala Dilemmas' && story.category === 'Kampala Dilemmas');
 
       const q = searchTerm.toLowerCase().trim();
       const matchSearch =
@@ -48,11 +49,11 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
       </div>
 
       <div className="category-tabs flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-        {['All', 'Teen', 'Adult'].map((cat) => (
+        {['All', 'Teen', 'Adult', 'Kampala Dilemmas'].map((cat) => (
           <button
             key={cat}
             type="button"
-            className={`px-4 py-2 text-xs font-mono font-bold uppercase rounded border transition-colors ${
+            className={`px-4 py-2 text-xs font-mono font-bold uppercase rounded border transition-colors whitespace-nowrap ${
               selectedCategory === cat
                 ? 'bg-[var(--yellow,#f4c900)] text-black border-[var(--yellow,#f4c900)]'
                 : 'bg-transparent text-[var(--text,#f5f3ed)] border-[var(--line,rgba(255,255,255,0.18))] hover:border-[var(--yellow,#f4c900)]'
@@ -62,7 +63,7 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
               setSelectedCategory(cat);
             }}
           >
-            {cat === 'All' ? 'All Stories' : `${cat} Stories`}
+            {cat === 'All' ? 'All Stories' : cat === 'Kampala Dilemmas' ? 'Kampala Dilemmas' : `${cat} Stories`}
           </button>
         ))}
         <span className="text-xs font-mono text-[var(--muted,#b8b8b5)] ml-auto">

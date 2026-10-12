@@ -43,6 +43,7 @@ export interface Episode {
   subtitle?: string; // "What would you do?"
   teaser: string;
   category?: string;
+  coverImage?: string;
   badge?: string; // "BATTERY: 2%"
   badgeColor?: 'amber' | 'red' | 'emerald' | 'zinc';
   isPremium: boolean;
@@ -132,9 +133,12 @@ export interface GameSessionRecord {
   visitorId: string;
   timestamp: number;
   dateStr: string;
+  dateUganda?: string;
+  dateIso?: string;
   episodeId: string;
   episodeNumber: string;
   episodeTitle: string;
+  storyIdentifier?: string;
   ageBracket: string;
   gender: string;
   location: string;
@@ -147,9 +151,18 @@ export interface GameSessionRecord {
   completed: boolean;
   completedAt?: string;
   isReplay: boolean;
+  finalStoryChoice?: string;
   pollOption?: string;
+  endingReachedTitle?: string;
   referralSource: string;
+  referralChannel?: string;
+  referralMedium?: string;
   countryOrTimezone: string;
+  activePlayTimeSeconds?: number;
+  playPacing?: 'Rapid (<15s)' | 'Quick (15–60s)' | 'Paced (>60s)';
+  isTest?: boolean;
+  testFlagReason?: string;
+  attemptId?: string;
 }
 
 export interface VisitorRecord {
