@@ -108,11 +108,29 @@ export function convertEpisodeToStoryData(ep: Episode): StoryData {
       choices.push({ label: n.buttonText || 'CONTINUE', to: n.nextNodeId });
     }
 
+    const paragraphs: string[] = [];
+    if (n.leadText) {
+      paragraphs.push(n.leadText);
+    }
+    if (n.bodyParagraphs && n.bodyParagraphs.length > 0) {
+      for (const p of n.bodyParagraphs) {
+        if (p !== n.leadText && !paragraphs.includes(p)) {
+          paragraphs.push(p);
+        }
+      }
+    }
+    if (n.highlightText && !paragraphs.includes(n.highlightText)) {
+      paragraphs.push(n.highlightText);
+    }
+    if (paragraphs.length === 0) {
+      paragraphs.push(n.headline);
+    }
+
     nodes[key] = {
       key: n.id,
       title: n.headline,
       summary: n.leadText || '',
-      paragraphs: n.bodyParagraphs && n.bodyParagraphs.length > 0 ? n.bodyParagraphs : [n.leadText || ''],
+      paragraphs: paragraphs,
       choices: choices,
       is_ending: n.type === 'climax' || choices.length === 0,
     };
@@ -126,7 +144,7 @@ export function convertEpisodeToStoryData(ep: Episode): StoryData {
   return {
     id: ep.id,
     title: ep.title,
-    image: (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
+    image: (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'cover-because-i-said-so.webp',
     category: ep.category || 'Kampala Dilemmas',
     nodes: nodes,
   };

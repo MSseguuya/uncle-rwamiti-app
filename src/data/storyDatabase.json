@@ -432,6 +432,17 @@
       "keywords": "MYSTERY / TRUST",
       "legacy_engine": false,
       "featured": false
+    },
+    {
+      "slug": "ep-013",
+      "title": "BECAUSE I SAID SO",
+      "description": "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything. You play Eva, sixteen, in Katete outside Mbarara.",
+      "cover": "cover-because-i-said-so.webp",
+      "duration_minutes": 5,
+      "reading_time": "4–6 min · interactive",
+      "category": "Kampala Dilemmas",
+      "keywords": "Kampala Dilemmas BECAUSE I SAID SO Eva workshop mother digital design ep-013",
+      "legacy_engine": false
     }
   ],
   "stories": {
@@ -8673,6 +8684,1104 @@
           "choices": []
         }
       }
+    },
+    "ep-013": {
+      "id": "ep-013",
+      "title": "BECAUSE I SAID SO",
+      "image": "cover-because-i-said-so.webp",
+      "category": "Kampala Dilemmas",
+      "nodes": {
+        "node-start": {
+          "key": "node-start",
+          "title": "AN UNCLE RWAMITI: YOUR MOVE STORY",
+          "summary": "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+          "paragraphs": [
+            "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+            "You play Eva, sixteen, in Katete outside Mbarara. Your choices lead to different consequences. Later, you can replay the disagreement as her mother.",
+            "No points. No correct answers. Only choices, consequences, and another move.",
+            "Eva, her family and the workshop in this story are fictional. • Free to play • Approx. five minutes"
+          ],
+          "choices": [
+            {
+              "label": "YOUR MOVE →",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-decision-1": {
+          "key": "node-decision-1",
+          "title": "EVA’S PERSPECTIVE",
+          "summary": "Eva, sixteen, lived in Katete, outside Mbarara. She had attended St Hellen’s Primary School and was now in Form Four at Maryhill.",
+          "paragraphs": [
+            "Eva, sixteen, lived in Katete, outside Mbarara. She had attended St Hellen’s Primary School and was now in Form Four at Maryhill.",
+            "On Saturday, a digital-design workshop was taking place in Mbarara. Eva wanted to learn how to turn her drawings into digital illustrations.",
+            "She had checked the organiser’s official page, read the programme and asked a teacher to confirm the invitation.",
+            "“Mum, may I go?” “No. Those things are scams.”",
+            "Eva placed her phone on the table. “Here is the organiser. Here is the programme. My teacher checked it.”",
+            "Her mother barely glanced at the screen. “I said no.”",
+            "“But you haven’t even—” “Because I said so.”",
+            "Eva picked up her phone. She had evidence that the workshop was genuine. She had not mentioned that her friend, who was supposed to travel with her, had cancelled. She would now be going alone.",
+            "What does Eva do?"
+          ],
+          "choices": [
+            {
+              "label": "A • GO SECRETLY",
+              "to": "node-went-secretly"
+            },
+            {
+              "label": "B • STAY HOME AND CLOSE THE CONVERSATION",
+              "to": "node-stayed-home"
+            },
+            {
+              "label": "C • ASK ABOUT THE CONCERN; TELL THE WHOLE PLAN",
+              "to": "node-opened-conversation"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-went-secretly": {
+          "key": "node-went-secretly",
+          "title": "THE VENUE CHANGES",
+          "summary": "Eva said she was visiting her friend.",
+          "paragraphs": [
+            "Eva said she was visiting her friend.",
+            "On the way to Mbarara, her phone vibrated. The organiser had changed the venue because the original room was unavailable. The new room was inside a hotel she did not know.",
+            "Her teacher replied to her message: “The workshop is genuine. I have not checked the new venue.”",
+            "Another message arrived.",
+            "Mum: “Your friend is here. Where are you?”",
+            "Eva had been right about the workshop. Now she needed help with something she had not checked.",
+            "What is Eva’s next move?"
+          ],
+          "choices": [
+            {
+              "label": "A1 • TELL MUM THE TRUTH AND ASK FOR HELP",
+              "to": "node-ending-a1"
+            },
+            {
+              "label": "A2 • STOP AND SEEK VERIFIED ADULT SUPPORT",
+              "to": "node-ending-a2"
+            },
+            {
+              "label": "A3 • CONTINUE AND ANSWER MUM LATER",
+              "to": "node-ending-a3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-stayed-home": {
+          "key": "node-stayed-home",
+          "title": "THE QUIET HOUSE",
+          "summary": "Eva stayed home. “I hope you’ve understood,” her mother said.",
+          "paragraphs": [
+            "Eva stayed home. “I hope you’ve understood,” her mother said.",
+            "Eva nodded. She had understood something. It was not what her mother thought.",
+            "The next morning, Eva saw photographs from the workshop. It had taken place successfully at a changed venue.",
+            "Her teacher asked why she had missed it. “Family arrangements,” Eva replied.",
+            "Then the organiser announced another session.",
+            "What does Eva do now?"
+          ],
+          "choices": [
+            {
+              "label": "B1 • EXPLAIN WHAT THE CONVERSATION DID TO HER",
+              "to": "node-ending-b1"
+            },
+            {
+              "label": "B2 • PREPARE A COMPLETE PLAN AND ASK AGAIN",
+              "to": "node-ending-b2"
+            },
+            {
+              "label": "B3 • KEEP QUIET AND PLAN WITHOUT MUM",
+              "to": "node-ending-b3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-opened-conversation": {
+          "key": "node-opened-conversation",
+          "title": "THE AGREED PLAN CHANGES",
+          "summary": "“What exactly worries you?” Eva asked.",
+          "paragraphs": [
+            "“What exactly worries you?” Eva asked.",
+            "Her mother folded her arms. “The journey. Who is responsible for you there? What if the plan changes?”",
+            "Eva looked down. “My friend has cancelled.”",
+            "“So you were going alone?” “Yes. I should have told you.”",
+            "Her mother finally read the invitation. “The workshop looks genuine,” she said. “I should have checked before calling it a scam.”",
+            "They arranged for an aunt to accompany Eva and agreed to verify any venue change before travelling.",
+            "On Saturday morning, the organiser announced a new venue. The aunt could no longer accompany her.",
+            "Their agreed plan has changed. What does Eva do?"
+          ],
+          "choices": [
+            {
+              "label": "C1 • CONTACT MUM AND RENEGOTIATE",
+              "to": "node-ending-c1"
+            },
+            {
+              "label": "C2 • GO ANYWAY: PERMISSION WAS ALREADY GIVEN",
+              "to": "node-ending-c2"
+            },
+            {
+              "label": "C3 • DECLINE AND FIND ANOTHER ROUTE",
+              "to": "node-ending-c3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a1": {
+          "key": "node-ending-a1",
+          "title": "THE CALL SHE DID NOT WANT TO MAKE",
+          "summary": "“Mum, I lied. I’m on my way to the workshop. They’ve changed the venue.”",
+          "paragraphs": [
+            "“Mum, I lied. I’m on my way to the workshop. They’ve changed the venue.”",
+            "Her mother’s first response was anger. Her second was a question. “Where exactly are you?”",
+            "Eva waited at a familiar shop while her mother arranged to meet her. They missed the opening session.",
+            "The argument was not over. But Eva no longer had to manage the uncertainty alone.",
+            "REFLECTION: Telling the truth reopened access to help. It did not erase the lie."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a2": {
+          "key": "node-ending-a2",
+          "title": "CHECKING TWICE",
+          "summary": "Eva stopped at a familiar place and contacted her teacher.",
+          "paragraphs": [
+            "Eva stopped at a familiar place and contacted her teacher.",
+            "The teacher helped verify the venue and contacted Eva’s mother about the changed arrangements.",
+            "Her mother wanted Eva home. Eva wanted to argue that she had been right.",
+            "Her teacher interrupted gently. “The workshop is real. That does not settle every part of the plan.”",
+            "Eva returned home. They still needed to discuss why she had lied—and why her evidence had been dismissed.",
+            "REFLECTION: Seeking reliable support helped with the immediate decision. The damaged trust still needed attention."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a3": {
+          "key": "node-ending-a3",
+          "title": "A REAL WORKSHOP, AN UNFINISHED ARGUMENT",
+          "summary": "The workshop took place. Eva learned something useful.",
+          "paragraphs": [
+            "The workshop took place. Eva learned something useful.",
+            "Her mother spent the afternoon trying to establish where she was.",
+            "When Eva returned, she held up her new digital illustration. “See? It wasn’t a scam.”",
+            "Her mother looked at the picture. “I’m glad you learned something. Why did I have to discover where you were from someone else?”",
+            "Eva’s evidence answered one question. It did not answer the other.",
+            "REFLECTION: A successful afternoon did not make every decision leading to it sound."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b1": {
+          "key": "node-ending-b1",
+          "title": "THE ANSWER BEHIND THE ANSWER",
+          "summary": "Eva told her mother how the conversation had felt.",
+          "paragraphs": [
+            "Eva told her mother how the conversation had felt.",
+            "Her mother admitted she had not examined the information. “I was worried about the journey,” she said.",
+            "“Then why did you say the workshop was a scam?”",
+            "Her mother paused. “That was unfair.”",
+            "Eva admitted her friend had cancelled. They had both left out something important.",
+            "They agreed to discuss the next invitation with the full information on the table.",
+            "REFLECTION: The useful conversation began when both explained what they had concealed."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b2": {
+          "key": "node-ending-b2",
+          "title": "A BETTER PLAN, THE SAME QUESTION",
+          "summary": "Eva prepared a clear plan. Her mother read it this time and asked questions about transport and supervision.",
+          "paragraphs": [
+            "Eva prepared a clear plan. Her mother read it this time and asked questions about transport and supervision.",
+            "They found an arrangement both could accept.",
+            "Before they finished, Eva asked: “What should I do next time you say no without looking?”",
+            "Her mother had no immediate answer.",
+            "The practical plan had improved. Their way of disagreeing still needed work.",
+            "REFLECTION: Good preparation can help. A relationship also needs room to question the decision process."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b3": {
+          "key": "node-ending-b3",
+          "title": "QUIET DOES NOT MEAN AGREEMENT",
+          "summary": "Eva stopped mentioning opportunities.",
+          "paragraphs": [
+            "Eva stopped mentioning opportunities.",
+            "Her mother noticed fewer arguments and assumed things were improving.",
+            "Eva asked friends for advice about the next session.",
+            "There was less noise at home. There was also less information passing between them.",
+            "REFLECTION: The disagreement disappeared from view. It had not been resolved."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c1": {
+          "key": "node-ending-c1",
+          "title": "PERMISSION TO THINK AGAIN",
+          "summary": "Eva contacted her mother. Together they checked the changed venue.",
+          "paragraphs": [
+            "Eva contacted her mother. Together they checked the changed venue.",
+            "They could not find suitable accompaniment in time. Eva missed this session.",
+            "But her mother helped her contact the organiser about the next one.",
+            "Eva was disappointed. She had also learned that telling her mother about a change did not automatically end the conversation.",
+            "REFLECTION: A shared decision can still be disappointing. Trust includes reconsidering when circumstances change."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c2": {
+          "key": "node-ending-c2",
+          "title": "THE PLAN THAT EXPIRED",
+          "summary": "Eva attended and returned with something she was proud of.",
+          "paragraphs": [
+            "Eva attended and returned with something she was proud of.",
+            "Then her mother discovered that the aunt had not gone.",
+            "“But you gave permission,” Eva said.",
+            "“For the arrangement we discussed.”",
+            "Eva had treated the earlier answer as permanent, even though important conditions had changed.",
+            "They now needed to decide what their agreements actually meant.",
+            "REFLECTION: Agreement about one plan does not automatically cover a different plan."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c3": {
+          "key": "node-ending-c3",
+          "title": "ANOTHER WAY FORWARD",
+          "summary": "Eva told her mother she would miss the session. Then she contacted the organiser.",
+          "paragraphs": [
+            "Eva told her mother she would miss the session. Then she contacted the organiser.",
+            "There was no online workshop, but there were introductory materials she could use and another session planned.",
+            "Her mother sat beside her as she tried the first exercise.",
+            "Neither had got everything they wanted that Saturday. They had kept the opportunity—and the conversation—alive.",
+            "REFLECTION: Changing the route did not require abandoning the goal."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-eva-story-completed": {
+          "key": "node-eva-story-completed",
+          "title": "TWO PEOPLE. MORE THAN ONE KIND OF KNOWLEDGE.",
+          "summary": "Eva could check the workshop online. Her mother could raise questions about the journey and responsibility.",
+          "paragraphs": [
+            "Eva could check the workshop online. Her mother could raise questions about the journey and responsibility.",
+            "Both could withhold information. Both could make assumptions.",
+            "What does Eva owe her mother—and what does her mother owe Eva?",
+            "Which needed the most attention? There is no correct answer. You may reflect privately or select a response on the next page."
+          ],
+          "choices": [
+            {
+              "label": "OPTIONAL REFLECTION POLL",
+              "to": "node-reflection-poll"
+            },
+            {
+              "label": "SEE MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "TRY ANOTHER MOVE",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-reflection-poll": {
+          "key": "node-reflection-poll",
+          "title": "WHICH NEEDED THE MOST ATTENTION?",
+          "summary": "Choose a response. This does not send or count votes; it is a private reflection prompt.",
+          "paragraphs": [
+            "Choose a response. This does not send or count votes; it is a private reflection prompt.",
+            "Listening to each other. Sharing the full information. Checking the changed arrangements. Or more than one of these?",
+            "There is no correct answer."
+          ],
+          "choices": [
+            {
+              "label": "LISTENING TO EACH OTHER",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "SHARING THE FULL INFORMATION",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "CHECKING THE CHANGED ARRANGEMENTS",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "MORE THAN ONE OF THESE",
+              "to": "node-reflection-counts"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-reflection-counts": {
+          "key": "node-reflection-counts",
+          "title": "YOUR REFLECTION COUNTS",
+          "summary": "Your choice is yours to consider; no answer has been scored, transmitted or stored.",
+          "paragraphs": [
+            "Your choice is yours to consider; no answer has been scored, transmitted or stored.",
+            "What might change if Eva and her mother asked what the other knew—and what neither had yet explained?"
+          ],
+          "choices": [
+            {
+              "label": "SEE MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "TRY ANOTHER MOVE",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-perspective": {
+          "key": "node-mother-perspective",
+          "title": "NOW YOU ARE EVA’S MOTHER.",
+          "summary": "This is a replay of the original disagreement, not a continuation of Eva’s ending.",
+          "paragraphs": [
+            "This is a replay of the original disagreement, not a continuation of Eva’s ending.",
+            "Your daughter shows you an invitation on her phone. You recently heard about someone losing money through a convincing online invitation.",
+            "You are also unsure how Eva will travel, who will supervise her and what happens if arrangements change.",
+            "You have not read the invitation. Eva says her teacher checked it.",
+            "When you hesitate, she says: “Mum, you haven’t even looked.”",
+            "You feel challenged.",
+            "What do you say?"
+          ],
+          "choices": [
+            {
+              "label": "M1 • NO. I DON’T HAVE TO EXPLAIN MYSELF.",
+              "to": "node-mother-ending-m1"
+            },
+            {
+              "label": "M2 • YOUR TEACHER CHECKED IT? THEN GO.",
+              "to": "node-mother-ending-m2"
+            },
+            {
+              "label": "M3 • LET’S CHECK IT. EXPLAIN THE WHOLE PLAN.",
+              "to": "node-mother-ending-m3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m1": {
+          "key": "node-mother-ending-m1",
+          "title": "AN ANSWER WITHOUT A CONVERSATION",
+          "summary": "Eva stops arguing.",
+          "paragraphs": [
+            "Eva stops arguing.",
+            "You still do not know that her friend has cancelled.",
+            "Your decision is clear. Your understanding of the situation is incomplete.",
+            "REFLECTION: How will you know whether silence means agreement, disappointment or concealment?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m2": {
+          "key": "node-mother-ending-m2",
+          "title": "ONE QUESTION ANSWERED",
+          "summary": "You accept the teacher’s confirmation and say yes.",
+          "paragraphs": [
+            "You accept the teacher’s confirmation and say yes.",
+            "Later, you discover that Eva intended to travel alone.",
+            "You checked whether the workshop was genuine. You did not discuss the rest of the arrangement.",
+            "REFLECTION: What else needed checking before either of you could make an informed decision?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m3": {
+          "key": "node-mother-ending-m3",
+          "title": "GUIDANCE THAT MAKES ROOM",
+          "summary": "You read the invitation. “The workshop appears genuine. I was too quick to dismiss it.”",
+          "paragraphs": [
+            "You read the invitation. “The workshop appears genuine. I was too quick to dismiss it.”",
+            "Then you ask about transport. Eva tells you her friend has cancelled.",
+            "You explain your concerns and examine alternatives together.",
+            "You have not promised to say yes. You have made it possible to discuss the decision.",
+            "REFLECTION: Could explaining your reasoning make your guidance more useful?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-wrapup": {
+          "key": "node-wrapup",
+          "title": "ANOTHER FAMILY. ANOTHER UNCOMFORTABLE CHOICE.",
+          "summary": "YOUR MOVE CONTINUES",
+          "paragraphs": [
+            "YOUR MOVE CONTINUES",
+            "Explore more free Uncle Rwamiti: Your Move stories.",
+            "Get more from Petero’s Paths",
+            "Uncle Rwamiti — the uncle your parents should probably never have introduced you to."
+          ],
+          "choices": [
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": true
+        },
+        "opening": {
+          "key": "opening",
+          "title": "AN UNCLE RWAMITI: YOUR MOVE STORY",
+          "summary": "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+          "paragraphs": [
+            "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+            "You play Eva, sixteen, in Katete outside Mbarara. Your choices lead to different consequences. Later, you can replay the disagreement as her mother.",
+            "No points. No correct answers. Only choices, consequences, and another move.",
+            "Eva, her family and the workshop in this story are fictional. • Free to play • Approx. five minutes"
+          ],
+          "choices": [
+            {
+              "label": "YOUR MOVE →",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": false
+        }
+      }
+    },
+    "because-i-said-so": {
+      "id": "because-i-said-so",
+      "title": "BECAUSE I SAID SO",
+      "image": "cover-because-i-said-so.webp",
+      "category": "Kampala Dilemmas",
+      "nodes": {
+        "node-start": {
+          "key": "node-start",
+          "title": "AN UNCLE RWAMITI: YOUR MOVE STORY",
+          "summary": "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+          "paragraphs": [
+            "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+            "You play Eva, sixteen, in Katete outside Mbarara. Your choices lead to different consequences. Later, you can replay the disagreement as her mother.",
+            "No points. No correct answers. Only choices, consequences, and another move.",
+            "Eva, her family and the workshop in this story are fictional. • Free to play • Approx. five minutes"
+          ],
+          "choices": [
+            {
+              "label": "YOUR MOVE →",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-decision-1": {
+          "key": "node-decision-1",
+          "title": "EVA’S PERSPECTIVE",
+          "summary": "Eva, sixteen, lived in Katete, outside Mbarara. She had attended St Hellen’s Primary School and was now in Form Four at Maryhill.",
+          "paragraphs": [
+            "Eva, sixteen, lived in Katete, outside Mbarara. She had attended St Hellen’s Primary School and was now in Form Four at Maryhill.",
+            "On Saturday, a digital-design workshop was taking place in Mbarara. Eva wanted to learn how to turn her drawings into digital illustrations.",
+            "She had checked the organiser’s official page, read the programme and asked a teacher to confirm the invitation.",
+            "“Mum, may I go?” “No. Those things are scams.”",
+            "Eva placed her phone on the table. “Here is the organiser. Here is the programme. My teacher checked it.”",
+            "Her mother barely glanced at the screen. “I said no.”",
+            "“But you haven’t even—” “Because I said so.”",
+            "Eva picked up her phone. She had evidence that the workshop was genuine. She had not mentioned that her friend, who was supposed to travel with her, had cancelled. She would now be going alone.",
+            "What does Eva do?"
+          ],
+          "choices": [
+            {
+              "label": "A • GO SECRETLY",
+              "to": "node-went-secretly"
+            },
+            {
+              "label": "B • STAY HOME AND CLOSE THE CONVERSATION",
+              "to": "node-stayed-home"
+            },
+            {
+              "label": "C • ASK ABOUT THE CONCERN; TELL THE WHOLE PLAN",
+              "to": "node-opened-conversation"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-went-secretly": {
+          "key": "node-went-secretly",
+          "title": "THE VENUE CHANGES",
+          "summary": "Eva said she was visiting her friend.",
+          "paragraphs": [
+            "Eva said she was visiting her friend.",
+            "On the way to Mbarara, her phone vibrated. The organiser had changed the venue because the original room was unavailable. The new room was inside a hotel she did not know.",
+            "Her teacher replied to her message: “The workshop is genuine. I have not checked the new venue.”",
+            "Another message arrived.",
+            "Mum: “Your friend is here. Where are you?”",
+            "Eva had been right about the workshop. Now she needed help with something she had not checked.",
+            "What is Eva’s next move?"
+          ],
+          "choices": [
+            {
+              "label": "A1 • TELL MUM THE TRUTH AND ASK FOR HELP",
+              "to": "node-ending-a1"
+            },
+            {
+              "label": "A2 • STOP AND SEEK VERIFIED ADULT SUPPORT",
+              "to": "node-ending-a2"
+            },
+            {
+              "label": "A3 • CONTINUE AND ANSWER MUM LATER",
+              "to": "node-ending-a3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-stayed-home": {
+          "key": "node-stayed-home",
+          "title": "THE QUIET HOUSE",
+          "summary": "Eva stayed home. “I hope you’ve understood,” her mother said.",
+          "paragraphs": [
+            "Eva stayed home. “I hope you’ve understood,” her mother said.",
+            "Eva nodded. She had understood something. It was not what her mother thought.",
+            "The next morning, Eva saw photographs from the workshop. It had taken place successfully at a changed venue.",
+            "Her teacher asked why she had missed it. “Family arrangements,” Eva replied.",
+            "Then the organiser announced another session.",
+            "What does Eva do now?"
+          ],
+          "choices": [
+            {
+              "label": "B1 • EXPLAIN WHAT THE CONVERSATION DID TO HER",
+              "to": "node-ending-b1"
+            },
+            {
+              "label": "B2 • PREPARE A COMPLETE PLAN AND ASK AGAIN",
+              "to": "node-ending-b2"
+            },
+            {
+              "label": "B3 • KEEP QUIET AND PLAN WITHOUT MUM",
+              "to": "node-ending-b3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-opened-conversation": {
+          "key": "node-opened-conversation",
+          "title": "THE AGREED PLAN CHANGES",
+          "summary": "“What exactly worries you?” Eva asked.",
+          "paragraphs": [
+            "“What exactly worries you?” Eva asked.",
+            "Her mother folded her arms. “The journey. Who is responsible for you there? What if the plan changes?”",
+            "Eva looked down. “My friend has cancelled.”",
+            "“So you were going alone?” “Yes. I should have told you.”",
+            "Her mother finally read the invitation. “The workshop looks genuine,” she said. “I should have checked before calling it a scam.”",
+            "They arranged for an aunt to accompany Eva and agreed to verify any venue change before travelling.",
+            "On Saturday morning, the organiser announced a new venue. The aunt could no longer accompany her.",
+            "Their agreed plan has changed. What does Eva do?"
+          ],
+          "choices": [
+            {
+              "label": "C1 • CONTACT MUM AND RENEGOTIATE",
+              "to": "node-ending-c1"
+            },
+            {
+              "label": "C2 • GO ANYWAY: PERMISSION WAS ALREADY GIVEN",
+              "to": "node-ending-c2"
+            },
+            {
+              "label": "C3 • DECLINE AND FIND ANOTHER ROUTE",
+              "to": "node-ending-c3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a1": {
+          "key": "node-ending-a1",
+          "title": "THE CALL SHE DID NOT WANT TO MAKE",
+          "summary": "“Mum, I lied. I’m on my way to the workshop. They’ve changed the venue.”",
+          "paragraphs": [
+            "“Mum, I lied. I’m on my way to the workshop. They’ve changed the venue.”",
+            "Her mother’s first response was anger. Her second was a question. “Where exactly are you?”",
+            "Eva waited at a familiar shop while her mother arranged to meet her. They missed the opening session.",
+            "The argument was not over. But Eva no longer had to manage the uncertainty alone.",
+            "REFLECTION: Telling the truth reopened access to help. It did not erase the lie."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a2": {
+          "key": "node-ending-a2",
+          "title": "CHECKING TWICE",
+          "summary": "Eva stopped at a familiar place and contacted her teacher.",
+          "paragraphs": [
+            "Eva stopped at a familiar place and contacted her teacher.",
+            "The teacher helped verify the venue and contacted Eva’s mother about the changed arrangements.",
+            "Her mother wanted Eva home. Eva wanted to argue that she had been right.",
+            "Her teacher interrupted gently. “The workshop is real. That does not settle every part of the plan.”",
+            "Eva returned home. They still needed to discuss why she had lied—and why her evidence had been dismissed.",
+            "REFLECTION: Seeking reliable support helped with the immediate decision. The damaged trust still needed attention."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-a3": {
+          "key": "node-ending-a3",
+          "title": "A REAL WORKSHOP, AN UNFINISHED ARGUMENT",
+          "summary": "The workshop took place. Eva learned something useful.",
+          "paragraphs": [
+            "The workshop took place. Eva learned something useful.",
+            "Her mother spent the afternoon trying to establish where she was.",
+            "When Eva returned, she held up her new digital illustration. “See? It wasn’t a scam.”",
+            "Her mother looked at the picture. “I’m glad you learned something. Why did I have to discover where you were from someone else?”",
+            "Eva’s evidence answered one question. It did not answer the other.",
+            "REFLECTION: A successful afternoon did not make every decision leading to it sound."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b1": {
+          "key": "node-ending-b1",
+          "title": "THE ANSWER BEHIND THE ANSWER",
+          "summary": "Eva told her mother how the conversation had felt.",
+          "paragraphs": [
+            "Eva told her mother how the conversation had felt.",
+            "Her mother admitted she had not examined the information. “I was worried about the journey,” she said.",
+            "“Then why did you say the workshop was a scam?”",
+            "Her mother paused. “That was unfair.”",
+            "Eva admitted her friend had cancelled. They had both left out something important.",
+            "They agreed to discuss the next invitation with the full information on the table.",
+            "REFLECTION: The useful conversation began when both explained what they had concealed."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b2": {
+          "key": "node-ending-b2",
+          "title": "A BETTER PLAN, THE SAME QUESTION",
+          "summary": "Eva prepared a clear plan. Her mother read it this time and asked questions about transport and supervision.",
+          "paragraphs": [
+            "Eva prepared a clear plan. Her mother read it this time and asked questions about transport and supervision.",
+            "They found an arrangement both could accept.",
+            "Before they finished, Eva asked: “What should I do next time you say no without looking?”",
+            "Her mother had no immediate answer.",
+            "The practical plan had improved. Their way of disagreeing still needed work.",
+            "REFLECTION: Good preparation can help. A relationship also needs room to question the decision process."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-b3": {
+          "key": "node-ending-b3",
+          "title": "QUIET DOES NOT MEAN AGREEMENT",
+          "summary": "Eva stopped mentioning opportunities.",
+          "paragraphs": [
+            "Eva stopped mentioning opportunities.",
+            "Her mother noticed fewer arguments and assumed things were improving.",
+            "Eva asked friends for advice about the next session.",
+            "There was less noise at home. There was also less information passing between them.",
+            "REFLECTION: The disagreement disappeared from view. It had not been resolved."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c1": {
+          "key": "node-ending-c1",
+          "title": "PERMISSION TO THINK AGAIN",
+          "summary": "Eva contacted her mother. Together they checked the changed venue.",
+          "paragraphs": [
+            "Eva contacted her mother. Together they checked the changed venue.",
+            "They could not find suitable accompaniment in time. Eva missed this session.",
+            "But her mother helped her contact the organiser about the next one.",
+            "Eva was disappointed. She had also learned that telling her mother about a change did not automatically end the conversation.",
+            "REFLECTION: A shared decision can still be disappointing. Trust includes reconsidering when circumstances change."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c2": {
+          "key": "node-ending-c2",
+          "title": "THE PLAN THAT EXPIRED",
+          "summary": "Eva attended and returned with something she was proud of.",
+          "paragraphs": [
+            "Eva attended and returned with something she was proud of.",
+            "Then her mother discovered that the aunt had not gone.",
+            "“But you gave permission,” Eva said.",
+            "“For the arrangement we discussed.”",
+            "Eva had treated the earlier answer as permanent, even though important conditions had changed.",
+            "They now needed to decide what their agreements actually meant.",
+            "REFLECTION: Agreement about one plan does not automatically cover a different plan."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-ending-c3": {
+          "key": "node-ending-c3",
+          "title": "ANOTHER WAY FORWARD",
+          "summary": "Eva told her mother she would miss the session. Then she contacted the organiser.",
+          "paragraphs": [
+            "Eva told her mother she would miss the session. Then she contacted the organiser.",
+            "There was no online workshop, but there were introductory materials she could use and another session planned.",
+            "Her mother sat beside her as she tried the first exercise.",
+            "Neither had got everything they wanted that Saturday. They had kept the opportunity—and the conversation—alive.",
+            "REFLECTION: Changing the route did not require abandoning the goal."
+          ],
+          "choices": [
+            {
+              "label": "CONTINUE TO REFLECTION →",
+              "to": "node-eva-story-completed"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-eva-story-completed": {
+          "key": "node-eva-story-completed",
+          "title": "TWO PEOPLE. MORE THAN ONE KIND OF KNOWLEDGE.",
+          "summary": "Eva could check the workshop online. Her mother could raise questions about the journey and responsibility.",
+          "paragraphs": [
+            "Eva could check the workshop online. Her mother could raise questions about the journey and responsibility.",
+            "Both could withhold information. Both could make assumptions.",
+            "What does Eva owe her mother—and what does her mother owe Eva?",
+            "Which needed the most attention? There is no correct answer. You may reflect privately or select a response on the next page."
+          ],
+          "choices": [
+            {
+              "label": "OPTIONAL REFLECTION POLL",
+              "to": "node-reflection-poll"
+            },
+            {
+              "label": "SEE MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "TRY ANOTHER MOVE",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-reflection-poll": {
+          "key": "node-reflection-poll",
+          "title": "WHICH NEEDED THE MOST ATTENTION?",
+          "summary": "Choose a response. This does not send or count votes; it is a private reflection prompt.",
+          "paragraphs": [
+            "Choose a response. This does not send or count votes; it is a private reflection prompt.",
+            "Listening to each other. Sharing the full information. Checking the changed arrangements. Or more than one of these?",
+            "There is no correct answer."
+          ],
+          "choices": [
+            {
+              "label": "LISTENING TO EACH OTHER",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "SHARING THE FULL INFORMATION",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "CHECKING THE CHANGED ARRANGEMENTS",
+              "to": "node-reflection-counts"
+            },
+            {
+              "label": "MORE THAN ONE OF THESE",
+              "to": "node-reflection-counts"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-reflection-counts": {
+          "key": "node-reflection-counts",
+          "title": "YOUR REFLECTION COUNTS",
+          "summary": "Your choice is yours to consider; no answer has been scored, transmitted or stored.",
+          "paragraphs": [
+            "Your choice is yours to consider; no answer has been scored, transmitted or stored.",
+            "What might change if Eva and her mother asked what the other knew—and what neither had yet explained?"
+          ],
+          "choices": [
+            {
+              "label": "SEE MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "TRY ANOTHER MOVE",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-perspective": {
+          "key": "node-mother-perspective",
+          "title": "NOW YOU ARE EVA’S MOTHER.",
+          "summary": "This is a replay of the original disagreement, not a continuation of Eva’s ending.",
+          "paragraphs": [
+            "This is a replay of the original disagreement, not a continuation of Eva’s ending.",
+            "Your daughter shows you an invitation on her phone. You recently heard about someone losing money through a convincing online invitation.",
+            "You are also unsure how Eva will travel, who will supervise her and what happens if arrangements change.",
+            "You have not read the invitation. Eva says her teacher checked it.",
+            "When you hesitate, she says: “Mum, you haven’t even looked.”",
+            "You feel challenged.",
+            "What do you say?"
+          ],
+          "choices": [
+            {
+              "label": "M1 • NO. I DON’T HAVE TO EXPLAIN MYSELF.",
+              "to": "node-mother-ending-m1"
+            },
+            {
+              "label": "M2 • YOUR TEACHER CHECKED IT? THEN GO.",
+              "to": "node-mother-ending-m2"
+            },
+            {
+              "label": "M3 • LET’S CHECK IT. EXPLAIN THE WHOLE PLAN.",
+              "to": "node-mother-ending-m3"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m1": {
+          "key": "node-mother-ending-m1",
+          "title": "AN ANSWER WITHOUT A CONVERSATION",
+          "summary": "Eva stops arguing.",
+          "paragraphs": [
+            "Eva stops arguing.",
+            "You still do not know that her friend has cancelled.",
+            "Your decision is clear. Your understanding of the situation is incomplete.",
+            "REFLECTION: How will you know whether silence means agreement, disappointment or concealment?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m2": {
+          "key": "node-mother-ending-m2",
+          "title": "ONE QUESTION ANSWERED",
+          "summary": "You accept the teacher’s confirmation and say yes.",
+          "paragraphs": [
+            "You accept the teacher’s confirmation and say yes.",
+            "Later, you discover that Eva intended to travel alone.",
+            "You checked whether the workshop was genuine. You did not discuss the rest of the arrangement.",
+            "REFLECTION: What else needed checking before either of you could make an informed decision?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-mother-ending-m3": {
+          "key": "node-mother-ending-m3",
+          "title": "GUIDANCE THAT MAKES ROOM",
+          "summary": "You read the invitation. “The workshop appears genuine. I was too quick to dismiss it.”",
+          "paragraphs": [
+            "You read the invitation. “The workshop appears genuine. I was too quick to dismiss it.”",
+            "Then you ask about transport. Eva tells you her friend has cancelled.",
+            "You explain your concerns and examine alternatives together.",
+            "You have not promised to say yes. You have made it possible to discuss the decision.",
+            "REFLECTION: Could explaining your reasoning make your guidance more useful?"
+          ],
+          "choices": [
+            {
+              "label": "REPLAY MUM’S SIDE",
+              "to": "node-mother-perspective"
+            },
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            },
+            {
+              "label": "EXPLORE MORE STORIES",
+              "to": "node-wrapup"
+            }
+          ],
+          "is_ending": false
+        },
+        "node-wrapup": {
+          "key": "node-wrapup",
+          "title": "ANOTHER FAMILY. ANOTHER UNCOMFORTABLE CHOICE.",
+          "summary": "YOUR MOVE CONTINUES",
+          "paragraphs": [
+            "YOUR MOVE CONTINUES",
+            "Explore more free Uncle Rwamiti: Your Move stories.",
+            "Get more from Petero’s Paths",
+            "Uncle Rwamiti — the uncle your parents should probably never have introduced you to."
+          ],
+          "choices": [
+            {
+              "label": "REPLAY EVA’S STORY",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": true
+        },
+        "opening": {
+          "key": "opening",
+          "title": "AN UNCLE RWAMITI: YOUR MOVE STORY",
+          "summary": "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+          "paragraphs": [
+            "Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.",
+            "You play Eva, sixteen, in Katete outside Mbarara. Your choices lead to different consequences. Later, you can replay the disagreement as her mother.",
+            "No points. No correct answers. Only choices, consequences, and another move.",
+            "Eva, her family and the workshop in this story are fictional. • Free to play • Approx. five minutes"
+          ],
+          "choices": [
+            {
+              "label": "YOUR MOVE →",
+              "to": "node-decision-1"
+            }
+          ],
+          "is_ending": false
+        }
+      }
     }
   },
   "uncleWisdom": {
@@ -8713,6 +9822,8 @@
     "lend-me-your-sweater": "We borrowed a sweater. Somehow the whole hall thinks it lent us one.",
     "your-passport-today": "The envelope is yours. So is the hand they are asking to sign.",
     "the-road-has-disappeared": "The road has vanished. The attendance book, unfortunately, has not.",
-    "i-said-im-fine": "We found someone for the microphone. Finding someone to sit beside you took a different conversation."
+    "i-said-im-fine": "We found someone for the microphone. Finding someone to sit beside you took a different conversation.",
+    "ep-013": "A parent's 'no' often guards against dangers they lived through, but a child's dream must eventually find its own footing with courage and honesty.",
+    "because-i-said-so": "A parent's 'no' often guards against dangers they lived through, but a child's dream must eventually find its own footing with courage and honesty."
   }
 }
