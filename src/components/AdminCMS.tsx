@@ -6,6 +6,7 @@ import { AnalyticsService } from '../services/analytics';
 import { AdminAuthService, ADMIN_RECOVERY_EMAIL } from '../services/adminAuth';
 import { sound } from '../services/audio';
 import { StoryEditorModal } from './StoryEditorModal';
+import { getStoredComics } from '../data/comicsData';
 import {
   X,
   Plus,
@@ -1442,6 +1443,13 @@ export const AdminCMS: React.FC<AdminCMSProps> = ({
                                      EP {ep.number}: {ep.title}
                                    </option>
                                 ))}
+                            </optgroup>
+                            <optgroup label="Comics & Graphic Stories">
+                              {getStoredComics().map((c) => (
+                                <option key={c.slug} value={c.slug}>
+                                  COMIC #{c.issueNumber}: {c.title}
+                                </option>
+                              ))}
                             </optgroup>
                           </select>
                         </div>

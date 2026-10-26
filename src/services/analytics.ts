@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import storyDb from '../data/storyDatabase.json';
 import { ALL_INCORPORATED_EPISODES } from '../data/allGamesDatabase';
+import { getStoredComics } from '../data/comicsData';
 
 const ANALYTICS_KEY = 'rwamiti_real_events_v4';
 const DEMOGRAPHICS_KEY = 'rwamiti_real_demographics_v4';
@@ -125,7 +126,28 @@ export function getCanonicalStoryInfo(
     };
   }
 
-  // 3. Fallback with cleaned readable title and number
+  // 3. Match from Comics collection
+  const comicList = getStoredComics();
+  const comicMatch = comicList.find(
+    (c) =>
+      c.slug.toLowerCase() === clean ||
+      c.id.toLowerCase() === clean ||
+      c.title.toLowerCase() === clean ||
+      c.issueNumber === fallbackNumber
+  );
+  if (comicMatch) {
+    const num = comicMatch.issueNumber.padStart(3, '0');
+    return {
+      canonicalId: comicMatch.slug,
+      episodeNumber: num,
+      episodeTitle: comicMatch.title,
+      storyIdentifier: `COMIC #${num} · ${comicMatch.title}`,
+      category: 'Comics',
+    };
+  }
+
+  // 4. Fallback with cleaned readable title and number
+  const isComicLike = clean.startsWith('comic-') || clean.includes('comic');
   const title =
     fallbackTitle && fallbackTitle !== '01'
       ? fallbackTitle
@@ -141,8 +163,8 @@ export function getCanonicalStoryInfo(
     canonicalId: clean || 'unknown',
     episodeNumber: num,
     episodeTitle: title,
-    storyIdentifier: `EP ${num} · ${title}`,
-    category: 'Stories',
+    storyIdentifier: `${isComicLike ? 'COMIC' : 'EP'} ${num} · ${title}`,
+    category: isComicLike ? 'Comics' : 'Stories',
   };
 }
 
@@ -1294,6 +1316,70 @@ export class AnalyticsService {
   static recordReplayClicked(episodeId: string): void {
     const canonical = getCanonicalStoryInfo(episodeId);
     this.track('replay_clicked', { episodeId: canonical.canonicalId });
+  }
+
+  // -------------------------------------------------------------
+  // 7B. COMIC BOOKS BEHAVIORAL ANALYTICS
+  // -------------------------------------------------------------
+
+  static recordComicStarted(comicId: string, comicTitle?: string): void {
+    const canonical = getCanonicalStoryInfo(comicId, undefined, comicTitle);
+    this.startRealGameSession({
+      episodeId: canonical.canonicalId,
+      episodeNumber: canonical.episodeNumber,
+      episodeTitle: canonical.episodeTitle,
+      isReplay: false,
+    }).catch(() => {});
+    this.track('story_started', { episodeId: canonical.canonicalId, metadata: { category: 'Comics' } });
+  }
+
+  static recordComicPanelRead(data: {
+    comicId: string;
+    panelNumber: number;
+    totalPanels: number;
+    activeTimeSeconds?: number;
+    choiceLabel?: string;
+    comicTitle?: string;
+  }): void {
+    const canonical = getCanonicalStoryInfo(data.comicId, undefined, data.comicTitle);
+    this.updateRealGameSessionChoice({
+      choiceId: `panel-${data.panelNumber}`,
+      choiceLabel: data.choiceLabel || `Read Panel ${data.panelNumber}`,
+      nodeId: `panel-${data.panelNumber}`,
+      nodeTitle: `Panel ${data.panelNumber} of ${data.totalPanels}`,
+      totalChoicesMade: data.panelNumber,
+      activeTimeSeconds: data.activeTimeSeconds,
+    }).catch(() => {});
+
+    this.track('choice_selected', {
+      episodeId: canonical.canonicalId,
+      nodeId: `panel-${data.panelNumber}`,
+      choiceLabel: data.choiceLabel || `Panel ${data.panelNumber}`,
+    });
+  }
+
+  static recordComicCompleted(data: {
+    comicId: string;
+    comicTitle?: string;
+    choicesCount?: number;
+    activeTimeSeconds?: number;
+    finalChoiceLabel?: string;
+    pollOption?: string;
+    endingTitle?: string;
+  }): void {
+    const canonical = getCanonicalStoryInfo(data.comicId, undefined, data.comicTitle);
+    this.completeRealGameSession({
+      episodeId: canonical.canonicalId,
+      episodeNumber: canonical.episodeNumber,
+      episodeTitle: canonical.episodeTitle,
+      choicesCount: data.choicesCount || 1,
+      finalChoiceLabel: data.finalChoiceLabel,
+      pollOption: data.pollOption,
+      endingTitle: data.endingTitle || 'Comic Complete',
+      activeTimeSeconds: data.activeTimeSeconds,
+    }).catch(() => {});
+
+    this.track('story_completed', { episodeId: canonical.canonicalId, metadata: { category: 'Comics' } });
   }
 
   // -------------------------------------------------------------

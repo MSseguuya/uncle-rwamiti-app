@@ -50,5 +50,10 @@ service cloud.firestore {
       allow create: if true;
       allow read: if true;
     }
+
+    // Comics & Graphic stories: publicly readable, writable for creators/admins
+    match /comics/{comicId} {
+      allow read, write: if true;
+    }
   }
 }

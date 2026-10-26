@@ -5,6 +5,11 @@ import {
   KAMPALA_COVERS,
   convertEpisodeToStoryData,
 } from '../data/allGamesDatabase';
+import {
+  getStoredComics,
+  convertComicToCatalogStory,
+  convertComicToStoryData,
+} from '../data/comicsData';
 
 export interface CatalogStory {
   slug: string;
@@ -79,9 +84,19 @@ export class StoryDatabaseService {
       legacy_engine: false,
     }));
 
+    const comicStories: CatalogStory[] = getStoredComics().map((c) =>
+      convertComicToCatalogStory(c)
+    );
+
     // Replace any duplicates in base if they share the same slug or title
-    const kampalaTitleMap = new Set(kampalaStories.map((k) => k.title.toLowerCase().trim()));
-    const kampalaSlugMap = new Set(kampalaStories.map((k) => k.slug.toLowerCase().trim()));
+    const kampalaTitleMap = new Set([
+      ...kampalaStories.map((k) => k.title.toLowerCase().trim()),
+      ...comicStories.map((c) => c.title.toLowerCase().trim()),
+    ]);
+    const kampalaSlugMap = new Set([
+      ...kampalaStories.map((k) => k.slug.toLowerCase().trim()),
+      ...comicStories.map((c) => c.slug.toLowerCase().trim()),
+    ]);
 
     const filteredBase = base.filter(
       (s) =>
@@ -89,7 +104,7 @@ export class StoryDatabaseService {
         !kampalaTitleMap.has(s.title.toLowerCase().trim())
     );
 
-    return [...filteredBase, ...kampalaStories];
+    return [...filteredBase, ...kampalaStories, ...comicStories];
   }
 
   private static catalog: CatalogStory[] = StoryDatabaseService.buildCatalog();
@@ -100,12 +115,25 @@ export class StoryDatabaseService {
     return this.catalog;
   }
 
+  static refreshCatalog(): CatalogStory[] {
+    this.catalog = StoryDatabaseService.buildCatalog();
+    return this.catalog;
+  }
+
   static getFeaturedStory(): CatalogStory {
     return (
       this.catalog.find((s) => s.slug === 'the-match-you-missed') ||
       this.catalog.find((s) => s.featured) ||
       this.catalog[0]
     );
+  }
+
+  static getComics(): CatalogStory[] {
+    return this.catalog.filter((s) => s.category === 'Comics');
+  }
+
+  static getAnimatedStories(): CatalogStory[] {
+    return this.catalog.filter((s) => s.category === 'Animated Stories');
   }
 
   static getTeenStories(): CatalogStory[] {
@@ -125,6 +153,10 @@ export class StoryDatabaseService {
     const foundEp = ALL_INCORPORATED_EPISODES.find((e) => e.id === slug || e.id.toLowerCase() === slug.toLowerCase());
     if (foundEp) {
       return convertEpisodeToStoryData(foundEp);
+    }
+    const foundComic = getStoredComics().find((c) => c.slug === slug || c.id === slug);
+    if (foundComic) {
+      return convertComicToStoryData(foundComic);
     }
     return null;
   }
@@ -146,10 +178,17 @@ export class StoryDatabaseService {
         legacy_engine: false,
       };
     }
+    const foundComic = getStoredComics().find((c) => c.slug === slug || c.id === slug);
+    if (foundComic) {
+      return convertComicToCatalogStory(foundComic);
+    }
     return null;
   }
 
   static getUncleWisdom(slug: string): string {
+    if (slug === 'ep-014' || slug === 'send-me-something-small') {
+      return 'My friend, twenty thousand shillings entered this house as transport money and left as a family meeting. Which was harder: finding the money, or telling someone the whole situation?';
+    }
     return (
       this.wisdom[slug] ||
       'A choice made in haste often reveals what we value in quiet. The question is never only what you chose, but what you were willing to leave behind.'
@@ -212,6 +251,20 @@ export class StoryDatabaseService {
       localStorage.setItem(STORAGE_PROGRESS_KEY, JSON.stringify(all));
     } catch (e) {
       console.warn('Failed writing story progress', e);
+    }
+  }
+
+  static clearProgress(slug: string): void {
+    const all = this.getAllProgress();
+    delete all[slug];
+    if (slug === 'ep-013' || slug === 'because-i-said-so') {
+      delete all['ep-013'];
+      delete all['because-i-said-so'];
+    }
+    try {
+      localStorage.setItem(STORAGE_PROGRESS_KEY, JSON.stringify(all));
+    } catch (e) {
+      console.warn('Failed clearing story progress', e);
     }
   }
 

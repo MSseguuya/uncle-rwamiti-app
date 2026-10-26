@@ -36,14 +36,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) 
 
       <button
         type="button"
-        className=""
+        className={activeTab === 'comics' ? 'active' : ''}
         onClick={() => {
           sound.playTap();
-          onSelectTab('search');
+          onSelectTab('comics');
         }}
       >
-        <span>⌕</span>
-        Search
+        <span>📖</span>
+        Comics
       </button>
 
       <button

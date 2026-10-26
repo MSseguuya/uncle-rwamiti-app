@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -26,10 +27,32 @@ app.post('/api/admin/request-password-reset', (req, res) => {
   });
 });
 
+
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+
+  try {
+    let html = fs.readFileSync(indexPath, 'utf8');
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.get('host') || 'unclerwamiti.com';
+    const currentOrigin = `${proto}://${host}`;
+
+    // Replace preview domain placeholder with the exact live origin requesting the page
+    html = html.replace(
+      /https:\/\/ais-pre-7yop2wmdn7lcixfoq5q7zz-780366897587\.europe-west2\.run\.app/g,
+      currentOrigin
+    );
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(html);
+  } catch (err) {
+    return res.sendFile(indexPath);
+  }
 });
 
 app.listen(PORT, '0.0.0.0', () => {

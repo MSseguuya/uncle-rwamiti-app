@@ -23,11 +23,17 @@ import { BottomNav } from './components/BottomNav';
 import { AuthorFooter } from './components/AuthorFooter';
 import { AdminCMS } from './components/AdminCMS';
 import { DemographicsModal } from './components/DemographicsModal';
+import { ComicBook } from './types';
+import { ATTACHED_COMIC, getStoredComics } from './data/comicsData';
+import { ComicsView } from './components/ComicsView';
+import { ComicBookReader } from './components/ComicBookReader';
 
 export default function App() {
   // Catalog & Stories Data
   const [catalog] = useState<CatalogStory[]>(() => StoryDatabaseService.getCatalog());
   const featuredStory = StoryDatabaseService.getFeaturedStory();
+  const comics = StoryDatabaseService.getComics();
+  const animatedStories = StoryDatabaseService.getAnimatedStories();
   const teenStories = StoryDatabaseService.getTeenStories();
   const adultStories = StoryDatabaseService.getAdultStories();
   const kampalaDilemmas = StoryDatabaseService.getKampalaDilemmas();
@@ -36,6 +42,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<MainNavTab>('browse');
   const [activeScreen, setActiveScreen] = useState<'main' | 'reader'>('main');
   const [currentStorySlug, setCurrentStorySlug] = useState<string>('the-match-you-missed');
+  const [activeComic, setActiveComic] = useState<ComicBook | null>(null);
 
   // Modals & Overlays
   const [detailModalStory, setDetailModalStory] = useState<CatalogStory | null>(null);
@@ -57,8 +64,19 @@ export default function App() {
 
   // Sync Continuing Stories
   const refreshContinuingStories = () => {
+    // Ensure "Because I Said So" progress is cleared from continuing list
+    StoryDatabaseService.clearProgress('ep-013');
+    StoryDatabaseService.clearProgress('because-i-said-so');
+
     const progressMap = StoryDatabaseService.getAllProgress();
     const continuing = catalog.filter((s) => {
+      // Exclude "Because I Said So" from Continue your story category
+      const isBecauseSaidSo =
+        s.slug === 'ep-013' ||
+        s.slug === 'because-i-said-so' ||
+        s.title.toUpperCase().includes('BECAUSE I SAID SO');
+      if (isBecauseSaidSo) return false;
+
       const p = progressMap[s.slug];
       return p && !p.completed && p.node !== 'opening';
     });
@@ -125,13 +143,32 @@ export default function App() {
         }
       }
 
-      // Check ?story=slug in query parameters
+      // Check comic / story URL deep-linking (e.g. from WhatsApp, social shares, or direct link)
+      const urlComic = params.get('comic');
       const urlStory = params.get('story');
-      if (urlStory) {
+      const urlTab = params.get('tab');
+      const urlView = params.get('view');
+      const urlRead = params.get('read');
+
+      if (
+        urlComic !== null ||
+        urlStory === 'comic-send-me-something-small' ||
+        urlView === 'comic' ||
+        urlRead === 'comic'
+      ) {
+        // Deep-link directly into reading the comic book!
+        const foundComic =
+          (urlComic && getStoredComics().find((c) => c.slug === urlComic || c.id === urlComic)) ||
+          ATTACHED_COMIC;
+        handleOpenComic(foundComic);
+      } else if (urlStory) {
+        // Find story in catalog (e.g. ep-014 in Kampala Dilemmas)
         const found = catalog.find((s) => s.slug === urlStory);
         if (found) {
           handlePlayStory(found.slug);
         }
+      } else if (urlTab === 'comics') {
+        setActiveTab('comics');
       }
     }
 
@@ -142,8 +179,23 @@ export default function App() {
     };
   }, [catalog]);
 
+  const handleOpenComic = (comic: ComicBook) => {
+    sound.playTap();
+    setActiveComic(comic);
+    setActiveTab('comics');
+    setDetailModalStory(null);
+    setActiveScreen('reader');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
   const handlePlayStory = (slug: string) => {
     sound.playTap();
+    const foundComic = getStoredComics().find((c) => c.slug === slug || c.id === slug);
+    if (foundComic) {
+      handleOpenComic(foundComic);
+      return;
+    }
+    setActiveComic(null);
     setCurrentStorySlug(slug);
     setDetailModalStory(null);
     setActiveScreen('reader');
@@ -170,12 +222,44 @@ export default function App() {
 
   const savedStoryList = catalog.filter((s) => savedSlugs.has(s.slug));
 
-  // If in Reader view, render the full StorySceneReader
+  // If in Reader view, render ComicBookReader or StorySceneReader
   if (activeScreen === 'reader') {
+    const comicToRead =
+      activeComic ||
+      getStoredComics().find((c) => c.slug === currentStorySlug || c.id === currentStorySlug);
+
+    if (comicToRead) {
+      return (
+        <>
+          <ComicBookReader
+            comic={comicToRead}
+            onBackToLibrary={() => {
+              setActiveComic(null);
+              setActiveTab('comics');
+              setActiveScreen('main');
+              refreshContinuingStories();
+            }}
+            onShare={(c) => {
+              const catStory = StoryDatabaseService.findCatalogStory(c.slug);
+              if (catStory) handleOpenShare(catStory);
+            }}
+          />
+
+          {/* Share Dilemma Modal */}
+          <ShareDilemmaModal
+            story={shareStory}
+            isOpen={isShareOpen}
+            onClose={() => setIsShareOpen(false)}
+          />
+        </>
+      );
+    }
+
     const currentStoryMeta =
       StoryDatabaseService.findCatalogStory(currentStorySlug) ||
       catalog.find((s) => s.slug === currentStorySlug) ||
       featuredStory;
+
     const currentStoryData = StoryDatabaseService.getStory(currentStorySlug) || {
       id: currentStorySlug,
       title: currentStoryMeta.title,
@@ -252,6 +336,28 @@ export default function App() {
             onMoreInfo={handleOpenMoreInfo}
           />
 
+          {/* Animated Stories Category */}
+          {animatedStories.length > 0 && (
+            <StreamRow
+              title="Animated Stories"
+              stories={animatedStories}
+              onSelectStory={handleOpenMoreInfo}
+            />
+          )}
+
+          {/* Comic Books & Graphic Stories */}
+          {comics.length > 0 && (
+            <StreamRow
+              title="Comic Books & Graphic Stories"
+              stories={comics}
+              onSelectStory={(story) => {
+                const c = getStoredComics().find((x) => x.slug === story.slug);
+                if (c) handleOpenComic(c);
+                else handleOpenMoreInfo(story);
+              }}
+            />
+          )}
+
           {/* Teen Stories Section */}
           <TeenStoriesSection
             stories={teenStories}
@@ -295,6 +401,13 @@ export default function App() {
         <SearchStoriesView
           catalog={catalog}
           onSelectStory={handleOpenMoreInfo}
+        />
+      )}
+
+      {activeTab === 'comics' && (
+        <ComicsView
+          onSelectComic={handleOpenComic}
+          onOpenAdmin={() => setIsAdminOpen(true)}
         />
       )}
 

@@ -76,6 +76,7 @@ export const KAMPALA_COVERS: Record<string, string> = {
   'ep-011': 'cover-lake-photograph.webp',  // Kampala 2040
   'ep-012': 'cover-school-fees.webp',      // Dad's Job Disappeared
   'ep-013': 'cover-because-i-said-so.webp', // Because I Said So
+  'ep-014': 'cover-send-me-something-small.webp', // Send Me Something Small
 };
 
 export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) => ({
@@ -88,7 +89,7 @@ export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) =>
   coverImage: KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
 }));
 
-// 3. Combined unified list of all 50 interactive games
+// 3. Combined unified list of all 50+ interactive games
 export const ALL_INCORPORATED_EPISODES: Episode[] = [
   ...CATALOG_EPISODES,
   ...KAMPALA_EPISODES,

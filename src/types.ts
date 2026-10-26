@@ -36,6 +36,69 @@ export interface RwamitiEnding {
   pollOptions: string[]; // ["YES", "NO", "HMMM..."]
 }
 
+export interface ComicPanelDialogue {
+  character: string;
+  text: string;
+  side?: 'left' | 'right';
+  bubbleType?: 'speech' | 'thought' | 'shout';
+  characterRole?: string;
+  avatarColor?: string;
+}
+
+export interface ComicPanelChoice {
+  id: string;
+  label: string;
+  nextPanelId: string;
+}
+
+export interface ComicPanel {
+  id: string;
+  panelNumber: number;
+  imageUrl?: string;
+  caption?: string;
+  dialogue?: ComicPanelDialogue[];
+  soundEffect?: string; // onomatopoeia like "SKRRRRT!", "KABOOM!"
+  settingDescription?: string;
+  timeMarker?: string;
+  dayMarker?: string;
+  clashReason?: string;
+  resolutionNote?: string;
+  choices?: ComicPanelChoice[];
+}
+
+export interface ComicPage {
+  pageNumber: number;
+  label: string;
+  image: string;
+  caption?: string;
+  keyMoments?: string[];
+  timeMarker?: string;
+}
+
+export interface ComicBook {
+  id: string;
+  slug: string;
+  issueNumber: string;
+  title: string;
+  series: string;
+  description: string;
+  pathLabel?: string;
+  coverImage: string;
+  pdfUrl?: string;
+  pages: ComicPage[];
+  releaseDate?: string;
+  pageCount: number;
+  readingTimeMinutes: number;
+  tags: string[];
+  panels: ComicPanel[];
+  rwamitiWisdom: string;
+  closingQuestion?: string;
+  pollOptions?: string[];
+  coverNote?: string;
+  alternativeRoutes?: Array<{ title: string; description: string; slug: string }>;
+  isCustom?: boolean;
+}
+
 export interface Episode {
   id: string; // e.g. "ep-001"
   number: string; // e.g. "001"

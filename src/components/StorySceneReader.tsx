@@ -4,6 +4,7 @@ import { ReaderControls } from './ReaderControls';
 import { AuthorFooter } from './AuthorFooter';
 import { sound } from '../services/audio';
 import { AnalyticsService } from '../services/analytics';
+import { RotateCcw } from 'lucide-react';
 
 // Traverses downstream from a node to collect total decision depths to all terminal endpoints
 function getDownstreamChoiceDepths(
@@ -39,6 +40,7 @@ interface StorySceneReaderProps {
   storyData: StoryData;
   onBackToStories: () => void;
   onShare: (story: CatalogStory) => void;
+  onSwitchToAnimated?: () => void;
 }
 
 export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
@@ -46,6 +48,7 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
   storyData,
   onBackToStories,
   onShare,
+  onSwitchToAnimated,
 }) => {
   const [currentNodeKey, setCurrentNodeKey] = useState<string>('opening');
   const [trail, setTrail] = useState<Array<{ from: string; to: string; label: string }>>([]);
@@ -211,9 +214,9 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
     activeStartRef.current = Date.now();
     activeAccumulatorRef.current = 0;
     AnalyticsService.recordReplayClicked(storyMeta.slug);
-    // Deliberate replay starts a separate identifiable attempt
     AnalyticsService.recordStoryStarted(storyMeta.slug, storyMeta.title, true);
 
+    StoryDatabaseService.clearProgress(storyMeta.slug);
     setPreviousTrail(trail);
     setTrail([]);
     setHistory([]);
@@ -246,17 +249,27 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
   return (
     <main className="shell anthology-scene min-h-screen">
       {/* Left visual pane (desktop sticky) */}
-      <div className="visual">
+      <div className="visual relative flex items-center justify-center overflow-hidden bg-[#07080a]">
+        {/* Ambient blurred backdrop so wide and tall screens are filled seamlessly */}
+        <img
+          decoding="async"
+          src={sceneImage}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-40 scale-125 pointer-events-none"
+        />
+        {/* Crisp foreground graphic fitted to height without cropping */}
         <img
           decoding="async"
           src={sceneImage}
           alt={storyMeta.title}
+          className="relative z-1 max-w-full max-h-[92vh] object-contain p-4 drop-shadow-[0_20px_50px_rgba(0,0,0,0.85)] transition-all duration-700"
           onError={(e) => {
             (e.target as HTMLImageElement).src = 'drawer.webp';
           }}
         />
-        <div className="visual-caption">AN UNCLE RWAMITI STORY</div>
-        <div className="visual-brand">
+        <div className="visual-caption z-10">AN UNCLE RWAMITI STORY</div>
+        <div className="visual-brand z-10">
           <img decoding="async" src="rwamiti.jpg" alt="Uncle Rwamiti portrait" />
           <span>
             UNCLE RWAMITI
@@ -264,6 +277,24 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
             <small>KAMPALA, UGANDA</small>
           </span>
         </div>
+
+        {/* Hotspot indicator if choices exist */}
+        {currentNode.choices && currentNode.choices.length > 0 && (
+          <div
+            onClick={() => {
+              const firstChoice = currentNode.choices[0];
+              handleChoice(firstChoice.to, firstChoice.label);
+            }}
+            className="visual-hotspot z-20 cursor-pointer animate-pulse"
+            title="Click to choose your move"
+          >
+            <span>⚡</span>
+            <div className="text-left">
+              <span className="block text-[9px] font-mono text-amber-400">HOTSPOT · YOUR MOVE</span>
+              <strong>{currentNode.title}</strong>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right reading pane */}
@@ -295,6 +326,31 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
           </div>
 
           <div className="top-actions flex items-center gap-2">
+            {/* Restart Story Button */}
+            <button
+              type="button"
+              className="px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-amber-400 border border-zinc-700 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+              onClick={handleReplay}
+              title="Restart story from the beginning"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">RESTART</span>
+            </button>
+
+            {onSwitchToAnimated && storyMeta.category === 'Animated Stories' && (
+                <button
+                  type="button"
+                  className="px-2.5 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black border border-amber-500/40 text-[10px] font-mono font-bold uppercase transition flex items-center gap-1 cursor-pointer"
+                  onClick={() => {
+                    sound.playTap();
+                    onSwitchToAnimated();
+                  }}
+                  title="Switch to Animated Video Story"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  <span>WATCH ANIMATED</span>
+                </button>
+              )}
             <ReaderControls />
             <button
               type="button"

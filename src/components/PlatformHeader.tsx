@@ -2,7 +2,7 @@ import React from 'react';
 import { ReaderControls } from './ReaderControls';
 import { sound } from '../services/audio';
 
-export type MainNavTab = 'browse' | 'search' | 'list';
+export type MainNavTab = 'browse' | 'search' | 'comics' | 'list';
 
 interface PlatformHeaderProps {
   activeTab: MainNavTab;
@@ -50,6 +50,16 @@ export const PlatformHeader: React.FC<PlatformHeaderProps> = ({
           }}
         >
           Stories
+        </button>
+        <button
+          type="button"
+          className={activeTab === 'comics' ? 'active' : ''}
+          onClick={() => {
+            sound.playTap();
+            onSelectTab('comics');
+          }}
+        >
+          Comics
         </button>
         <button
           type="button"

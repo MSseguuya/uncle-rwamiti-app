@@ -1,6 +1,7 @@
 import React from 'react';
 import { CatalogStory, StoryData, StoryDatabaseService } from '../services/storyDatabaseService';
 import { sound } from '../services/audio';
+import { RotateCcw } from 'lucide-react';
 
 interface StoryDetailModalProps {
   story: CatalogStory | null;
@@ -67,9 +68,16 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({
         </div>
 
         <article className="detail-content px-6 py-8">
-          <p className="kicker">
-            {story.category.toUpperCase()} · {readingTime.toUpperCase()}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="kicker">
+              {story.category.toUpperCase()} · {readingTime.toUpperCase()}
+            </p>
+            {story.category === 'Animated Stories' && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase">
+                AI ANIMATED CHARACTERS
+              </span>
+            )}
+          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight my-2">
             {story.title}
           </h1>
@@ -80,14 +88,37 @@ export const StoryDetailModal: React.FC<StoryDetailModalProps> = ({
           <div className="detail-actions flex flex-wrap gap-3 my-6">
             <button
               type="button"
-              className="primary flex-1 min-h-[48px] px-6 py-3 font-bold"
+              className="primary flex-1 min-h-[48px] px-6 py-3 font-bold flex items-center justify-center gap-2"
               onClick={() => {
                 sound.playTap();
                 onPlay(story.slug);
               }}
             >
-              {progress && !progress.completed ? 'Continue story →' : 'Play this story →'}
+              {story.category === 'Animated Stories' ? (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                  <span>{progress && !progress.completed ? 'Continue animated story →' : 'Play animated story →'}</span>
+                </>
+              ) : (
+                <span>{progress && !progress.completed ? 'Continue reading →' : 'Play this story →'}</span>
+              )}
             </button>
+
+            {progress && (
+              <button
+                type="button"
+                className="outline-button px-4 py-3 font-semibold text-zinc-300 hover:text-amber-400 flex items-center gap-1.5"
+                onClick={() => {
+                  sound.playTap();
+                  StoryDatabaseService.clearProgress(story.slug);
+                  onPlay(story.slug);
+                }}
+                title="Restart this story from the beginning"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Restart</span>
+              </button>
+            )}
 
             <button
               type="button"

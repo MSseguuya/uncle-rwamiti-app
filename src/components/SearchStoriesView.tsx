@@ -15,6 +15,7 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
     return catalog.filter((story) => {
       const matchCat =
         selectedCategory === 'All' ||
+        (selectedCategory === 'Comics' && story.category === 'Comics') ||
         (selectedCategory === 'Teen' && story.category === 'Teen Stories') ||
         (selectedCategory === 'Adult' && story.category === 'Adult Stories') ||
         (selectedCategory === 'Kampala Dilemmas' && story.category === 'Kampala Dilemmas');
@@ -49,7 +50,7 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
       </div>
 
       <div className="category-tabs flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-        {['All', 'Teen', 'Adult', 'Kampala Dilemmas'].map((cat) => (
+        {['All', 'Comics', 'Teen', 'Adult', 'Kampala Dilemmas'].map((cat) => (
           <button
             key={cat}
             type="button"
@@ -63,7 +64,13 @@ export const SearchStoriesView: React.FC<SearchStoriesViewProps> = ({ catalog, o
               setSelectedCategory(cat);
             }}
           >
-            {cat === 'All' ? 'All Stories' : cat === 'Kampala Dilemmas' ? 'Kampala Dilemmas' : `${cat} Stories`}
+            {cat === 'All'
+              ? 'All Stories'
+              : cat === 'Animated'
+              ? 'Animated Stories'
+              : cat === 'Kampala Dilemmas'
+              ? 'Kampala Dilemmas'
+              : `${cat} Stories`}
           </button>
         ))}
         <span className="text-xs font-mono text-[var(--muted,#b8b8b5)] ml-auto">
