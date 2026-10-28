@@ -186,6 +186,10 @@ export class StoryDatabaseService {
   }
 
   static getUncleWisdom(slug: string): string {
+    const foundComic = getStoredComics().find((c) => c.slug === slug || c.id === slug);
+    if (foundComic && foundComic.rwamitiWisdom) {
+      return foundComic.rwamitiWisdom;
+    }
     if (slug === 'ep-014' || slug === 'send-me-something-small') {
       return 'My friend, twenty thousand shillings entered this house as transport money and left as a family meeting. Which was harder: finding the money, or telling someone the whole situation?';
     }

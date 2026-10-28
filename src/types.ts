@@ -40,7 +40,7 @@ export interface ComicPanelDialogue {
   character: string;
   text: string;
   side?: 'left' | 'right';
-  bubbleType?: 'speech' | 'thought' | 'shout';
+  bubbleType?: 'speech' | 'thought' | 'shout' | 'narration';
   characterRole?: string;
   avatarColor?: string;
 }

@@ -113,7 +113,7 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
         comicTitle: comic.title,
         choicesCount: pageReadSet.size,
         activeTimeSeconds: getActiveSeconds(),
-        endingTitle: 'Finished Send Me Something Small (One Possible Path)',
+        endingTitle: `Finished ${comic.title} (Issue #${comic.issueNumber})`,
       });
     }
   };
@@ -185,14 +185,14 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
       choicesCount: 1,
       pollOption: option,
       activeTimeSeconds: getActiveSeconds(),
-      endingTitle: 'Voted on One Possible Path Poll',
+      endingTitle: `Voted on ${comic.title} Poll`,
     });
   };
 
   const handleWhatsAppShare = () => {
     sound.playTap();
     const shareUrl = getComicShareUrl(comic.slug);
-    const message = `📖 *${comic.title}* (Comic Book: One Possible Path)\nYou have a degree. You have an interview. You need transport money. Again.\nWhat would you do? Start reading the comic on Uncle Rwamiti: Your Move 👉 ${shareUrl}`;
+    const message = `📖 *${comic.title}* (Issue #${comic.issueNumber})\n${comic.description}\nWhat would you do? Start reading the comic on Uncle Rwamiti: Your Move 👉 ${shareUrl}`;
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     AnalyticsService.recordChoiceSelected('share', 'whatsapp', comic.title);
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
