@@ -3,612 +3,337 @@ import { Episode } from '../../types';
 export const ep013: Episode = {
   id: 'ep-013',
   number: '013',
-  title: 'BECAUSE I SAID SO',
+  title: 'BECAUSE I SAID SO.',
   subtitle: 'An Uncle Rwamiti: Your Move Story',
-  teaser: 'Eva has checked the facts. Her mother has made the decision. Neither has told the other everything. You play Eva, sixteen, in Katete outside Mbarara.',
+  teaser:
+    'In Katete, just outside Mbarara, sixteen-year-old Eva is invited to a Saturday digital illustration workshop. She has read the programme, her teacher confirmed the invitation, and her aunt agreed to take her and bring her back. Her mother says no without looking at the screen.',
   category: 'Kampala Dilemmas',
   badge: 'KATETE • MBARARA',
   badgeColor: 'amber',
-  coverImage: 'cover-because-i-said-so.webp',
+  coverImage: 'assets/comic-pages/because-i-said-so/cover.jpg',
   isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {
-    headline: '“TWO PEOPLE. MORE THAN ONE KIND OF KNOWLEDGE.”',
+    headline: '“A PARENT’S DUTY IS TO GUIDE AND PROTECT. A REFUSAL TO LOOK IS SOMETHING ELSE.”',
     quoteLines: [
-      '“Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.”',
-      '“‘Because I said so’ is rarely about the thing being refused. It is about fear dressed in authority.”',
-      '“Good preparation can help. A relationship also needs room to question the decision process.”',
+      '“Eva did her homework before asking: she read the programme, her teacher confirmed the invitation, and her aunt agreed to accompany her to Mbarara and back.”',
+      '“When authority feels questioned, the conversation stops being about the evidence—even when a parent also carries real worries about schoolwork and household priorities.”',
+      '“Keeping the conversation open does not guarantee an immediate yes. Sometimes the real victory is getting the evidence seen so the next decision is made with open eyes.”',
     ],
-    closingQuestion: '“What might change if Eva and her mother asked what the other knew—and what neither had yet explained?”',
+    closingQuestion: 'When Eva’s mother says “No. Because I said so” without reading the details, what do you do next?',
     pollOptions: [
-      'LISTENING TO EACH OTHER',
-      'SHARING THE FULL INFORMATION',
-      'CHECKING THE CHANGED ARRANGEMENTS',
-      'MORE THAN ONE OF THESE',
+      'A. Challenge her directly: “About this subject, I do know more. Please look before deciding.”',
+      'B. Withdraw: “Okay, Mum.” Put the phone away and stop explaining.',
+      'C. Try to keep the conversation open: “You can still guide me. Can I first show you what I’ve learned?”',
     ],
   },
-  recommendedNextEpisodeId: 'ep-001',
-  sharePrompt: 'I just played Episode 013: BECAUSE I SAID SO on Uncle Rwamiti. Two people, more than one kind of knowledge. What is your move? Test your move!',
+  recommendedNextEpisodeId: 'ep-015',
+  sharePrompt:
+    'I just played Episode 013: BECAUSE I SAID SO. on Uncle Rwamiti. Authority, evidence, and a Saturday workshop in Mbarara. What would your move be?',
   nodes: {
-    // PAGE 1: TITLE & INTRODUCTION
     'node-start': {
       id: 'node-start',
       type: 'start',
-      badge: 'KATETE • MBARARA',
+      badge: 'AN UNCLE RWAMITI INTERACTIVE STORY',
       badgeColor: 'amber',
-      headline: 'AN UNCLE RWAMITI: YOUR MOVE STORY',
-      leadText: 'Eva has checked the facts. Her mother has made the decision. Neither has told the other everything.',
+      headline: 'BECAUSE I SAID SO.',
+      leadText: 'Katete, just outside Mbarara. Eva is sixteen. For four months she has been teaching herself digital illustration on her phone.',
       bodyParagraphs: [
-        'You play Eva, sixteen, in Katete outside Mbarara. Your choices lead to different consequences. Later, you can replay the disagreement as her mother.',
-        'No points. No correct answers. Only choices, consequences, and another move.',
-        'Eva, her family and the workshop in this story are fictional. • Free to play • Approx. five minutes',
+        'Now she has been invited to a Saturday Digital Illustration Workshop in Mbarara.',
+        'Before asking her mother Grace, Eva prepares carefully: she reads the full programme, her school art teacher confirms the invitation, and her aunt confirms she can take Eva to Mbarara and bring her back.',
+        'Ten opening panels • Three choices • Realistic continuations exploring what happens even when keeping the conversation open still meets a refusal.',
       ],
-      buttonText: 'YOUR MOVE →',
-      nextNodeId: 'node-decision-1',
+      buttonText: 'START THE STORY ›',
+      nextNodeId: 'node-panels-1-3',
+      image: 'assets/comic-pages/because-i-said-so/cover.jpg',
     },
 
-    // PAGE 2: DECISION 1 OF 2 - EVA'S PERSPECTIVE
-    'node-decision-1': {
-      id: 'node-decision-1',
-      type: 'decision',
-      badge: 'DECISION 1 OF 2',
+    'node-panels-1-3': {
+      id: 'node-panels-1-3',
+      type: 'consequence',
+      badge: 'PANELS 1–3 • THE INVITATION & DISMISSAL',
       badgeColor: 'amber',
-      headline: 'EVA’S PERSPECTIVE',
-      leadText: 'Eva, sixteen, lived in Katete, outside Mbarara. She had attended St Hellen’s Primary School and was now in Form Four at Maryhill.',
+      headline: '1. The Workshop Invitation & 2. “Get a Pencil”',
+      leadText:
+        'Eva approaches her mother in the sitting room, holding out her phone with the Saturday workshop details open on the screen.',
       bodyParagraphs: [
-        'On Saturday, a digital-design workshop was taking place in Mbarara. Eva wanted to learn how to turn her drawings into digital illustrations.',
-        'She had checked the organiser’s official page, read the programme and asked a teacher to confirm the invitation.',
-        '“Mum, may I go?” “No. Those things are scams.”',
-        'Eva placed her phone on the table. “Here is the organiser. Here is the programme. My teacher checked it.”',
-        'Her mother barely glanced at the screen. “I said no.”',
-        '“But you haven’t even—” “Because I said so.”',
-        'Eva picked up her phone. She had evidence that the workshop was genuine. She had not mentioned that her friend, who was supposed to travel with her, had cancelled. She would now be going alone.',
+        'EVA: “Mum, there’s a digital illustration workshop in Mbarara on Saturday. Look—”',
+        'Grace glances up without looking at the phone screen.',
+        'MUM: “Another day playing on a phone? Eva, drawing is drawing. Get a pencil.”',
+        'EVA: “It’s digital illustration, Mum. People use it for books, posters and business work.”',
       ],
-      highlightText: 'What does Eva do?',
-      choices: [
-        {
-          id: 'c1_go_secretly',
-          label: 'A • GO SECRETLY',
-          nextNodeId: 'node-went-secretly',
-        },
-        {
-          id: 'c1_stay_home',
-          label: 'B • STAY HOME AND CLOSE THE CONVERSATION',
-          nextNodeId: 'node-stayed-home',
-        },
-        {
-          id: 'c1_ask_concern',
-          label: 'C • ASK ABOUT THE CONCERN; TELL THE WHOLE PLAN',
-          nextNodeId: 'node-opened-conversation',
-        },
-      ],
+      buttonText: 'NEXT: PANELS 4–6 ›',
+      nextNodeId: 'node-panels-4-6',
+      image: 'assets/comic-pages/because-i-said-so/panel-2.jpg',
     },
 
-    // PAGE 3: DECISION 2 OF 2 - EVA WENT SECRETLY
-    'node-went-secretly': {
-      id: 'node-went-secretly',
-      type: 'decision',
-      badge: 'DECISION 2 OF 2 • EVA WENT SECRETLY',
+    'node-panels-4-6': {
+      id: 'node-panels-4-6',
+      type: 'consequence',
+      badge: 'PANELS 4–6 • AUTHORITY VS. SUBJECT KNOWLEDGE',
+      badgeColor: 'amber',
+      headline: '3. “So Now You Know More Than Your Mother?” & 4. The Evidence',
+      leadText:
+        'Grace straightens in her chair, her voice sharpening at the thought of being corrected by her sixteen-year-old daughter.',
+      bodyParagraphs: [
+        'MUM: “I went to school before you were born. So now you know more than your mother?”',
+        'EVA: “About this, I’ve been learning for months—”',
+        'MUM: “And I have been your mother for sixteen years.”',
+        'EVA: “Did you even look at the details? I read the programme, my teacher confirmed the invitation, and Aunt can take me and bring me back.”',
+      ],
+      buttonText: 'NEXT: PANELS 7–10 ›',
+      nextNodeId: 'node-panels-7-10',
+      image: 'assets/comic-pages/because-i-said-so/panel-6.jpg',
+    },
+
+    'node-panels-7-10': {
+      id: 'node-panels-7-10',
+      type: 'consequence',
+      badge: 'PANELS 7–10 • THE REFUSAL TO LOOK',
       badgeColor: 'red',
-      headline: 'THE VENUE CHANGES',
-      leadText: 'Eva said she was visiting her friend.',
+      headline: '5. “No. Because I Said So.” & 6. Uncle Rwamiti’s Observation',
+      leadText:
+        'Eva holds the phone steady, showing the teacher’s confirmation and her aunt’s message. Her mother still refuses to look at the screen.',
       bodyParagraphs: [
-        'On the way to Mbarara, her phone vibrated. The organiser had changed the venue because the original room was unavailable. The new room was inside a hotel she did not know.',
-        'Her teacher replied to her message: “The workshop is genuine. I have not checked the new venue.”',
-        'Another message arrived.',
-        'Mum: “Your friend is here. Where are you?”',
-        'Eva had been right about the workshop. Now she needed help with something she had not checked.',
+        'MUM: “These things are a distraction. You have school. You should focus on real subjects.”',
+        'MUM: “No. Because I said so.”',
+        'Eva stands holding the phone she was not allowed to show.',
+        'UNCLE RWAMITI: “A parent’s duty is to guide and protect. A refusal to look is something else. When authority feels questioned, the conversation stops being about the evidence.”',
       ],
-      highlightText: 'What is Eva’s next move?',
-      choices: [
-        {
-          id: 'c2_a1',
-          label: 'A1 • TELL MUM THE TRUTH AND ASK FOR HELP',
-          nextNodeId: 'node-ending-a1',
-        },
-        {
-          id: 'c2_a2',
-          label: 'A2 • STOP AND SEEK VERIFIED ADULT SUPPORT',
-          nextNodeId: 'node-ending-a2',
-        },
-        {
-          id: 'c2_a3',
-          label: 'A3 • CONTINUE AND ANSWER MUM LATER',
-          nextNodeId: 'node-ending-a3',
-        },
-      ],
+      buttonText: 'MAKE YOUR MOVE ›',
+      nextNodeId: 'node-decision',
+      image: 'assets/comic-pages/because-i-said-so/panel-10.jpg',
     },
 
-    // PAGE 4: DECISION 2 OF 2 - EVA STAYED HOME
-    'node-stayed-home': {
-      id: 'node-stayed-home',
+    'node-decision': {
+      id: 'node-decision',
       type: 'decision',
-      badge: 'DECISION 2 OF 2 • EVA STAYED HOME',
-      badgeColor: 'zinc',
-      headline: 'THE QUIET HOUSE',
-      leadText: 'Eva stayed home. “I hope you’ve understood,” her mother said.',
+      badge: 'YOUR MOVE',
+      badgeColor: 'amber',
+      headline: 'YOUR MOVE: WHAT DO YOU DO NEXT?',
+      leadText:
+        'You are Eva. You have prepared the programme, your teacher’s confirmation, and your aunt’s escort plan. Your mother has said no without reading the details.',
+      highlightText: 'How do you respond? Choose A, B or C.',
       bodyParagraphs: [
-        'Eva nodded. She had understood something. It was not what her mother thought.',
-        'The next morning, Eva saw photographs from the workshop. It had taken place successfully at a changed venue.',
-        'Her teacher asked why she had missed it. “Family arrangements,” Eva replied.',
-        'Then the organiser announced another session.',
+        'Each choice leads to a realistic continuation—including what happens when you keep the conversation open and still face a refusal.',
       ],
-      highlightText: 'What does Eva do now?',
       choices: [
         {
-          id: 'c2_b1',
-          label: 'B1 • EXPLAIN WHAT THE CONVERSATION DID TO HER',
-          nextNodeId: 'node-ending-b1',
+          id: 'choice-a',
+          label: 'A • CHALLENGE HER DIRECTLY — “About this subject, I do know more. Please look before deciding.”',
+          nextNodeId: 'node-path-a-1',
+          statPercent: 28,
         },
         {
-          id: 'c2_b2',
-          label: 'B2 • PREPARE A COMPLETE PLAN AND ASK AGAIN',
-          nextNodeId: 'node-ending-b2',
+          id: 'choice-b',
+          label: 'B • WITHDRAW — “Okay, Mum.” Put the phone away and stop explaining.',
+          nextNodeId: 'node-path-b-1',
+          statPercent: 24,
         },
         {
-          id: 'c2_b3',
-          label: 'B3 • KEEP QUIET AND PLAN WITHOUT MUM',
-          nextNodeId: 'node-ending-b3',
+          id: 'choice-c',
+          label: 'C • TRY TO KEEP THE CONVERSATION OPEN — “You can still guide me. Can I first show you what I’ve learned?”',
+          nextNodeId: 'node-path-c-1',
+          statPercent: 48,
         },
       ],
+      image: 'assets/comic-pages/because-i-said-so/page-2.jpg',
     },
 
-    // PAGE 5: DECISION 2 OF 2 - EVA OPENED THE CONVERSATION
-    'node-opened-conversation': {
-      id: 'node-opened-conversation',
+    'node-path-a-1': {
+      id: 'node-path-a-1',
       type: 'decision',
-      badge: 'DECISION 2 OF 2 • EVA OPENED THE CONVERSATION',
-      badgeColor: 'emerald',
-      headline: 'THE AGREED PLAN CHANGES',
-      leadText: '“What exactly worries you?” Eva asked.',
-      bodyParagraphs: [
-        'Her mother folded her arms. “The journey. Who is responsible for you there? What if the plan changes?”',
-        'Eva looked down. “My friend has cancelled.”',
-        '“So you were going alone?” “Yes. I should have told you.”',
-        'Her mother finally read the invitation. “The workshop looks genuine,” she said. “I should have checked before calling it a scam.”',
-        'They arranged for an aunt to accompany Eva and agreed to verify any venue change before travelling.',
-        'On Saturday morning, the organiser announced a new venue. The aunt could no longer accompany her.',
-        'Their agreed plan has changed. What does Eva do?',
-      ],
-      choices: [
-        {
-          id: 'c2_c1',
-          label: 'C1 • CONTACT MUM AND RENEGOTIATE',
-          nextNodeId: 'node-ending-c1',
-        },
-        {
-          id: 'c2_c2',
-          label: 'C2 • GO ANYWAY: PERMISSION WAS ALREADY GIVEN',
-          nextNodeId: 'node-ending-c2',
-        },
-        {
-          id: 'c2_c3',
-          label: 'C3 • DECLINE AND FIND ANOTHER ROUTE',
-          nextNodeId: 'node-ending-c3',
-        },
-      ],
-    },
-
-    // PAGE 6: EVA'S ENDING A1
-    'node-ending-a1': {
-      id: 'node-ending-a1',
-      type: 'consequence',
-      badge: 'EVA’S ENDING • A1',
+      badge: 'YOUR MOVE A • CHALLENGE HER DIRECTLY',
       badgeColor: 'red',
-      headline: 'THE CALL SHE DID NOT WANT TO MAKE',
-      leadText: '“Mum, I lied. I’m on my way to the workshop. They’ve changed the venue.”',
+      headline: 'A1. Right on the Facts, Tense in the Room',
+      leadText:
+        'EVA: “About this subject, I do know more. Please look before deciding.”',
       bodyParagraphs: [
-        'Her mother’s first response was anger. Her second was a question. “Where exactly are you?”',
-        'Eva waited at a familiar shop while her mother arranged to meet her. They missed the opening session.',
-        'The argument was not over. But Eva no longer had to manage the uncertainty alone.',
+        'Your statement is factually true—you have studied digital illustration for four months and read the entire programme, while your mother hasn’t glanced at the screen.',
+        'But hearing “I do know more” makes Grace stiffen further. Beneath her defensiveness, she names the specific worry she hadn’t explained before:',
+        'MUM: “You think four months on a phone means you can lecture me? Next Tuesday you have continuous assessment tests at school, and every trip into Mbarara costs transport money we need for term expenses. How am I supposed to judge a phone workshop when your school exams are five days away?”',
       ],
-      highlightText: 'REFLECTION: Telling the truth reopened access to help. It did not erase the lie.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
+      highlightText: 'Now that her real concern—next week’s school tests and household cost—is out in the open, what do you do?',
+      choices: [
+        {
+          id: 'choice-a-walk',
+          label: '1. Insist that she is being unfair and walk away to your room.',
+          nextNodeId: 'node-ending-a',
+          statPercent: 42,
+        },
+        {
+          id: 'choice-a-address',
+          label: '2. Address her specific worry: show your completed test revision schedule and ask her to read the teacher’s note even if Saturday is off the table.',
+          nextNodeId: 'node-path-c-2',
+          statPercent: 58,
+        },
+      ],
+      image: 'assets/comic-pages/because-i-said-so/panel-5.jpg',
     },
 
-    // PAGE 7: EVA'S ENDING A2
-    'node-ending-a2': {
-      id: 'node-ending-a2',
+    'node-ending-a': {
+      id: 'node-ending-a',
       type: 'consequence',
-      badge: 'EVA’S ENDING • A2',
+      badge: 'UNCLE RWAMITI • OUTCOME A',
       badgeColor: 'amber',
-      headline: 'CHECKING TWICE',
-      leadText: 'Eva stopped at a familiar place and contacted her teacher.',
+      headline: 'WHEN THE EVIDENCE NEVER GETS READ',
+      leadText:
+        'Eva leaves the sitting room knowing her facts were solid. Grace remains in her chair feeling her authority was challenged. The phone screen is never looked at.',
       bodyParagraphs: [
-        'The teacher helped verify the venue and contacted Eva’s mother about the changed arrangements.',
-        'Her mother wanted Eva home. Eva wanted to argue that she had been right.',
-        'Her teacher interrupted gently. “The workshop is real. That does not settle every part of the plan.”',
-        'Eva returned home. They still needed to discuss why she had lied—and why her evidence had been dismissed.',
+        'Saturday passes without the workshop, and neither mother nor daughter mentions the art teacher’s message again.',
+        'UNCLE RWAMITI: “Eva was right that she knew more about digital illustration. Yet when a parent feels their standing is on trial, winning the point often loses the hearing.”',
       ],
-      highlightText: 'REFLECTION: Seeking reliable support helped with the immediate decision. The damaged trust still needed attention.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
+      choices: [
+        {
+          id: 'retry-from-a',
+          label: 'TRY ANOTHER CHOICE (Return to YOUR MOVE) ›',
+          nextNodeId: 'node-decision',
+        },
+        {
+          id: 'restart-from-a',
+          label: 'RESTART FROM THE COVER ›',
+          nextNodeId: 'node-start',
+        },
+      ],
+      image: 'assets/comic-pages/because-i-said-so/panel-9.jpg',
     },
 
-    // PAGE 8: EVA'S ENDING A3
-    'node-ending-a3': {
-      id: 'node-ending-a3',
-      type: 'consequence',
-      badge: 'EVA’S ENDING • A3',
+    'node-path-b-1': {
+      id: 'node-path-b-1',
+      type: 'decision',
+      badge: 'YOUR MOVE B • WITHDRAW',
       badgeColor: 'amber',
-      headline: 'A REAL WORKSHOP, AN UNFINISHED ARGUMENT',
-      leadText: 'The workshop took place. Eva learned something useful.',
+      headline: 'B1. Peace in the Sitting Room, Evidence in Your Pocket',
+      leadText:
+        'EVA: “Okay, Mum.” You lock the phone, slip it into your pocket, and stop explaining.',
       bodyParagraphs: [
-        'Her mother spent the afternoon trying to establish where she was.',
-        'When Eva returned, she held up her new digital illustration. “See? It wasn’t a scam.”',
-        'Her mother looked at the picture. “I’m glad you learned something. Why did I have to discover where you were from someone else?”',
-        'Eva’s evidence answered one question. It did not answer the other.',
+        'The tension in the room drops immediately. Grace nods, relieved that her authority wasn’t contested.',
+        'MUM: “Good. Your continuous assessment tests start on Tuesday. Go and revise your chemistry.”',
+        'Yet because you stopped explaining, your mother still believes the workshop was just idle phone play—she never learned what digital illustration is used for, or that your art teacher endorsed your work.',
       ],
-      highlightText: 'REFLECTION: A successful afternoon did not make every decision leading to it sound.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
+      highlightText: 'Later that evening, after finishing your chemistry revision, do you leave the subject closed or try a quieter opening?',
+      choices: [
+        {
+          id: 'choice-b-keep-closed',
+          label: '1. Keep it closed. At least the house is peaceful tonight.',
+          nextNodeId: 'node-ending-b',
+          statPercent: 49,
+        },
+        {
+          id: 'choice-b-reopen',
+          label: '2. Show her your completed chemistry notes first, then ask: “Since my revision is done, can I show you two illustrations I made so you can guide me?”',
+          nextNodeId: 'node-path-c-2',
+          statPercent: 51,
+        },
+      ],
+      image: 'assets/comic-pages/because-i-said-so/panel-8.jpg',
     },
 
-    // PAGE 9: EVA'S ENDING B1
-    'node-ending-b1': {
-      id: 'node-ending-b1',
+    'node-ending-b': {
+      id: 'node-ending-b',
       type: 'consequence',
-      badge: 'EVA’S ENDING • B1',
+      badge: 'UNCLE RWAMITI • OUTCOME B',
+      badgeColor: 'amber',
+      headline: 'THE PRICE OF QUIET WITHDRAWAL',
+      leadText:
+        'Saturday comes and goes peacefully in Katete. Eva’s mother is pleased with her obedience—but still thinks digital illustration is “playing on a phone.”',
+      bodyParagraphs: [
+        'When the next workshop invitation arrives during the school holidays, Eva realizes she will have to start the exact same explanation from zero.',
+        'UNCLE RWAMITI: “Putting the phone away ended the argument in five seconds. The trouble with silence is that it leaves every misunderstanding intact for next time.”',
+      ],
+      choices: [
+        {
+          id: 'retry-from-b',
+          label: 'TRY ANOTHER CHOICE (Return to YOUR MOVE) ›',
+          nextNodeId: 'node-decision',
+        },
+        {
+          id: 'restart-from-b',
+          label: 'RESTART FROM THE COVER ›',
+          nextNodeId: 'node-start',
+        },
+      ],
+      image: 'assets/comic-pages/because-i-said-so/panel-8.jpg',
+    },
+
+    'node-path-c-1': {
+      id: 'node-path-c-1',
+      type: 'decision',
+      badge: 'YOUR MOVE C • KEEP THE CONVERSATION OPEN',
       badgeColor: 'emerald',
-      headline: 'THE ANSWER BEHIND THE ANSWER',
-      leadText: 'Eva told her mother how the conversation had felt.',
+      headline: 'C1. What Happens When You Keep It Open—And Still Hear “No”?',
+      leadText:
+        'EVA: “You can still guide me. Can I first show you what I’ve learned?”',
       bodyParagraphs: [
-        'Her mother admitted she had not examined the information. “I was worried about the journey,” she said.',
-        '“Then why did you say the workshop was a scam?”',
-        'Her mother paused. “That was unfair.”',
-        'Eva admitted her friend had cancelled. They had both left out something important.',
-        'They agreed to discuss the next invitation with the full information on the table.',
+        'Because Eva respects her mother’s role as a guide rather than turning the moment into a contest, Grace’s posture softens. For the first time, she explains the specific worries behind her refusal:',
+        'MUM: “Eva, even with your aunt going to Mbarara and your teacher confirming it, your mid-term tests start on Tuesday. And how do I judge whether a digital workshop is worth transport money and a whole Saturday when I have never seen how this work helps your future? My answer for this Saturday is still no.”',
       ],
-      highlightText: 'REFLECTION: The useful conversation began when both explained what they had concealed.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
+      highlightText: 'Keeping the conversation open did not magically turn “no” into “yes” for Saturday. What do you do when the refusal stands?',
+      choices: [
+        {
+          id: 'choice-c-show-anyway',
+          label: '1. Accept the “no” for this Saturday before exams, and ask her to spend three minutes looking at your artwork and teacher’s note so she can judge the holiday workshop.',
+          nextNodeId: 'node-path-c-2',
+          statPercent: 68,
+        },
+        {
+          id: 'choice-c-frustrated',
+          label: '2. Say “If the answer is still no, then looking doesn’t matter” and put the phone away.',
+          nextNodeId: 'node-ending-b',
+          statPercent: 32,
+        },
+      ],
+      image: 'assets/comic-pages/because-i-said-so/panel-7.jpg',
     },
 
-    // PAGE 10: EVA'S ENDING B2
-    'node-ending-b2': {
-      id: 'node-ending-b2',
+    'node-path-c-2': {
+      id: 'node-path-c-2',
       type: 'consequence',
-      badge: 'EVA’S ENDING • B2',
+      badge: 'YOUR MOVE C • THE EVIDENCE IS SEEN',
       badgeColor: 'emerald',
-      headline: 'A BETTER PLAN, THE SAME QUESTION',
-      leadText: 'Eva prepared a clear plan. Her mother read it this time and asked questions about transport and supervision.',
+      headline: 'C2. A Refusal for Saturday, A Commitment for End of Term',
+      leadText:
+        'Because the pressure to win Saturday immediately is off the table, Grace takes the phone into her hands and actually looks.',
       bodyParagraphs: [
-        'They found an arrangement both could accept.',
-        'Before they finished, Eva asked: “What should I do next time you say no without looking?”',
-        'Her mother had no immediate answer.',
-        'The practical plan had improved. Their way of disagreeing still needed work.',
+        'She scrolls through four months of Eva’s digital illustrations—book cover layouts, poster designs, and labelled biology diagrams—and reads the confirmation message from Eva’s art teacher and her aunt.',
+        'MUM: “You drew these yourself? On this phone?”',
+        'EVA: “Yes, Mum. After finishing my homework.”',
+        'MUM: “This is not playing. My decision for this Saturday stays—you have tests on Tuesday and money is tight this week. But on closing day at the end of term, I will come to school and speak with your art teacher myself so we can plan for the holiday workshop properly.”',
       ],
-      highlightText: 'REFLECTION: Good preparation can help. A relationship also needs room to question the decision process.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
+      buttonText: 'SEE UNCLE RWAMITI’S REFLECTION ›',
+      nextNodeId: 'node-ending-c',
+      image: 'assets/comic-pages/because-i-said-so/panel-10.jpg',
     },
 
-    // PAGE 11: EVA'S ENDING B3
-    'node-ending-b3': {
-      id: 'node-ending-b3',
+    'node-ending-c': {
+      id: 'node-ending-c',
       type: 'consequence',
-      badge: 'EVA’S ENDING • B3',
-      badgeColor: 'zinc',
-      headline: 'QUIET DOES NOT MEAN AGREEMENT',
-      leadText: 'Eva stopped mentioning opportunities.',
-      bodyParagraphs: [
-        'Her mother noticed fewer arguments and assumed things were improving.',
-        'Eva asked friends for advice about the next session.',
-        'There was less noise at home. There was also less information passing between them.',
-      ],
-      highlightText: 'REFLECTION: The disagreement disappeared from view. It had not been resolved.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
-    },
-
-    // PAGE 12: EVA'S ENDING C1
-    'node-ending-c1': {
-      id: 'node-ending-c1',
-      type: 'consequence',
-      badge: 'EVA’S ENDING • C1',
+      badge: 'UNCLE RWAMITI • OUTCOME C',
       badgeColor: 'emerald',
-      headline: 'PERMISSION TO THINK AGAIN',
-      leadText: 'Eva contacted her mother. Together they checked the changed venue.',
+      headline: 'WHEN RESPECTING AUTHORITY OPENS THE EVIDENCE',
+      leadText:
+        'Eva does not attend the Saturday workshop in Mbarara this week. The disappointment is real—good communication is not a magic spell that erases exam timetables or household budgets.',
       bodyParagraphs: [
-        'They could not find suitable accompaniment in time. Eva missed this session.',
-        'But her mother helped her contact the organiser about the next one.',
-        'Eva was disappointed. She had also learned that telling her mother about a change did not automatically end the conversation.',
-      ],
-      highlightText: 'REFLECTION: A shared decision can still be disappointing. Trust includes reconsidering when circumstances change.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
-    },
-
-    // PAGE 13: EVA'S ENDING C2
-    'node-ending-c2': {
-      id: 'node-ending-c2',
-      type: 'consequence',
-      badge: 'EVA’S ENDING • C2',
-      badgeColor: 'amber',
-      headline: 'THE PLAN THAT EXPIRED',
-      leadText: 'Eva attended and returned with something she was proud of.',
-      bodyParagraphs: [
-        'Then her mother discovered that the aunt had not gone.',
-        '“But you gave permission,” Eva said.',
-        '“For the arrangement we discussed.”',
-        'Eva had treated the earlier answer as permanent, even though important conditions had changed.',
-        'They now needed to decide what their agreements actually meant.',
-      ],
-      highlightText: 'REFLECTION: Agreement about one plan does not automatically cover a different plan.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
-    },
-
-    // PAGE 14: EVA'S ENDING C3
-    'node-ending-c3': {
-      id: 'node-ending-c3',
-      type: 'consequence',
-      badge: 'EVA’S ENDING • C3',
-      badgeColor: 'emerald',
-      headline: 'ANOTHER WAY FORWARD',
-      leadText: 'Eva told her mother she would miss the session. Then she contacted the organiser.',
-      bodyParagraphs: [
-        'There was no online workshop, but there were introductory materials she could use and another session planned.',
-        'Her mother sat beside her as she tried the first exercise.',
-        'Neither had got everything they wanted that Saturday. They had kept the opportunity—and the conversation—alive.',
-      ],
-      highlightText: 'REFLECTION: Changing the route did not require abandoning the goal.',
-      buttonText: 'CONTINUE TO REFLECTION →',
-      nextNodeId: 'node-eva-story-completed',
-    },
-
-    // PAGE 15: EVA'S STORY COMPLETED
-    'node-eva-story-completed': {
-      id: 'node-eva-story-completed',
-      type: 'decision',
-      badge: 'EVA’S STORY COMPLETED',
-      badgeColor: 'amber',
-      headline: 'TWO PEOPLE. MORE THAN ONE KIND OF KNOWLEDGE.',
-      leadText: 'Eva could check the workshop online. Her mother could raise questions about the journey and responsibility.',
-      bodyParagraphs: [
-        'Both could withhold information. Both could make assumptions.',
-        'What does Eva owe her mother—and what does her mother owe Eva?',
-        'Which needed the most attention? There is no correct answer. You may reflect privately or select a response on the next page.',
+        'Yet something fundamental has changed in the house: her mother has looked at the evidence, recognized four months of real skill, and agreed to meet her teacher before the next opportunity.',
+        'UNCLE RWAMITI: “Sometimes keeping the conversation open still ends in a ‘no’ for today. The difference is whether tomorrow’s conversation starts from ‘Because I said so’—or from evidence both of you have finally seen.”',
       ],
       choices: [
         {
-          id: 'c_opt_poll',
-          label: 'OPTIONAL REFLECTION POLL',
-          nextNodeId: 'node-reflection-poll',
+          id: 'retry-from-c',
+          label: 'TRY ANOTHER CHOICE (Return to YOUR MOVE) ›',
+          nextNodeId: 'node-decision',
         },
         {
-          id: 'c_see_mum',
-          label: 'SEE MUM’S SIDE',
-          nextNodeId: 'node-mother-perspective',
-        },
-        {
-          id: 'c_try_another',
-          label: 'TRY ANOTHER MOVE',
-          nextNodeId: 'node-decision-1',
-        },
-        {
-          id: 'c_explore_more',
-          label: 'EXPLORE MORE STORIES',
-          nextNodeId: 'node-wrapup',
+          id: 'restart-from-c',
+          label: 'RESTART FROM THE COVER ›',
+          nextNodeId: 'node-start',
         },
       ],
-    },
-
-    // PAGE 16: OPTIONAL PRIVATE POLL
-    'node-reflection-poll': {
-      id: 'node-reflection-poll',
-      type: 'decision',
-      badge: 'OPTIONAL PRIVATE POLL',
-      badgeColor: 'amber',
-      headline: 'WHICH NEEDED THE MOST ATTENTION?',
-      leadText: 'Choose a response. This does not send or count votes; it is a private reflection prompt.',
-      bodyParagraphs: [
-        'Listening to each other. Sharing the full information. Checking the changed arrangements. Or more than one of these?',
-        'There is no correct answer.',
-      ],
-      choices: [
-        {
-          id: 'poll_1',
-          label: 'LISTENING TO EACH OTHER',
-          nextNodeId: 'node-reflection-counts',
-        },
-        {
-          id: 'poll_2',
-          label: 'SHARING THE FULL INFORMATION',
-          nextNodeId: 'node-reflection-counts',
-        },
-        {
-          id: 'poll_3',
-          label: 'CHECKING THE CHANGED ARRANGEMENTS',
-          nextNodeId: 'node-reflection-counts',
-        },
-        {
-          id: 'poll_4',
-          label: 'MORE THAN ONE OF THESE',
-          nextNodeId: 'node-reflection-counts',
-        },
-      ],
-    },
-
-    // PAGE 17: YOUR REFLECTION COUNTS
-    'node-reflection-counts': {
-      id: 'node-reflection-counts',
-      type: 'decision',
-      badge: 'REFLECTION',
-      badgeColor: 'amber',
-      headline: 'YOUR REFLECTION COUNTS',
-      leadText: 'Your choice is yours to consider; no answer has been scored, transmitted or stored.',
-      bodyParagraphs: [
-        'What might change if Eva and her mother asked what the other knew—and what neither had yet explained?',
-      ],
-      choices: [
-        {
-          id: 'c_refl_mum',
-          label: 'SEE MUM’S SIDE',
-          nextNodeId: 'node-mother-perspective',
-        },
-        {
-          id: 'c_refl_retry',
-          label: 'TRY ANOTHER MOVE',
-          nextNodeId: 'node-decision-1',
-        },
-        {
-          id: 'c_refl_explore',
-          label: 'EXPLORE MORE STORIES',
-          nextNodeId: 'node-wrapup',
-        },
-      ],
-    },
-
-    // PAGE 18: MOTHER'S PERSPECTIVE
-    'node-mother-perspective': {
-      id: 'node-mother-perspective',
-      type: 'decision',
-      badge: 'MOTHER’S PERSPECTIVE • ONE DECISION',
-      badgeColor: 'red',
-      headline: 'NOW YOU ARE EVA’S MOTHER.',
-      leadText: 'This is a replay of the original disagreement, not a continuation of Eva’s ending.',
-      bodyParagraphs: [
-        'Your daughter shows you an invitation on her phone. You recently heard about someone losing money through a convincing online invitation.',
-        'You are also unsure how Eva will travel, who will supervise her and what happens if arrangements change.',
-        'You have not read the invitation. Eva says her teacher checked it.',
-        'When you hesitate, she says: “Mum, you haven’t even looked.”',
-        'You feel challenged.',
-      ],
-      highlightText: 'What do you say?',
-      choices: [
-        {
-          id: 'm1_no_explain',
-          label: 'M1 • NO. I DON’T HAVE TO EXPLAIN MYSELF.',
-          nextNodeId: 'node-mother-ending-m1',
-        },
-        {
-          id: 'm2_teacher_checked',
-          label: 'M2 • YOUR TEACHER CHECKED IT? THEN GO.',
-          nextNodeId: 'node-mother-ending-m2',
-        },
-        {
-          id: 'm3_check_whole_plan',
-          label: 'M3 • LET’S CHECK IT. EXPLAIN THE WHOLE PLAN.',
-          nextNodeId: 'node-mother-ending-m3',
-        },
-      ],
-    },
-
-    // PAGE 19: MOTHER'S ENDING M1
-    'node-mother-ending-m1': {
-      id: 'node-mother-ending-m1',
-      type: 'decision',
-      badge: 'MOTHER’S ENDING • M1',
-      badgeColor: 'zinc',
-      headline: 'AN ANSWER WITHOUT A CONVERSATION',
-      leadText: 'Eva stops arguing.',
-      bodyParagraphs: [
-        'You still do not know that her friend has cancelled.',
-        'Your decision is clear. Your understanding of the situation is incomplete.',
-      ],
-      highlightText: 'REFLECTION: How will you know whether silence means agreement, disappointment or concealment?',
-      choices: [
-        {
-          id: 'm1_replay_mum',
-          label: 'REPLAY MUM’S SIDE',
-          nextNodeId: 'node-mother-perspective',
-        },
-        {
-          id: 'm1_replay_eva',
-          label: 'REPLAY EVA’S STORY',
-          nextNodeId: 'node-decision-1',
-        },
-        {
-          id: 'm1_explore',
-          label: 'EXPLORE MORE STORIES',
-          nextNodeId: 'node-wrapup',
-        },
-      ],
-    },
-
-    // PAGE 20: MOTHER'S ENDING M2
-    'node-mother-ending-m2': {
-      id: 'node-mother-ending-m2',
-      type: 'decision',
-      badge: 'MOTHER’S ENDING • M2',
-      badgeColor: 'amber',
-      headline: 'ONE QUESTION ANSWERED',
-      leadText: 'You accept the teacher’s confirmation and say yes.',
-      bodyParagraphs: [
-        'Later, you discover that Eva intended to travel alone.',
-        'You checked whether the workshop was genuine. You did not discuss the rest of the arrangement.',
-      ],
-      highlightText: 'REFLECTION: What else needed checking before either of you could make an informed decision?',
-      choices: [
-        {
-          id: 'm2_replay_mum',
-          label: 'REPLAY MUM’S SIDE',
-          nextNodeId: 'node-mother-perspective',
-        },
-        {
-          id: 'm2_replay_eva',
-          label: 'REPLAY EVA’S STORY',
-          nextNodeId: 'node-decision-1',
-        },
-        {
-          id: 'm2_explore',
-          label: 'EXPLORE MORE STORIES',
-          nextNodeId: 'node-wrapup',
-        },
-      ],
-    },
-
-    // PAGE 21: MOTHER'S ENDING M3
-    'node-mother-ending-m3': {
-      id: 'node-mother-ending-m3',
-      type: 'decision',
-      badge: 'MOTHER’S ENDING • M3',
-      badgeColor: 'emerald',
-      headline: 'GUIDANCE THAT MAKES ROOM',
-      leadText: 'You read the invitation. “The workshop appears genuine. I was too quick to dismiss it.”',
-      bodyParagraphs: [
-        'Then you ask about transport. Eva tells you her friend has cancelled.',
-        'You explain your concerns and examine alternatives together.',
-        'You have not promised to say yes. You have made it possible to discuss the decision.',
-      ],
-      highlightText: 'REFLECTION: Could explaining your reasoning make your guidance more useful?',
-      choices: [
-        {
-          id: 'm3_replay_mum',
-          label: 'REPLAY MUM’S SIDE',
-          nextNodeId: 'node-mother-perspective',
-        },
-        {
-          id: 'm3_replay_eva',
-          label: 'REPLAY EVA’S STORY',
-          nextNodeId: 'node-decision-1',
-        },
-        {
-          id: 'm3_explore',
-          label: 'EXPLORE MORE STORIES',
-          nextNodeId: 'node-wrapup',
-        },
-      ],
-    },
-
-    // PAGE 22: YOUR MOVE CONTINUES
-    'node-wrapup': {
-      id: 'node-wrapup',
-      type: 'climax',
-      badge: 'UNCLE RWAMITI • YOUR MOVE',
-      badgeColor: 'amber',
-      headline: 'ANOTHER FAMILY. ANOTHER UNCOMFORTABLE CHOICE.',
-      leadText: 'YOUR MOVE CONTINUES',
-      bodyParagraphs: [
-        'Explore more free Uncle Rwamiti: Your Move stories.',
-        'Get more from Petero’s Paths',
-        'Uncle Rwamiti — the uncle your parents should probably never have introduced you to.',
-      ],
-      buttonText: 'REPLAY EVA’S STORY',
-      nextNodeId: 'node-decision-1',
+      image: 'assets/comic-pages/because-i-said-so/panel-10.jpg',
     },
   },
 };
+
+export const EPISODE_013_BECAUSE_I_SAID_SO = ep013;
+export default ep013;

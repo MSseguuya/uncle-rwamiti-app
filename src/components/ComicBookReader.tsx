@@ -44,6 +44,8 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isLargeText, setIsLargeText] = useState<boolean>(false);
   const [pollVoted, setPollVoted] = useState<string | null>(null);
+  const [customPostDraft, setCustomPostDraft] = useState<string>('');
+  const [submittedCustomPost, setSubmittedCustomPost] = useState<string | null>(null);
   const [pageReadSet, setPageReadSet] = useState<Set<number>>(() => new Set([1]));
 
   // Active reading time tracking
@@ -53,14 +55,18 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   const touchStartYRef = useRef<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Dynamic Browser Title for current comic issue
+  // Dynamic Browser Title & state reset for current comic issue
   useEffect(() => {
     const previousTitle = document.title;
     document.title = `${comic.title} · Uncle Rwamiti Comics`;
+    setCurrentPageIndex(0);
+    setPollVoted(null);
+    setCustomPostDraft('');
+    setSubmittedCustomPost(null);
     return () => {
       document.title = previousTitle;
     };
-  }, [comic.title]);
+  }, [comic.slug, comic.title]);
 
   const pages: ComicPage[] = comic.pages || [];
   const totalPages = pages.length;
@@ -189,24 +195,40 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   const handlePollVote = (option: string) => {
     sound.playTap();
     setPollVoted(option);
-    AnalyticsService.recordChoiceSelected('poll', option, comic.title);
+    if (!option.toLowerCase().includes('compose your own post')) {
+      AnalyticsService.recordChoiceSelected('poll', option, comic.title);
+      AnalyticsService.completeRealGameSession({
+        episodeId: comic.slug,
+        episodeTitle: comic.title,
+        choicesCount: 1,
+        pollOption: option,
+        activeTimeSeconds: getActiveSeconds(),
+        endingTitle: `Voted on ${comic.title} Poll`,
+      });
+    }
+  };
+
+  const handleSubmitCustomPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = customPostDraft.trim();
+    if (!trimmed) return;
+    sound.playTap();
+    setSubmittedCustomPost(trimmed);
+    AnalyticsService.recordChoiceSelected('poll_custom_post', trimmed, comic.title);
     AnalyticsService.completeRealGameSession({
       episodeId: comic.slug,
       episodeTitle: comic.title,
       choicesCount: 1,
-      pollOption: option,
+      pollOption: `Custom Post: ${trimmed}`,
       activeTimeSeconds: getActiveSeconds(),
-      endingTitle: `Voted on ${comic.title} Poll`,
+      endingTitle: `Composed Post on ${comic.title}`,
     });
   };
 
-  const handleWhatsAppShare = () => {
-    sound.playTap();
+  const getWhatsAppShareHref = () => {
     const shareUrl = getComicShareUrl(comic.slug);
     const message = `📖 *${comic.title}* (Issue #${comic.issueNumber})\n${comic.description}\nWhat would you do? Start reading the comic on Uncle Rwamiti: Your Move 👉 ${shareUrl}`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-    AnalyticsService.recordChoiceSelected('share', 'whatsapp', comic.title);
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
   };
 
   const progressPercent = Math.min(
@@ -217,7 +239,7 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   const ISSUE_REFLECTIONS: Record<string, { title: string; text: string }> = {
     'send-me-something-small': {
       title: 'THE COST OF PRIDE & TRANSPORT',
-      text: 'Alex negotiated the limits of a paid task with Kigo Initiative, delivering verified data while refusing to fabricate missing records. As Uncle Rwamiti reminds us: twenty thousand shillings entered as transport money and left as a family meeting.',
+      text: 'Alex negotiated the limits of a paid task with Kigo Initiative, delivering verified attendance data while refusing to fabricate missing records. As Uncle Rwamiti reminds us: twenty thousand shillings entered as transport money and left as a family meeting.',
     },
     'ban-bodas': {
       title: 'THE COMMUTE & THE ROAD REALITY',
@@ -239,10 +261,11 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
 
   const MATCHING_GAMES: Record<string, { slug: string; name: string; episodeNum: string }> = {
     'send-me-something-small': { slug: 'ep-014', name: 'Send Me Something Small', episodeNum: 'EP 014' },
-    'ban-bodas': { slug: 'ban-bodas', name: 'Ban Bodas! She Typed.', episodeNum: 'KAMPALA DILEMMA' },
-    'they-extended-her-internship': { slug: 'they-extended-her-internship', name: 'They Extended Her Internship', episodeNum: 'KAMPALA DILEMMA' },
+    'ban-bodas': { slug: 'ep-016', name: 'Ban Bodas! She Typed.', episodeNum: 'EP 016' },
+    'they-extended-her-internship': { slug: 'ep-017', name: 'They Extended Her Internship', episodeNum: 'EP 017' },
     'my-son-does-not-work-here': { slug: 'ep-015', name: 'My Son Does Not Work Here', episodeNum: 'EP 015' },
     'because-i-said-so-comic': { slug: 'ep-013', name: 'Because I Said So.', episodeNum: 'EP 013' },
+    'because-i-said-so': { slug: 'ep-013', name: 'Because I Said So.', episodeNum: 'EP 013' },
   };
 
   const currentReflection = ISSUE_REFLECTIONS[comic.slug] || {
@@ -251,10 +274,13 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   };
 
   const matchingGame = MATCHING_GAMES[comic.slug];
+  const isComposeOptionSelected = Boolean(
+    pollVoted && pollVoted.toLowerCase().includes('compose your own post')
+  );
 
   // Render the ending section, Uncle Rwamiti verdict, and Reader Participation
   const renderVerdictAndParticipation = () => (
-    <div className="p-6 sm:p-8 rounded-3xl bg-[#12141c] border-2 border-amber-500/60 shadow-2xl my-8 space-y-6">
+    <div className="p-6 sm:p-8 rounded-3xl bg-[#12141c] border-2 border-amber-500/60 shadow-2xl my-8 space-y-6 select-text">
       {/* Uncle Rwamiti's Verdict */}
       <div className="flex items-start gap-4">
         <img
@@ -302,7 +328,50 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
           ))}
         </div>
 
-        {pollVoted && (
+        {/* Interactive Compose Your Own Post Text Field */}
+        {isComposeOptionSelected && (
+          <form onSubmit={handleSubmitCustomPost} className="mt-4 p-4 rounded-2xl bg-zinc-900/95 border border-amber-500/50 space-y-3">
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+              Compose Jessica’s Revised Post & Practical Commitment:
+            </label>
+            <textarea
+              value={customPostDraft}
+              onChange={(e) => setCustomPostDraft(e.target.value)}
+              rows={3}
+              placeholder="Write your own revised post here... What will Jessica stop asking riders to do, start doing differently, or ask Kampala authorities to change?"
+              className="w-full rounded-xl bg-[#090b10] border border-zinc-700 focus:border-amber-400 focus:outline-none p-3 text-xs sm:text-sm text-white placeholder-zinc-500 font-sans leading-relaxed"
+            />
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[11px] font-mono text-zinc-400">
+                Your reflection turns debate into a concrete action on Kampala roads.
+              </span>
+              <button
+                type="submit"
+                disabled={!customPostDraft.trim()}
+                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black font-mono text-xs font-black uppercase tracking-wider transition cursor-pointer"
+              >
+                Publish Post
+              </button>
+            </div>
+          </form>
+        )}
+
+        {submittedCustomPost && isComposeOptionSelected && (
+          <div className="mt-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-200 text-xs font-mono space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold uppercase">
+              <Check className="w-4 h-4 flex-shrink-0" />
+              <span>Your Revised Post Has Been Published</span>
+            </div>
+            <blockquote className="p-3 rounded-lg bg-black/50 border border-emerald-500/20 text-white font-sans italic text-sm">
+              “{submittedCustomPost}”
+            </blockquote>
+            <p className="text-zinc-300">
+              Uncle Rwamiti: “Changing the post is good. Changing how you treat the rider when you are late is where the city actually changes.”
+            </p>
+          </div>
+        )}
+
+        {pollVoted && !isComposeOptionSelected && (
           <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-start gap-2.5">
             <Check className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
@@ -382,14 +451,19 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleWhatsAppShare}
+        <a
+          href={getWhatsAppShareHref()}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => {
+            sound.playTap();
+            AnalyticsService.recordChoiceSelected('share', 'whatsapp', comic.title);
+          }}
           className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-emerald-500/25 whitespace-nowrap"
         >
           <WhatsAppIcon className="w-4 h-4 text-white" />
           <span>Share on WhatsApp</span>
-        </button>
+        </a>
       </div>
 
       {/* Back and Top Navigation */}
@@ -540,15 +614,20 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
           )}
 
           {/* Direct WhatsApp Share Button */}
-          <button
-            type="button"
-            onClick={handleWhatsAppShare}
+          <a
+            href={getWhatsAppShareHref()}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              sound.playTap();
+              AnalyticsService.recordChoiceSelected('share', 'whatsapp', comic.title);
+            }}
             className="px-2.5 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20ba59] active:scale-95 text-white font-mono text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
             title="Share on WhatsApp with Cover Thumbnail Preview"
           >
             <WhatsAppIcon className="w-3.5 h-3.5 text-white" />
             <span className="hidden sm:inline">WhatsApp</span>
-          </button>
+          </a>
 
           <button
             type="button"

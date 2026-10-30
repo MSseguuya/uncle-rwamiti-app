@@ -149,22 +149,70 @@ export class StoryDatabaseService {
   }
 
   static getStory(slug: string): StoryData | null {
-    if (this.stories[slug]) return this.stories[slug];
-    const foundEp = ALL_INCORPORATED_EPISODES.find((e) => e.id === slug || e.id.toLowerCase() === slug.toLowerCase());
-    if (foundEp) {
-      return convertEpisodeToStoryData(foundEp);
+    const aliasMap: Record<string, string> = {
+      'because-i-said-so-game': 'ep-013',
+      'send-me-something-small-game': 'ep-014',
+      'my-son-does-not-work-here-game': 'ep-015',
+      'ban-bodas-game': 'ep-016',
+      'they-extended-her-internship-game': 'ep-017',
+    };
+    const resolvedSlug = aliasMap[slug] || slug;
+
+    // 1. Check updated Kampala episodes first so TypeScript episodes always override static JSON
+    const foundKampalaEp = KAMPALA_EPISODES.find(
+      (e) => e.id === resolvedSlug || e.id.toLowerCase() === resolvedSlug.toLowerCase()
+    );
+    if (foundKampalaEp) {
+      return convertEpisodeToStoryData(foundKampalaEp);
     }
+
+    // 2. Check comics
     const foundComic = getStoredComics().find((c) => c.slug === slug || c.id === slug);
     if (foundComic) {
       return convertComicToStoryData(foundComic);
+    }
+
+    // 3. Check static JSON stories
+    if (this.stories[resolvedSlug]) return this.stories[resolvedSlug];
+
+    // 4. Fallback to any other incorporated episodes
+    const foundEp = ALL_INCORPORATED_EPISODES.find(
+      (e) => e.id === resolvedSlug || e.id.toLowerCase() === resolvedSlug.toLowerCase()
+    );
+    if (foundEp) {
+      return convertEpisodeToStoryData(foundEp);
     }
     return null;
   }
 
   static findCatalogStory(slug: string): CatalogStory | null {
-    const fromCat = this.catalog.find((s) => s.slug === slug);
+    const aliasMap: Record<string, string> = {
+      'because-i-said-so-game': 'ep-013',
+      'send-me-something-small-game': 'ep-014',
+      'my-son-does-not-work-here-game': 'ep-015',
+      'ban-bodas-game': 'ep-016',
+      'they-extended-her-internship-game': 'ep-017',
+    };
+    const resolvedSlug = aliasMap[slug] || slug;
+
+    const foundKampalaEp = KAMPALA_EPISODES.find((e) => e.id === resolvedSlug);
+    if (foundKampalaEp) {
+      return {
+        slug: foundKampalaEp.id,
+        title: foundKampalaEp.title,
+        description: foundKampalaEp.teaser,
+        cover: (foundKampalaEp as any).coverImage || 'rwamiti.jpg',
+        duration_minutes: 6,
+        reading_time: '4–6 min · interactive',
+        category: foundKampalaEp.category || 'Kampala Dilemmas',
+        keywords: `${foundKampalaEp.category || 'Kampala Dilemmas'} ${foundKampalaEp.title} ${foundKampalaEp.teaser}`,
+        legacy_engine: false,
+      };
+    }
+
+    const fromCat = this.catalog.find((s) => s.slug === resolvedSlug);
     if (fromCat) return fromCat;
-    const foundEp = ALL_INCORPORATED_EPISODES.find((e) => e.id === slug);
+    const foundEp = ALL_INCORPORATED_EPISODES.find((e) => e.id === resolvedSlug);
     if (foundEp) {
       return {
         slug: foundEp.id,
@@ -190,11 +238,20 @@ export class StoryDatabaseService {
     if (foundComic && foundComic.rwamitiWisdom) {
       return foundComic.rwamitiWisdom;
     }
-    if (slug === 'ep-014' || slug === 'send-me-something-small') {
+    if (slug === 'ep-013' || slug === 'because-i-said-so' || slug === 'because-i-said-so-game') {
+      return 'A parent’s duty is to guide and protect. A refusal to look is something else. When authority feels questioned, the conversation stops being about the evidence.';
+    }
+    if (slug === 'ep-014' || slug === 'send-me-something-small' || slug === 'send-me-something-small-game') {
       return 'My friend, twenty thousand shillings entered this house as transport money and left as a family meeting. Which was harder: finding the money, or telling someone the whole situation?';
     }
     if (slug === 'ep-015' || slug === 'my-son-does-not-work-here' || slug === 'my-son-does-not-work-here-game') {
-      return 'Pride does not pay the landlord. A father’s shame often hides his own fear that the world he prepared you for no longer exists. Joel asked a question: who pays this month?';
+      return 'Joel asked a question that neither pride nor embarrassment can wave away: Who do I tell my landlord is paying this month?';
+    }
+    if (slug === 'ep-016' || slug === 'ban-bodas' || slug === 'ban-bodas-game') {
+      return 'It is easy to condemn a system while it is carrying you. Both the rider at the handlebars and the passenger offering two thousand shillings to beat the clock share the road.';
+    }
+    if (slug === 'ep-017' || slug === 'they-extended-her-internship' || slug === 'they-extended-her-internship-game') {
+      return 'An unpaid extension is never free—someone at home is paying the taxi fare. Asking for the budget facts and a written reference turns hope into clarity.';
     }
     return (
       this.wisdom[slug] ||

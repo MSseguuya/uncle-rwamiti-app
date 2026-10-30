@@ -75,9 +75,11 @@ export const KAMPALA_COVERS: Record<string, string> = {
   'ep-010': 'cover-guest-room.webp',       // The Answer Is Already on AI
   'ep-011': 'cover-lake-photograph.webp',  // Kampala 2040
   'ep-012': 'cover-school-fees.webp',      // Dad's Job Disappeared
-  'ep-013': 'cover-because-i-said-so.webp', // Because I Said So
+  'ep-013': 'assets/comic-pages/because-i-said-so/cover.jpg', // Because I Said So
   'ep-014': 'cover-send-me-something-small.webp', // Send Me Something Small
-  'ep-015': 'cover-my-son-does-not-work-here.webp', // My Son Does Not Work Here
+  'ep-015': 'assets/comic-pages/my-son-does-not-work-here/page-1.jpg', // My Son Does Not Work Here
+  'ep-016': 'assets/comic-pages/ban-bodas/page-1.jpg', // Ban Bodas!
+  'ep-017': 'assets/comic-pages/extended-internship/page-1.jpg', // They Extended Her Internship
 };
 
 export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) => ({
@@ -87,13 +89,15 @@ export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) =>
   subtitle: `Kampala Dilemma • EP ${ep.number}`,
   badge: ep.badge || `EPISODE ${ep.number}`,
   badgeColor: ep.badgeColor || 'amber',
-  coverImage: KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
+  coverImage: (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'rwamiti.jpg',
 }));
 
-// 3. Combined unified list of all 50+ interactive games
+const kampalaIds = new Set(KAMPALA_EPISODES.map((e) => e.id.toLowerCase()));
+
+// 3. Combined unified list of all 50+ interactive games (Kampala episodes take priority over legacy JSON catalog)
 export const ALL_INCORPORATED_EPISODES: Episode[] = [
-  ...CATALOG_EPISODES,
   ...KAMPALA_EPISODES,
+  ...CATALOG_EPISODES.filter((c) => !kampalaIds.has(c.id.toLowerCase()) && c.id !== 'because-i-said-so'),
 ];
 
 // Helper to convert an Episode into StoryData for seamless playing in StorySceneReader

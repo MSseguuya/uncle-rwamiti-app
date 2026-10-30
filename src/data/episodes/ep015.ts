@@ -10,27 +10,27 @@ export const ep015: Episode = {
   category: 'Kampala Dilemmas',
   badge: 'TERRACE RESTAURANT • KAMPALA',
   badgeColor: 'amber',
-  coverImage: 'cover-my-son-does-not-work-here.webp',
+  coverImage: 'assets/comic-pages/my-son-does-not-work-here/page-1.jpg',
   isPremium: false,
   published: true,
   initialNodeId: 'node-start',
   rwamitiEnding: {
-    headline: '“PRIDE DOES NOT PAY THE LANDLORD. WHO PAYS THIS MONTH?”',
+    headline: '“JOEL ASKED YOU A QUESTION.”',
     quoteLines: [
-      '“A father’s shame often hides his own fear that the world he prepared you for no longer exists.”',
-      '“Joel asked the one question that pride cannot answer: Who do I tell my landlord is paying this month?”',
-      '“Every path forward has a cost. The question is whose time, whose money, and whose terms you are willing to spend.”',
+      '“Why did David say his son did not work there? Was it pride in front of friends, disappointment after paying for law school, fear that temporary work becomes permanent, or concern for Joel’s future?”',
+      '“Joel restored his dignity without making a speech—and asked the one question that cannot be waved away: Who do I tell my landlord is paying this month?”',
+      '“Every path forward carries a concrete cost. The question is whose time, whose money, and whose terms are on the table.”',
     ],
     closingQuestion: 'If you were Joel facing tomorrow’s interview and today’s rent, which conversation would you begin?',
     pollOptions: [
-      'A. Ask manager for morning off & trade Saturday with Sarah',
-      'B. Ask Grace for a different time & send CV tonight',
-      'C. Make Dad’s rent promise concrete before stepping away',
+      'A. Ask your manager for another morning off. He covered your last absence himself.',
+      'B. Ask Grace for a different interview time. She has already said tomorrow morning is unusually free.',
+      'C. Ask your father to cover your rent if you lose the job. Ask him now, before everyone leaves.',
     ],
   },
   recommendedNextEpisodeId: 'ep-014',
   sharePrompt:
-    'I just played Episode 015: MY SON DOES NOT WORK HERE on Uncle Rwamiti. A law graduate, a restaurant uniform, and a father’s pride. What would your move be?',
+    'I just played Episode 015: MY SON DOES NOT WORK HERE on Uncle Rwamiti. A law graduate, a restaurant uniform, and a father’s reaction. What would your move be?',
   nodes: {
     // PAGE 1: TITLE & COVER
     'node-start': {
@@ -41,13 +41,12 @@ export const ep015: Episode = {
       headline: 'MY SON DOES NOT WORK HERE',
       leadText: 'Joel has a law degree and a paying job. His father did not expect the two to look like this.',
       bodyParagraphs: [
-        'A law graduate. A restaurant uniform. A father’s pride. A conversation nobody expected.',
-        'Eight opening panels • Three choices • Three different endings.',
-        'All dialogue and branching outcomes follow the supplied producer script.',
+        'A law graduate. A restaurant uniform. A father’s reaction at lunch. A question about rent that cannot be ignored.',
+        'Eight opening scenes • Three choices • Three distinct continuations.',
       ],
       buttonText: 'START THE STORY ›',
       nextNodeId: 'node-restaurant-1',
-      image: 'cover-my-son-does-not-work-here.webp',
+      image: 'assets/comic-pages/my-son-does-not-work-here/page-1.jpg',
     },
 
     // PAGE 2: 1 THE PROUD INTRODUCTION & 2 AN UNEXPECTED WAITER
