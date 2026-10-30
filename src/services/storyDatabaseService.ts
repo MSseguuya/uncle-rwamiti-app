@@ -193,6 +193,9 @@ export class StoryDatabaseService {
     if (slug === 'ep-014' || slug === 'send-me-something-small') {
       return 'My friend, twenty thousand shillings entered this house as transport money and left as a family meeting. Which was harder: finding the money, or telling someone the whole situation?';
     }
+    if (slug === 'ep-015' || slug === 'my-son-does-not-work-here' || slug === 'my-son-does-not-work-here-game') {
+      return 'Pride does not pay the landlord. A father’s shame often hides his own fear that the world he prepared you for no longer exists. Joel asked a question: who pays this month?';
+    }
     return (
       this.wisdom[slug] ||
       'A choice made in haste often reveals what we value in quiet. The question is never only what you chose, but what you were willing to leave behind.'

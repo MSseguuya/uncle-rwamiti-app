@@ -25,6 +25,7 @@ export interface StoryNode {
   buttonText?: string; // e.g. "START", "CONTINUE", "UNCLE RWAMITI IS WAITING"
   nextNodeId?: string; // for linear steps (start, consequence, climax)
   choices?: StoryChoice[]; // for decision steps
+  image?: string; // optional scene image
   videoUrl?: string; // optional vertical video URL
   videoTitle?: string;
 }

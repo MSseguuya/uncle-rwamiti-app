@@ -29,12 +29,14 @@ interface ComicBookReaderProps {
   comic: ComicBook;
   onBackToLibrary: () => void;
   onShare: (comic: ComicBook) => void;
+  onPlayGame?: (gameSlug: string) => void;
 }
 
 export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   comic,
   onBackToLibrary,
   onShare,
+  onPlayGame,
 }) => {
   // Reading Mode: 'stacked' (vertical panels for phones), 'flip' (one page at a time), or 'scroll' (continuous page view)
   const [readingMode, setReadingMode] = useState<'stacked' | 'flip' | 'scroll'>('stacked');
@@ -50,6 +52,15 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Dynamic Browser Title for current comic issue
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = `${comic.title} · Uncle Rwamiti Comics`;
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [comic.title]);
 
   const pages: ComicPage[] = comic.pages || [];
   const totalPages = pages.length;
@@ -203,6 +214,44 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
     Math.round(((currentPageIndex + 1) / totalPages) * 100)
   );
 
+  const ISSUE_REFLECTIONS: Record<string, { title: string; text: string }> = {
+    'send-me-something-small': {
+      title: 'THE COST OF PRIDE & TRANSPORT',
+      text: 'Alex negotiated the limits of a paid task with Kigo Initiative, delivering verified data while refusing to fabricate missing records. As Uncle Rwamiti reminds us: twenty thousand shillings entered as transport money and left as a family meeting.',
+    },
+    'ban-bodas': {
+      title: 'THE COMMUTE & THE ROAD REALITY',
+      text: 'Jessica and Safari realized that condemning the public transport system from the back of it misses the real issue. A safer Kampala requires passenger patience, fair stage organization, and dedicated lanes—not blanket bans that ignore how the city actually moves.',
+    },
+    'they-extended-her-internship': {
+      title: 'THE HOUSEHOLD SUBSIDY OF FREE WORK',
+      text: 'Nora was working, but her family was paying the bill. Setting a clear boundary and asking for a written reference was not giving up—it was putting the real cost of corporate experience on the table before her family had to borrow.',
+    },
+    'my-son-does-not-work-here': {
+      title: 'DIGNITY, PRIDE & RENT',
+      text: 'At the restaurant table, Joel held onto his dignity and asked who pays the rent. Whether David reacted from fear, pride, disappointment, or protective anxiety, Joel’s question stayed on the table: who pays the landlord this month?',
+    },
+    'because-i-said-so-comic': {
+      title: 'EVIDENCE VS PARENTAL AUTHORITY',
+      text: 'Eva prepared her case with school backing, teacher recommendations, and safety escorts. Her mother worried about pending term fees, mock exams, and safety. Evidence alone cannot persuade without acknowledging the real anxieties behind a parent’s refusal.',
+    },
+  };
+
+  const MATCHING_GAMES: Record<string, { slug: string; name: string; episodeNum: string }> = {
+    'send-me-something-small': { slug: 'ep-014', name: 'Send Me Something Small', episodeNum: 'EP 014' },
+    'ban-bodas': { slug: 'ban-bodas', name: 'Ban Bodas! She Typed.', episodeNum: 'KAMPALA DILEMMA' },
+    'they-extended-her-internship': { slug: 'they-extended-her-internship', name: 'They Extended Her Internship', episodeNum: 'KAMPALA DILEMMA' },
+    'my-son-does-not-work-here': { slug: 'ep-015', name: 'My Son Does Not Work Here', episodeNum: 'EP 015' },
+    'because-i-said-so-comic': { slug: 'ep-013', name: 'Because I Said So.', episodeNum: 'EP 013' },
+  };
+
+  const currentReflection = ISSUE_REFLECTIONS[comic.slug] || {
+    title: 'ONE POSSIBLE PATH',
+    text: comic.description,
+  };
+
+  const matchingGame = MATCHING_GAMES[comic.slug];
+
   // Render the ending section, Uncle Rwamiti verdict, and Reader Participation
   const renderVerdictAndParticipation = () => (
     <div className="p-6 sm:p-8 rounded-3xl bg-[#12141c] border-2 border-amber-500/60 shadow-2xl my-8 space-y-6">
@@ -254,25 +303,63 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
         </div>
 
         {pollVoted && (
-          <div className="mt-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono flex items-center gap-2">
-            <Check className="w-4 h-4 flex-shrink-0" />
-            <span>✓ Your move has been recorded in live behavioral analytics!</span>
+          <div className="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-start gap-2.5">
+            <Check className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-white block">Your move has been recorded.</span>
+              <span className="text-zinc-300">
+                Uncle Rwamiti: “A choice made with reflection is the first step toward taking responsibility for your own direction.”
+              </span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* One Possible Path Reflection */}
+      {/* Issue-Specific Reflection */}
       <div className="pt-6 border-t border-zinc-800">
         <div className="flex items-center gap-2 text-amber-300 mb-2">
           <Compass className="w-4 h-4 text-amber-400" />
           <h4 className="text-xs font-mono font-bold uppercase tracking-wider">
-            ONE POSSIBLE PATH
+            {currentReflection.title}
           </h4>
         </div>
-        <p className="text-xs text-zinc-400 leading-relaxed">
-          In this comic, Alex asked Mum &amp; Dad and chose Kigo Initiative’s data task. As Uncle Rwamiti reminds us: twenty thousand shillings entered as transport money and left as a family meeting.
+        <p className="text-xs text-zinc-300 leading-relaxed">
+          {currentReflection.text}
         </p>
       </div>
+
+      {/* Explicit Working Transition to Interactive Game */}
+      {matchingGame && onPlayGame && (
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-zinc-900 border-2 border-amber-500/60 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-amber-500 text-black flex items-center justify-center font-black text-lg flex-shrink-0 shadow-md">
+              🎮
+            </div>
+            <div>
+              <span className="px-2 py-0.5 rounded bg-amber-500 text-black font-mono text-[9px] font-black uppercase tracking-wider">
+                INTERACTIVE STORY · {matchingGame.episodeNum}
+              </span>
+              <h4 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                Play “{matchingGame.name}” in the Dilemma Engine
+              </h4>
+              <p className="text-xs text-zinc-300 mt-0.5">
+                Explore all three branching paths, consequences, and Uncle Rwamiti reflections.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              sound.playTap();
+              onPlayGame(matchingGame.slug);
+            }}
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-black font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg whitespace-nowrap"
+          >
+            <span>PLAY THE STORY ›</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* WhatsApp Share Card */}
       <div className="p-4 rounded-2xl bg-black/60 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -474,21 +561,27 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
         </div>
       </header>
 
-      {/* Editorial Banner: One Possible Path + Sam Note on Cover */}
-      <div className="bg-[#10131c] border-b border-amber-500/20 px-3 sm:px-6 py-2 text-xs font-mono text-zinc-300 flex flex-wrap items-center justify-between gap-2 shadow-inner">
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold uppercase text-[9px] tracking-wider border border-amber-500/40">
-            ONE POSSIBLE PATH
-          </span>
-          <span className="text-zinc-200 font-semibold">
-            Route: Mum’s Prescription &amp; The Freelance Task
-          </span>
+      {/* Editorial Banner: Issue-Specific Route & Cover Note */}
+      {(comic.pathLabel || comic.coverNote) && (
+        <div className="bg-[#10131c] border-b border-amber-500/20 px-3 sm:px-6 py-2 text-xs font-mono text-zinc-300 flex flex-wrap items-center justify-between gap-2 shadow-inner">
+          {comic.pathLabel && (
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold uppercase text-[9px] tracking-wider border border-amber-500/40">
+                ISSUE #{comic.issueNumber}
+              </span>
+              <span className="text-zinc-200 font-semibold">
+                {comic.pathLabel}
+              </span>
+            </div>
+          )}
+          {comic.coverNote && (
+            <div className="text-[11px] text-zinc-400 flex items-center gap-1">
+              <Info className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+              <span>{comic.coverNote}</span>
+            </div>
+          )}
         </div>
-        <div className="text-[11px] text-zinc-400 flex items-center gap-1">
-          <Info className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-          <span>Cover Note: Friend Sam appears on cover but belongs to an alternative borrowing branch.</span>
-        </div>
-      </div>
+      )}
 
       {/* Reading Progress Indicator */}
       <div className="w-full h-1 bg-zinc-900">
@@ -512,7 +605,7 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
               <div className="bg-[#141722] px-4 py-3 border-b border-zinc-800 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono text-[10px] font-bold uppercase border border-amber-500/30">
-                    {p.dayMarker || `PANEL ${pIdx + 1}`}
+                    {p.dayMarker || `PANEL ${p.panelNumber}`}
                   </span>
                   {p.timeMarker && (
                     <span className="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-200 font-mono text-[10px] font-bold flex items-center gap-1">
@@ -522,19 +615,25 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
                   )}
                 </div>
                 <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-                  {p.settingDescription || `Panel ${pIdx + 1} of ${comic.panels.length}`}
+                  {p.settingDescription || `Panel ${p.panelNumber} of ${comic.panels.length}`}
                 </span>
               </div>
 
-              {/* Panel Image */}
-              {p.imageUrl && (
+              {/* Panel Image: in stacked mode, only show if first panel on this page image to avoid repeating multi-panel full pages */}
+              {p.imageUrl && (!pIdx || p.imageUrl !== comic.panels[pIdx - 1]?.imageUrl) && (
                 <div className="relative bg-black border-b border-zinc-800/80 overflow-hidden">
                   <img
                     src={p.imageUrl}
                     alt={p.caption || `Panel ${p.panelNumber}`}
-                    className="w-full h-auto max-h-[460px] object-contain block mx-auto"
+                    className="w-full h-auto max-h-[500px] object-contain block mx-auto"
                     loading={pIdx <= 2 ? 'eager' : 'lazy'}
                   />
+                  {comic.panels.filter((other) => other.imageUrl === p.imageUrl).length > 1 && (
+                    <div className="px-3 py-1.5 bg-[#0a0c12]/95 border-t border-zinc-800 text-[10px] font-mono text-amber-300/80 flex items-center justify-between">
+                      <span className="font-bold">PAGE SCENE · DETAILED DIALOGUE PANELS BELOW</span>
+                      <span className="text-zinc-400">Panels {comic.panels.filter((other) => other.imageUrl === p.imageUrl).map((o) => o.panelNumber).join(', ')}</span>
+                    </div>
+                  )}
                 </div>
               )}
 

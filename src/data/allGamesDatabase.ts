@@ -77,6 +77,7 @@ export const KAMPALA_COVERS: Record<string, string> = {
   'ep-012': 'cover-school-fees.webp',      // Dad's Job Disappeared
   'ep-013': 'cover-because-i-said-so.webp', // Because I Said So
   'ep-014': 'cover-send-me-something-small.webp', // Send Me Something Small
+  'ep-015': 'cover-my-son-does-not-work-here.webp', // My Son Does Not Work Here
 };
 
 export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) => ({
@@ -132,8 +133,9 @@ export function convertEpisodeToStoryData(ep: Episode): StoryData {
       title: n.headline,
       summary: n.leadText || '',
       paragraphs: paragraphs,
+      image: (n as any).image || (ep as any).coverImage || KAMPALA_COVERS[ep.id] || 'cover-my-son-does-not-work-here.webp',
       choices: choices,
-      is_ending: n.type === 'climax' || choices.length === 0,
+      is_ending: choices.length === 0,
     };
   }
 

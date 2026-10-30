@@ -239,6 +239,10 @@ export default function App() {
               setActiveScreen('main');
               refreshContinuingStories();
             }}
+            onPlayGame={(gameSlug) => {
+              setActiveComic(null);
+              handlePlayStory(gameSlug);
+            }}
             onShare={(c) => {
               const catStory = StoryDatabaseService.findCatalogStory(c.slug);
               if (catStory) handleOpenShare(catStory);

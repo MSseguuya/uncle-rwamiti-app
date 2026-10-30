@@ -411,12 +411,27 @@ export const StorySceneReader: React.FC<StorySceneReaderProps> = ({
           )}
 
           {/* Story paragraphs */}
-          <div className="story space-y-5 my-6 leading-relaxed">
-            {currentNode.paragraphs.map((p, idx) => (
-              <p key={idx} className="text-base sm:text-lg leading-relaxed text-[var(--text,#f5f3ed)]">
-                {p}
-              </p>
-            ))}
+          <div className="story space-y-4 my-6 leading-relaxed">
+            {currentNode.paragraphs.map((p, idx) => {
+              const speakerMatch = p.match(/^([A-Z\s,]+):\s*(.*)$/);
+              if (speakerMatch && speakerMatch[1].trim().length > 1 && speakerMatch[1].trim().length < 25) {
+                return (
+                  <div key={idx} className="dialogue-block bg-white/[0.03] border-l-2 border-amber-400/80 rounded-r px-4 py-2.5 my-2.5">
+                    <span className="font-mono text-[11px] uppercase tracking-wider font-bold text-amber-400 block mb-1">
+                      {speakerMatch[1].trim()}
+                    </span>
+                    <p className="text-base sm:text-lg leading-relaxed text-[var(--text,#f5f3ed)]">
+                      {speakerMatch[2]}
+                    </p>
+                  </div>
+                );
+              }
+              return (
+                <p key={idx} className="text-base sm:text-lg leading-relaxed text-[var(--text,#f5f3ed)]">
+                  {p}
+                </p>
+              );
+            })}
           </div>
 
           {/* Reading Footer: Choices or Ending */}
