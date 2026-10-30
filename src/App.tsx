@@ -87,6 +87,36 @@ export default function App() {
     refreshContinuingStories();
   }, [activeScreen, activeTab]);
 
+  // Keep browser document.title synchronized with the current screen, tab, comic, or story
+  useEffect(() => {
+    if (activeScreen === 'reader') {
+      const comicToRead =
+        activeComic ||
+        getStoredComics().find((c) => c.slug === currentStorySlug || c.id === currentStorySlug);
+      if (comicToRead) {
+        document.title = `${comicToRead.title} · Uncle Rwamiti Comics`;
+        return;
+      }
+      const storyMeta =
+        StoryDatabaseService.findCatalogStory(currentStorySlug) ||
+        catalog.find((s) => s.slug === currentStorySlug);
+      if (storyMeta) {
+        document.title = `${storyMeta.title} · Uncle Rwamiti: Your Move`;
+        return;
+      }
+    }
+
+    if (activeTab === 'comics') {
+      document.title = 'Comics Library · Uncle Rwamiti: Your Move';
+    } else if (activeTab === 'search') {
+      document.title = 'Search Stories · Uncle Rwamiti: Your Move';
+    } else if (activeTab === 'list') {
+      document.title = 'My List · Uncle Rwamiti: Your Move';
+    } else {
+      document.title = 'Uncle Rwamiti: Your Move';
+    }
+  }, [activeScreen, activeTab, activeComic, currentStorySlug, catalog]);
+
   // Firestore real-time synchronization & Visitor Tracking
   useEffect(() => {
     // Record real visitor session (referral, device, unique visitor ID)

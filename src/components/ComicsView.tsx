@@ -35,6 +35,12 @@ export const ComicsView: React.FC<ComicsViewProps> = ({
   const currentComic = comics.find((c) => c.slug === selectedSlug) || comics[0];
   const isBookmarked = currentComic ? savedSlugs.has(currentComic.slug) : false;
 
+  React.useEffect(() => {
+    if (currentComic) {
+      document.title = `${currentComic.title} · Uncle Rwamiti Comics`;
+    }
+  }, [currentComic]);
+
   const handleToggleBookmark = (e: React.MouseEvent, slug: string) => {
     e.stopPropagation();
     sound.playTap();
