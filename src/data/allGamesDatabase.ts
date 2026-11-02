@@ -1,6 +1,6 @@
 import { Episode, StoryNode, StoryChoice } from '../types';
 import storyDb from './storyDatabase.json';
-import { ALL_UPDATED_EPISODES } from './episodes';
+import { ALL_UPDATED_EPISODES, ep016, ep017 } from './episodes';
 import { StoryData, CatalogStory } from '../services/storyDatabaseService';
 
 // 1. Convert all 38 platform catalog stories into full Episode objects
@@ -61,7 +61,7 @@ export const CATALOG_EPISODES: Episode[] = rawCatalog.map((story, idx) => {
   };
 });
 
-// 2. Format the 12 original Kampala dilemmas with consistent category & sequential numbering
+// 2. Format the Kampala dilemmas with consistent category & sequential numbering
 export const KAMPALA_COVERS: Record<string, string> = {
   'ep-001': 'cover-match-you-missed.webp', // 2% Battery
   'ep-002': 'cover-red-ledger.webp',        // Everybody Took One
@@ -94,9 +94,11 @@ export const KAMPALA_EPISODES: Episode[] = ALL_UPDATED_EPISODES.map((ep, idx) =>
 
 const kampalaIds = new Set(KAMPALA_EPISODES.map((e) => e.id.toLowerCase()));
 
-// 3. Combined unified list of all 50+ interactive games (Kampala episodes take priority over legacy JSON catalog)
+// 3. Combined unified list of all interactive games (includes comic-linked companion games ep016 & ep017 without listing them in Kampala Dilemmas)
 export const ALL_INCORPORATED_EPISODES: Episode[] = [
   ...KAMPALA_EPISODES,
+  { ...ep016, category: 'Comics' },
+  { ...ep017, category: 'Comics' },
   ...CATALOG_EPISODES.filter((c) => !kampalaIds.has(c.id.toLowerCase()) && c.id !== 'because-i-said-so'),
 ];
 

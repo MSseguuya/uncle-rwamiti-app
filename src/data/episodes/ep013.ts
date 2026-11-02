@@ -42,7 +42,6 @@ export const ep013: Episode = {
       bodyParagraphs: [
         'Now she has been invited to a Saturday Digital Illustration Workshop in Mbarara.',
         'Before asking her mother Grace, Eva prepares carefully: she reads the full programme, her school art teacher confirms the invitation, and her aunt confirms she can take Eva to Mbarara and bring her back.',
-        'Ten opening panels • Three choices • Realistic continuations exploring what happens even when keeping the conversation open still meets a refusal.',
       ],
       buttonText: 'START THE STORY ›',
       nextNodeId: 'node-panels-1-3',
@@ -52,18 +51,19 @@ export const ep013: Episode = {
     'node-panels-1-3': {
       id: 'node-panels-1-3',
       type: 'consequence',
-      badge: 'PANELS 1–3 • THE INVITATION & DISMISSAL',
+      badge: 'THE INVITATION & DISMISSAL',
       badgeColor: 'amber',
-      headline: '1. The Workshop Invitation & 2. “Get a Pencil”',
+      headline: 'Something Worth Showing & “Get a Pencil”',
       leadText:
-        'Eva approaches her mother in the sitting room, holding out her phone with the Saturday workshop details open on the screen.',
+        'Eva approaches her mother at the table in Katete, holding out her phone with her completed artwork and the Mbarara workshop invitation.',
       bodyParagraphs: [
-        'EVA: “Mum, there’s a digital illustration workshop in Mbarara on Saturday. Look—”',
-        'Grace glances up without looking at the phone screen.',
-        'MUM: “Another day playing on a phone? Eva, drawing is drawing. Get a pencil.”',
-        'EVA: “It’s digital illustration, Mum. People use it for books, posters and business work.”',
+        'EVA: “Mum, I made this.”',
+        'MUM: “Another day playing on a phone?”',
+        'EVA: “Mum, may I attend? There’s a digital illustration workshop in Mbarara on Saturday.”',
+        'EVA: “It’s digital illustration. You can use it for book covers, posters, animation—”',
+        'MUM: “Eva, drawing is drawing. Get a pencil.”',
       ],
-      buttonText: 'NEXT: PANELS 4–6 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-4-6',
       image: 'assets/comic-pages/because-i-said-so/panel-2.jpg',
     },
@@ -71,18 +71,20 @@ export const ep013: Episode = {
     'node-panels-4-6': {
       id: 'node-panels-4-6',
       type: 'consequence',
-      badge: 'PANELS 4–6 • AUTHORITY VS. SUBJECT KNOWLEDGE',
+      badge: 'AUTHORITY VS. SUBJECT KNOWLEDGE',
       badgeColor: 'amber',
-      headline: '3. “So Now You Know More Than Your Mother?” & 4. The Evidence',
+      headline: '“So Now You Know More Than Your Mother?”',
       leadText:
-        'Grace straightens in her chair, her voice sharpening at the thought of being corrected by her sixteen-year-old daughter.',
+        'Eva presents her workshop programme and teacher confirmation, opening her phone to explain layers and digital tools.',
       bodyParagraphs: [
-        'MUM: “I went to school before you were born. So now you know more than your mother?”',
-        'EVA: “About this, I’ve been learning for months—”',
-        'MUM: “And I have been your mother for sixteen years.”',
-        'EVA: “Did you even look at the details? I read the programme, my teacher confirmed the invitation, and Aunt can take me and bring me back.”',
+        'EVA: “You start with a drawing. But there are things you do with layers, and—”',
+        'MUM: “Who told you all that?”',
+        'EVA: “I’ve been learning. Let me show you.”',
+        'MUM: “I went to school before you were born.”',
+        'EVA: “I know, Mum. But this is something I’ve been studying.”',
+        'MUM: “So now you know more than your mother?”',
       ],
-      buttonText: 'NEXT: PANELS 7–10 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-7-10',
       image: 'assets/comic-pages/because-i-said-so/panel-6.jpg',
     },
@@ -90,15 +92,17 @@ export const ep013: Episode = {
     'node-panels-7-10': {
       id: 'node-panels-7-10',
       type: 'consequence',
-      badge: 'PANELS 7–10 • THE REFUSAL TO LOOK',
+      badge: 'A FAMILIAR WORRY & STILL NOT CONVINCED',
       badgeColor: 'red',
-      headline: '5. “No. Because I Said So.” & 6. Uncle Rwamiti’s Observation',
+      headline: '“Still Not Convinced” & A Decision Now',
       leadText:
-        'Eva holds the phone steady, showing the teacher’s confirmation and her aunt’s message. Her mother still refuses to look at the screen.',
+        'Grace points to upcoming school tests and distractions, while Eva tries to explain the long-term future of the skill.',
       bodyParagraphs: [
         'MUM: “These things are a distraction. You have school. You should focus on real subjects.”',
-        'MUM: “No. Because I said so.”',
-        'Eva stands holding the phone she was not allowed to show.',
+        'EVA: “This is part of my future. I can use these skills after school.”',
+        'MUM: “I don’t think this workshop is necessary.”',
+        'EVA: “But it would help me learn properly.”',
+        'You can see why both of them feel this way. What should Eva do next?',
         'UNCLE RWAMITI: “A parent’s duty is to guide and protect. A refusal to look is something else. When authority feels questioned, the conversation stops being about the evidence.”',
       ],
       buttonText: 'MAKE YOUR MOVE ›',
@@ -115,9 +119,7 @@ export const ep013: Episode = {
       leadText:
         'You are Eva. You have prepared the programme, your teacher’s confirmation, and your aunt’s escort plan. Your mother has said no without reading the details.',
       highlightText: 'How do you respond? Choose A, B or C.',
-      bodyParagraphs: [
-        'Each choice leads to a realistic continuation—including what happens when you keep the conversation open and still face a refusal.',
-      ],
+      bodyParagraphs: [],
       choices: [
         {
           id: 'choice-a',
@@ -146,7 +148,7 @@ export const ep013: Episode = {
       type: 'decision',
       badge: 'YOUR MOVE A • CHALLENGE HER DIRECTLY',
       badgeColor: 'red',
-      headline: 'A1. Right on the Facts, Tense in the Room',
+      headline: 'Right on the Facts, Tense in the Room',
       leadText:
         'EVA: “About this subject, I do know more. Please look before deciding.”',
       bodyParagraphs: [
@@ -204,7 +206,7 @@ export const ep013: Episode = {
       type: 'decision',
       badge: 'YOUR MOVE B • WITHDRAW',
       badgeColor: 'amber',
-      headline: 'B1. Peace in the Sitting Room, Evidence in Your Pocket',
+      headline: 'Peace in the Sitting Room, Evidence in Your Pocket',
       leadText:
         'EVA: “Okay, Mum.” You lock the phone, slip it into your pocket, and stop explaining.',
       bodyParagraphs: [
@@ -245,7 +247,7 @@ export const ep013: Episode = {
       choices: [
         {
           id: 'retry-from-b',
-          label: 'TRY ANOTHER CHOICE (Return to YOUR MOVE) ›',
+          label: 'TRY ANOTHER CHOICE ›',
           nextNodeId: 'node-decision',
         },
         {
@@ -262,7 +264,7 @@ export const ep013: Episode = {
       type: 'decision',
       badge: 'YOUR MOVE C • KEEP THE CONVERSATION OPEN',
       badgeColor: 'emerald',
-      headline: 'C1. What Happens When You Keep It Open—And Still Hear “No”?',
+      headline: 'What Happens When You Keep It Open—And Still Hear “No”?',
       leadText:
         'EVA: “You can still guide me. Can I first show you what I’ve learned?”',
       bodyParagraphs: [
@@ -292,7 +294,7 @@ export const ep013: Episode = {
       type: 'consequence',
       badge: 'YOUR MOVE C • THE EVIDENCE IS SEEN',
       badgeColor: 'emerald',
-      headline: 'C2. A Refusal for Saturday, A Commitment for End of Term',
+      headline: 'A Refusal for Saturday, A Commitment for End of Term',
       leadText:
         'Because the pressure to win Saturday immediately is off the table, Grace takes the phone into her hands and actually looks.',
       bodyParagraphs: [

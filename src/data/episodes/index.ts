@@ -52,6 +52,5 @@ export const ALL_UPDATED_EPISODES = [
   ep013,
   ep014,
   ep015,
-  ep016,
-  ep017,
 ];
+

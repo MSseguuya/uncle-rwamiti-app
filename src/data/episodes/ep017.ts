@@ -7,7 +7,7 @@ export const ep017: Episode = {
   subtitle: 'An Uncle Rwamiti: Your Move Story',
   teaser:
     'Nora graduated four years ago. Every weekday she leaves home before seven for an unpaid placement. When HR extends her placement for another three months without pay, her father opens the household ledger.',
-  category: 'Kampala Dilemmas',
+  category: 'Comics',
   badge: 'KAMPALA • UNPAID EXTENSION',
   badgeColor: 'amber',
   coverImage: 'assets/comic-pages/extended-internship/page-1.jpg',
@@ -35,13 +35,12 @@ export const ep017: Episode = {
     'node-start': {
       id: 'node-start',
       type: 'start',
-      badge: 'AN UNCLE RWAMITI INTERACTIVE STORY',
+      badge: 'AN INTERACTIVE STORY',
       badgeColor: 'amber',
       headline: 'THEY EXTENDED HER INTERNSHIP',
       leadText: '“They want to keep me!” Nora tells her parents. Her father looks up from the table: “Wonderful. How much?”',
       bodyParagraphs: [
         'Nora graduated four years ago. Every weekday she leaves home before seven. Her three-month unpaid placement is ending on Friday—and HR has just emailed to extend it for a further three months.',
-        'Experience panels 1 to 10 of Nora’s story and weigh what information, household limit, or negotiated support is needed before deciding.',
       ],
       buttonText: 'START THE STORY ›',
       nextNodeId: 'node-panels-1-4',
@@ -51,9 +50,9 @@ export const ep017: Episode = {
     'node-panels-1-4': {
       id: 'node-panels-1-4',
       type: 'consequence',
-      badge: 'PANELS 1–4 • THE OFFICE & THE EXTENSION EMAIL',
+      badge: 'THE OFFICE & THE EXTENSION EMAIL',
       badgeColor: 'amber',
-      headline: '1. Someone Who Leaves for Work · 2. Useful at the Office · 3. Good News · 4. Not Yet',
+      headline: 'Someone Who Leaves for Work',
       leadText:
         'Every weekday morning, Nora leaves home before seven with a packed lunch from her mother. At the office, she has become indispensable.',
       bodyParagraphs: [
@@ -64,7 +63,7 @@ export const ep017: Episode = {
         'NORA: “Will there be an allowance this time?”',
         'SUPERVISOR: “It shows we value your contribution. There’s no approved budget. But a vacancy may come up. I can’t promise a date.”',
       ],
-      buttonText: 'NEXT: PANELS 5–7 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-5-7',
       image: 'assets/comic-pages/extended-internship/page-2.jpg',
     },
@@ -72,9 +71,9 @@ export const ep017: Episode = {
     'node-panels-5-7': {
       id: 'node-panels-5-7',
       type: 'consequence',
-      badge: 'PANELS 5–7 • THE HOUSEHOLD LEDGER',
+      badge: 'THE HOUSEHOLD LEDGER',
       badgeColor: 'amber',
-      headline: '5. What Leaving the House Means · 6. The Bill at Home · 7. An Answer Nobody Likes',
+      headline: 'The Bill at Home',
       leadText:
         'At the dinner table that evening, Nora explains why walking away from the office is so difficult—and her father opens the household expenses notebook.',
       bodyParagraphs: [
@@ -103,9 +102,7 @@ export const ep017: Episode = {
       leadText:
         'Nora values having somewhere to go and being useful, yet her father would have to borrow after one more month of transport. Before deciding how to answer the extension offer tomorrow morning, what does she need to establish?',
       highlightText: 'Choose the priority Nora brings to the table:',
-      bodyParagraphs: [
-        'Each choice focuses on concrete information, household financial limits, or negotiated support rather than blind hope.',
-      ],
+      bodyParagraphs: [],
       choices: [
         {
           id: 'choice-limit',
@@ -132,16 +129,16 @@ export const ep017: Episode = {
     'node-panel-8-a': {
       id: 'node-panel-8-a',
       type: 'consequence',
-      badge: 'PANEL 8 • A PRACTICAL REQUEST',
+      badge: 'A PRACTICAL REQUEST',
       badgeColor: 'amber',
-      headline: '8. Next Day — At the Office',
+      headline: 'Next Day — At the Office',
       leadText:
         'Knowing that another three unpaid months would force her father to borrow for transport, Nora speaks clearly with her supervisor.',
       bodyParagraphs: [
         'NORA: “I can finish my current placement. I can’t afford another three unpaid months. Could I have a reference describing the work I’ve done?”',
         'SUPERVISOR: “I understand.”',
       ],
-      buttonText: 'NEXT: PANELS 9–10 (FRIDAY & MONDAY) ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-9-10',
       image: 'assets/comic-pages/extended-internship/panel-8.jpg',
     },
@@ -149,16 +146,16 @@ export const ep017: Episode = {
     'node-panel-8-b': {
       id: 'node-panel-8-b',
       type: 'consequence',
-      badge: 'PANEL 8 • TESTING SUPPORT & MAKING A PRACTICAL REQUEST',
+      badge: 'TESTING SUPPORT & MAKING A PRACTICAL REQUEST',
       badgeColor: 'amber',
-      headline: '8. Next Day — At the Office',
+      headline: 'Next Day — At the Office',
       leadText:
         'Nora checks whether the office can offer transport reimbursement or reduced days. When her supervisor confirms that neither is approved, she makes her decision without bitterness.',
       bodyParagraphs: [
         'NORA: “I can finish my current placement. I can’t afford another three unpaid months. Could I have a reference describing the work I’ve done?”',
         'SUPERVISOR: “I understand.”',
       ],
-      buttonText: 'NEXT: PANELS 9–10 (FRIDAY & MONDAY) ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-9-10',
       image: 'assets/comic-pages/extended-internship/panel-8.jpg',
     },
@@ -166,16 +163,16 @@ export const ep017: Episode = {
     'node-panel-8-c': {
       id: 'node-panel-8-c',
       type: 'consequence',
-      badge: 'PANEL 8 • VERIFYING THE BUDGET & MAKING A PRACTICAL REQUEST',
+      badge: 'VERIFYING THE BUDGET & MAKING A PRACTICAL REQUEST',
       badgeColor: 'amber',
-      headline: '8. Next Day — At the Office',
+      headline: 'Next Day — At the Office',
       leadText:
         'When Nora asks whether there is any approved hiring date in the next quarter, her supervisor admits there is none. With that clarity, Nora protects her family’s one remaining month of transport money.',
       bodyParagraphs: [
         'NORA: “I can finish my current placement. I can’t afford another three unpaid months. Could I have a reference describing the work I’ve done?”',
         'SUPERVISOR: “I understand.”',
       ],
-      buttonText: 'NEXT: PANELS 9–10 (FRIDAY & MONDAY) ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-9-10',
       image: 'assets/comic-pages/extended-internship/panel-8.jpg',
     },
@@ -183,9 +180,9 @@ export const ep017: Episode = {
     'node-panels-9-10': {
       id: 'node-panels-9-10',
       type: 'consequence',
-      badge: 'PANELS 9–10 • NO SURPRISE OFFER & MONDAY MORNING',
+      badge: 'FRIDAY & MONDAY MORNING',
       badgeColor: 'emerald',
-      headline: '9. No Surprise Offer · 10. Monday Morning',
+      headline: 'No Surprise Offer & Monday Morning',
       leadText:
         'Friday afternoon. There was no last-minute job offer. Nora walks out holding her signed Reference Letter.',
       bodyParagraphs: [
@@ -201,7 +198,7 @@ export const ep017: Episode = {
       choices: [
         {
           id: 'retry-ei',
-          label: 'TRY ANOTHER CHOICE (Return to YOUR MOVE) ›',
+          label: 'TRY ANOTHER CHOICE ›',
           nextNodeId: 'node-decision',
         },
         {

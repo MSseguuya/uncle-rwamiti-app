@@ -7,7 +7,7 @@ export const ep016: Episode = {
   subtitle: 'An Uncle Rwamiti: Your Move Story',
   teaser:
     'Jessica types “BAN BODAS. KAMPALA DESERVES BETTER.” from the back of Safari’s motorcycle in Kampala rush hour. Forty minutes later on Uncle Rwamiti’s veranda, passenger and rider confront both dangerous riding and passenger pressure.',
-  category: 'Kampala Dilemmas',
+  category: 'Comics',
   badge: 'KAMPALA RUSH HOUR • THE VERANDA',
   badgeColor: 'amber',
   coverImage: 'assets/comic-pages/ban-bodas/cover.jpg',
@@ -28,20 +28,19 @@ export const ep016: Episode = {
       'C. Safari, what would help you earn a living while riding safely?',
     ],
   },
-  recommendedNextEpisodeId: 'ep-017',
+  recommendedNextEpisodeId: 'ep-015',
   sharePrompt:
     'I just played BAN BODAS! SHE TYPED. FROM THE BACK OF A BODA. on Uncle Rwamiti. What would you write now—and what would you change on your next ride?',
   nodes: {
     'node-start': {
       id: 'node-start',
       type: 'start',
-      badge: 'AN UNCLE RWAMITI INTERACTIVE STORY',
+      badge: 'AN INTERACTIVE STORY',
       badgeColor: 'amber',
       headline: 'BAN BODAS! SHE TYPED. FROM THE BACK OF A BODA.',
       leadText: 'Kampala rush hour. Jessica is on the back of Safari’s motorcycle, forty minutes late.',
       bodyParagraphs: [
         'From the back seat of the boda that is carrying her through jammed traffic, Jessica posts: “BAN BODAS. KAMPALA DESERVES BETTER.”',
-        'Experience all 12 panels of the story on Uncle Rwamiti’s veranda, choose how Jessica responds to her viral post, and decide what practical habit changes next.',
       ],
       buttonText: 'START THE STORY ›',
       nextNodeId: 'node-panels-1-3',
@@ -51,9 +50,9 @@ export const ep016: Episode = {
     'node-panels-1-3': {
       id: 'node-panels-1-3',
       type: 'consequence',
-      badge: 'PANELS 1–3 • KAMPALA RUSH HOUR & THE FARE',
+      badge: 'KAMPALA RUSH HOUR & THE FARE',
       badgeColor: 'amber',
-      headline: '1. Kampala, Rush Hour · 2. At Uncle Rwamiti’s Home · 3. The Fare',
+      headline: 'Kampala Rush Hour & The Fare',
       leadText:
         'In bumper-to-bumper Kampala traffic, Jessica types on her phone from the back of Safari’s motorcycle: “BAN BODAS. KAMPALA DESERVES BETTER.”',
       bodyParagraphs: [
@@ -67,7 +66,7 @@ export const ep016: Episode = {
         'JESSICA: “Have you seen how they ride?”',
         'UNCLE RWAMITI: “You want bodas banned?”',
       ],
-      buttonText: 'NEXT: PANELS 4–6 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-4-6',
       image: 'assets/comic-pages/ban-bodas/panel-1.jpg',
     },
@@ -75,9 +74,9 @@ export const ep016: Episode = {
     'node-panels-4-6': {
       id: 'node-panels-4-6',
       type: 'consequence',
-      badge: 'PANELS 4–6 • FIVE MINUTES FOR TEA & SAFARI’S PAST',
+      badge: 'FIVE MINUTES FOR TEA',
       badgeColor: 'amber',
-      headline: '4. Five Minutes for Tea · 5. Captain Safari · 6. Safari’s Past',
+      headline: 'Captain Safari',
       leadText:
         'Uncle Rwamiti invites Safari onto the veranda for five minutes of tea.',
       bodyParagraphs: [
@@ -88,7 +87,7 @@ export const ep016: Episode = {
         'UNCLE RWAMITI: “Captain Safari.”',
         'SAFARI: “I helped at a garage. Some weeks there was work. Some weeks I waited. Then someone offered me a bike. A payment every day. I started earning.”',
       ],
-      buttonText: 'NEXT: PANELS 7–9 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-7-9',
       image: 'assets/comic-pages/ban-bodas/panel-5.jpg',
     },
@@ -96,9 +95,9 @@ export const ep016: Episode = {
     'node-panels-7-9': {
       id: 'node-panels-7-9',
       type: 'consequence',
-      badge: 'PANELS 7–9 • PAVEMENTS & PASSENGER PRESSURE',
+      badge: 'PAVEMENTS & PASSENGER PRESSURE',
       badgeColor: 'amber',
-      headline: '7. Back on the Veranda · 8. Looking Towards the Road · 9. Remembering Their Journey',
+      headline: 'Remembering Their Journey',
       leadText:
         'Jessica challenges Safari directly about dangerous riding in Kampala.',
       bodyParagraphs: [
@@ -112,7 +111,7 @@ export const ep016: Episode = {
         'SAFARI: “Yes.”',
         'JESSICA: “I told you the other riders were passing.”',
       ],
-      buttonText: 'NEXT: PANELS 10–12 ›',
+      buttonText: 'NEXT ›',
       nextNodeId: 'node-panels-10-12',
       image: 'assets/comic-pages/ban-bodas/panel-9.jpg',
     },
@@ -120,9 +119,9 @@ export const ep016: Episode = {
     'node-panels-10-12': {
       id: 'node-panels-10-12',
       type: 'consequence',
-      badge: 'PANELS 10–12 • THE OWNER CALLS & THE VIRAL POST',
+      badge: 'THE OWNER CALLS & THE VIRAL POST',
       badgeColor: 'amber',
-      headline: '10. Fair · 11. Safari Leaves · 12. Where Are You Taking Them?',
+      headline: 'Where Are You Taking Them?',
       leadText:
         'On the veranda, both rider and passenger reckon with their part.',
       bodyParagraphs: [

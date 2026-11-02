@@ -478,7 +478,7 @@ function createPaidTaskNodes() {
         'You confirm the scope and payment terms in writing. The client agrees.',
         'Then the full file arrives.\nSeveral hundred rows are missing attendance dates. You cannot reconstruct them from what you have.',
       ],
-      highlightText: 'Your move:\n────────\nENDINGS',
+      highlightText: 'Your move:',
       choices: [
         {
           id: `c-eighty-${r}`,
@@ -649,8 +649,8 @@ function createEndingNodes() {
         'Less money. A promise you can make.',
         'Dad knocks. You show him the task and explain why you are not attending the interview.',
         'He asks, “Is this a job?” “A task.” “And after?” “I don’t know yet.”',
-        'The next day you deliver at 12:41 p.m. The client requests a corrected heading, then accepts the file. Payment arrives the following working day.',
-        'It is not a salary. After data costs and any repayment, it is not even the full sixty thousand.',
+        'The next day you deliver at 12:41 p.m. The client requests a corrected heading, then accepts the file. That afternoon, payment of UGX 60,000 arrives via Mobile Money, bringing your balance from UGX 2,300 to UGX 62,300.',
+        'You immediately transfer UGX 20,000 via Mobile Money to Mum, fully restoring her prescription money and contributing to the household (leaving UGX 42,300 in Mobile Money, alongside UGX 15,000 cash in hand).',
         'You save a description of the work, without the client’s records, and ask permission to use a redacted sample. They have not answered yet.',
       ],
       buttonText: 'Continue to what happened next ›',
