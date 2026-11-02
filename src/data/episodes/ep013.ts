@@ -21,7 +21,7 @@ export const ep013: Episode = {
       '“When authority feels questioned, the conversation stops being about the evidence—even when a parent also carries real worries about schoolwork and household priorities.”',
       '“Keeping the conversation open does not guarantee an immediate yes. Sometimes the real victory is getting the evidence seen so the next decision is made with open eyes.”',
     ],
-    closingQuestion: 'When Eva’s mother says “No. Because I said so” without reading the details, what do you do next?',
+    closingQuestion: 'When Eva’s mother says, “I don’t think this workshop is necessary” without reading the details, what do you do next?',
     pollOptions: [
       'A. Challenge her directly: “About this subject, I do know more. Please look before deciding.”',
       'B. Withdraw: “Okay, Mum.” Put the phone away and stop explaining.',
@@ -117,7 +117,7 @@ export const ep013: Episode = {
       badgeColor: 'amber',
       headline: 'YOUR MOVE: WHAT DO YOU DO NEXT?',
       leadText:
-        'You are Eva. You have prepared the programme, your teacher’s confirmation, and your aunt’s escort plan. Your mother has said no without reading the details.',
+        'You are Eva. You have prepared the programme, your teacher’s confirmation, and your aunt’s escort plan. Your mother has said, “I don’t think this workshop is necessary” without looking at the screen.',
       highlightText: 'How do you respond? Choose A, B or C.',
       bodyParagraphs: [],
       choices: [
@@ -315,10 +315,10 @@ export const ep013: Episode = {
       badgeColor: 'emerald',
       headline: 'WHEN RESPECTING AUTHORITY OPENS THE EVIDENCE',
       leadText:
-        'Eva does not attend the Saturday workshop in Mbarara this week. The disappointment is real—good communication is not a magic spell that erases exam timetables or household budgets.',
+        'Eva does not attend the Saturday workshop in Mbarara this week. The disappointment is real—good communication is not a magic spell that immediately changes a parent’s mind.',
       bodyParagraphs: [
         'Yet something fundamental has changed in the house: her mother has looked at the evidence, recognized four months of real skill, and agreed to meet her teacher before the next opportunity.',
-        'UNCLE RWAMITI: “Sometimes keeping the conversation open still ends in a ‘no’ for today. The difference is whether tomorrow’s conversation starts from ‘Because I said so’—or from evidence both of you have finally seen.”',
+        'UNCLE RWAMITI: “Sometimes keeping the conversation open still ends in a ‘no’ for today. The difference is whether tomorrow’s conversation starts from a dismissal—or from evidence both of you have finally seen.”',
       ],
       choices: [
         {

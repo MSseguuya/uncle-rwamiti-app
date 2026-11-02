@@ -65,12 +65,13 @@ export const ATTACHED_COMIC: ComicBook = {
       image: 'assets/comic-pages/page-3.jpg',
       timeMarker: 'DAY 1 — 2:17 PM TO 2:25 PM',
       caption:
-        'DAY 1 — 2:17 PM: You ask Mum for UGX 20,000 transport. At 2:25 PM she offers UGX 10,000 cash from her prescription refill envelope and asks you to tell Dad. Dad provides the other UGX 10,000 cash. Alex now holds UGX 20,000 physical cash in hand, keeping Mobile Money untouched at UGX 2,300.',
+        'DAY 1 — 2:17 PM: You ask Mum for UGX 20,000 transport. At 2:25 PM she offers UGX 10,000 cash from her prescription refill envelope and asks you to tell Dad. Dad sends UGX 10,000 via Mobile Money directly to Mum (his phone screen confirms: “Money Sent UGX 10,000”) to restore her prescription money. Mum then hands you the full UGX 20,000 physical cash handover for transport, leaving your own Mobile Money balance untouched at UGX 2,300.',
       keyMoments: [
         '2:17 PM: Asking Mum for twenty thousand for tomorrow’s interview transport',
         '2:25 PM: Mum hands Alex UGX 10,000 cash from her prescription refill envelope: “Please don’t make this another secret”',
-        'Dad provides UGX 10,000 cash to complete the UGX 20,000 transport fare: “Next time, tell me what is happening before she has to juggle things”',
-        'Mum: “And next time, both of you remember I can hear”',
+        'Dad sends UGX 10,000 to Mum via Mobile Money (phone confirmation: “Money Sent UGX 10,000”) to restore her prescription refill',
+        'Cash handover: Mum hands Alex two UGX 10,000 notes (UGX 20,000 cash in hand for transport), leaving Alex’s Mobile Money balance untouched at UGX 2,300',
+        'Dad: “Next time, tell me what is happening before she has to juggle things” — Mum: “And next time, both of you remember I can hear”',
         'Money breakdown: UGX 20,000 cash in hand | UGX 2,300 Mobile Money balance',
       ],
     },
@@ -229,7 +230,7 @@ export const ATTACHED_COMIC: ComicBook = {
           character: 'Dad',
           characterRole: 'Father',
           avatarColor: 'slate',
-          text: '“Next time, tell me what is happening before she has to juggle things.” (Sends UGX 10,000)',
+          text: '“Next time, tell me what is happening before she has to juggle things.” (Dad opens his phone and sends UGX 10,000 directly to Mum via Mobile Money to restore her prescription refill; his screen confirms “Money Sent UGX 10,000”. Mum then completes the physical cash handover of two UGX 10,000 notes to Alex for transport.)',
           side: 'left',
           bubbleType: 'speech',
         },
@@ -243,7 +244,7 @@ export const ATTACHED_COMIC: ComicBook = {
         },
       ],
       resolutionNote:
-        'Alex now holds UGX 20,000 cash in hand for transport (UGX 10,000 cash from Mum’s prescription refill envelope and UGX 10,000 cash from Dad), leaving Mobile Money untouched at UGX 2,300. Later, Alex spends UGX 5,000 cash on data, receives UGX 60,000 via Mobile Money from Kigo Initiative (new balance UGX 62,300), and sends UGX 20,000 Mobile Money to Mum, restoring her prescription refill electronically and leaving UGX 42,300 Mobile Money + UGX 15,000 cash.',
+        'Dad’s phone confirms “Money Sent UGX 10,000” to Mum via Mobile Money to restore her prescription refill. Mum hands Alex two UGX 10,000 notes (UGX 20,000 physical cash in hand for transport), leaving Alex’s own Mobile Money balance untouched at UGX 2,300. Later, Alex spends UGX 5,000 cash at the kiosk on data, receives UGX 60,000 via Mobile Money from Kigo Initiative (new balance UGX 62,300), and sends UGX 20,000 Mobile Money to Mum, restoring her prescription refill electronically and leaving UGX 42,300 Mobile Money + UGX 15,000 cash in hand.',
     },
     {
       id: 'p4',
@@ -320,7 +321,8 @@ export const ATTACHED_COMIC: ComicBook = {
       dayMarker: 'PAGE 5',
       timeMarker: '11:22 PM – 11:42 PM',
       caption: 'PAGE 5: THE MESSY ATTENDANCE SPREADSHEET & SCOPE NEGOTIATION.',
-      settingDescription: 'Laptop desk at night. 11:22 PM to 11:42 PM.',
+      settingDescription:
+        'Laptop desk at night. Alex pays UGX 5,000 cash at the kiosk for data (leaving UGX 15,000 cash in hand and Mobile Money untouched at UGX 2,300). 11:22 PM to 11:42 PM.',
       dialogue: [
         {
           character: 'Alex',
@@ -1746,7 +1748,7 @@ export const COMIC_BECAUSE_I_SAID_SO: ComicBook = {
   rwamitiWisdom:
     'A parent’s duty is to guide and protect. A refusal to look is something else. When authority feels questioned, the conversation stops being about the evidence.',
   closingQuestion:
-    'You are Eva. Your mother has said “No. Because I said so” without reading the details. What do you do next?',
+    'You are Eva. Your mother has said, “I don’t think this workshop is necessary” without looking at the screen or your teacher’s confirmation. What do you do next?',
   pollOptions: [
     'A • CHALLENGE HER DIRECTLY: “About this subject, I do know more. Please look before deciding.”',
     'B • WITHDRAW: “Okay, Mum.” Put the phone away and stop explaining.',
@@ -1763,7 +1765,7 @@ export const COMIC_BECAUSE_I_SAID_SO: ComicBook = {
       keyMoments: [
         'Eva, 16, in Katete just outside Mbarara',
         'Saturday Digital Illustration Workshop invitation on her phone',
-        'Mum’s refusal: “No. Because I said so.”',
+        'Mum’s response: “I don’t think this workshop is necessary.”',
         'Uncle Rwamiti observes the tension between authority and evidence',
       ],
     },

@@ -255,7 +255,11 @@ export const ComicBookReader: React.FC<ComicBookReaderProps> = ({
     },
     'because-i-said-so-comic': {
       title: 'EVIDENCE VS PARENTAL AUTHORITY',
-      text: 'Eva prepared her case with school backing, teacher recommendations, and safety escorts. Her mother worried about pending term fees, mock exams, and safety. Evidence alone cannot persuade without acknowledging the real anxieties behind a parent’s refusal.',
+      text: 'Eva prepared her case carefully with the workshop programme, teacher confirmation, and accompaniment. Her mother saw phone drawing as a distraction from school and felt her parental authority questioned. When Mum concluded, “I don’t think this workshop is necessary,” the tension became less about the evidence and more about whether authority or preparation leads the decision.',
+    },
+    'because-i-said-so': {
+      title: 'EVIDENCE VS PARENTAL AUTHORITY',
+      text: 'Eva prepared her case carefully with the workshop programme, teacher confirmation, and accompaniment. Her mother saw phone drawing as a distraction from school and felt her parental authority questioned. When Mum concluded, “I don’t think this workshop is necessary,” the tension became less about the evidence and more about whether authority or preparation leads the decision.',
     },
   };
 
